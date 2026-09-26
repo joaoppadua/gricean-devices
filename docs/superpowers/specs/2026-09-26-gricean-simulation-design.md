@@ -87,7 +87,7 @@ explain the effect.
 
 ### 3.5 Inference stack
 
-Python, Hugging Face `transformers` on Apple MPS (or MLX-LM where faster),
+Python, Hugging Face `transformers` on Apple MPS (CPU fallback elsewhere),
 half precision. Every checkpoint pinned to a revision hash in
 `configs/models.yaml`.
 
@@ -224,8 +224,11 @@ Purpose: a reader can enact the mechanism, not only observe checkpoints.
 - **Data:** `databricks/databricks-dolly-15k` (CC BY-SA), plain-instruction
   categories only (drop context-dependent ones), ≈8,000 pairs. Enacts SFT
   only.
-- **Method:** LoRA via MLX-LM's trainer, 1–2 epochs, fixed seed, all
-  hyperparameters in `configs/finetune.yaml`. Adapter weights committed under
+- **Method:** LoRA via `peft` on the same Hugging Face `transformers` backend
+  used for inference (portable; adapters load directly into the evaluated
+  model), 1–2 epochs, fixed seed, all hyperparameters in
+  `configs/finetune.yaml`. Prompt format for training and evaluation is a
+  fixed Alpaca-style template, since the base tokenizer has no chat template. Adapter weights committed under
   `adapters/` so replicators can skip training.
 - **Comparison:** SmolLM2 base vs base + adapter on the full stimulus set,
   both measurement lines, same table format as OLMo.

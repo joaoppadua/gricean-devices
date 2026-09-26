@@ -1,0 +1,45 @@
+# revision: fill with the exact commit hash from the Hugging Face model page before running.
+models:
+  olmo_base:
+    repo: allenai/OLMo-2-0425-1B
+    revision: main
+    family: olmo
+    template: none
+  olmo_sft:
+    repo: allenai/OLMo-2-0425-1B-SFT
+    revision: main
+    family: olmo
+    template: chat
+  olmo_dpo:
+    repo: allenai/OLMo-2-0425-1B-DPO
+    revision: main
+    family: olmo
+    template: chat
+  olmo_instruct:
+    repo: allenai/OLMo-2-0425-1B-Instruct
+    revision: main
+    family: olmo
+    template: chat
+  qwen_base:
+    repo: Qwen/Qwen2.5-1.5B
+    revision: main
+    family: qwen
+    template: none
+  qwen_instruct:
+    repo: Qwen/Qwen2.5-1.5B-Instruct
+    revision: main
+    family: qwen
+    template: chat
+  smollm_base:
+    repo: HuggingFaceTB/SmolLM2-360M
+    revision: main
+    family: smollm
+    template: alpaca
+ladders:
+  olmo: [olmo_base, olmo_sft, olmo_dpo, olmo_instruct]
+  qwen: [qwen_base, qwen_instruct]
+  smollm: [smollm_base]
+neither_source:
+  olmo: qwen_base
+  qwen: olmo_base
+  smollm: olmo_base

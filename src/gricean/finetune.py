@@ -46,12 +46,21 @@ def write_jsonl(rows: list[dict], path: Path) -> None:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 
+def tokenize_rows(rows: list[dict], tok, max_len: int) -> list[dict]:
+    """Full-sequence LM examples whose labels keep the end-of-text token, so the adapter learns to stop.
+
+    (A collator that derives labels from pad_token_id would mask EOS out whenever pad == eos.)"""
+    enc = tok([r["text"] + tok.eos_token for r in rows], truncation=True, max_length=max_len)
+    return [{"input_ids": ids, "attention_mask": am, "labels": list(ids)}
+            for ids, am in zip(enc["input_ids"], enc["attention_mask"])]
+
+
 def train_lora(base_spec: ModelSpec, rows: list[dict], out_dir: Path, cfg: dict,
                device: str | None = None) -> Path:
     import torch
     from datasets import Dataset
     from peft import LoraConfig, get_peft_model
-    from transformers import (AutoModelForCausalLM, AutoTokenizer, DataCollatorForLanguageModeling,
+    from transformers import (AutoModelForCausalLM, AutoTokenizer, DataCollatorForSeq2Seq,
                               Trainer, TrainingArguments, set_seed)
     from .lm import pick_device
     device = device or pick_device()
@@ -64,9 +73,7 @@ def train_lora(base_spec: ModelSpec, rows: list[dict], out_dir: Path, cfg: dict,
     model = get_peft_model(model, LoraConfig(r=cfg["lora"]["r"], lora_alpha=cfg["lora"]["alpha"],
                                              lora_dropout=cfg["lora"]["dropout"],
                                              target_modules=cfg["lora"]["target_modules"], task_type="CAUSAL_LM"))
-    ds = Dataset.from_list([{"text": r["text"] + tok.eos_token} for r in rows])
-    ds = ds.map(lambda b: tok(b["text"], truncation=True, max_length=cfg["max_seq_len"]),
-                batched=True, remove_columns=["text"])
+    ds = Dataset.from_list(tokenize_rows(rows, tok, cfg["max_seq_len"]))
     args = TrainingArguments(
         output_dir=str(Path(out_dir) / "trainer"), num_train_epochs=cfg["epochs"],
         per_device_train_batch_size=cfg["batch_size"], gradient_accumulation_steps=cfg["grad_accum"],
@@ -74,7 +81,7 @@ def train_lora(base_spec: ModelSpec, rows: list[dict], out_dir: Path, cfg: dict,
         seed=cfg["seed"], use_cpu=(device == "cpu"), dataloader_pin_memory=False,
     )
     trainer = Trainer(model=model, args=args, train_dataset=ds,
-                      data_collator=DataCollatorForLanguageModeling(tok, mlm=False))
+                      data_collator=DataCollatorForSeq2Seq(tok, padding=True, label_pad_token_id=-100))
     trainer.train()
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     model.save_pretrained(str(out_dir))

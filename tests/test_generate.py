@@ -58,3 +58,31 @@ def test_model_revision_change_recomputes_everything(tmp_path: Path):
     G.run_generate(lm, spec(), items(), template=True, gen_cfg=GEN, stimuli_checksum="abc", root=tmp_path)
     s2 = ModelSpec(name="fake", repo="r", revision="v2", family="f", template="chat")
     assert G.run_generate(lm, s2, items(), template=True, gen_cfg=GEN, stimuli_checksum="abc", root=tmp_path) == 9
+
+
+def items_with_embedded():
+    return [Item(id="e", category="indirect_request", language="en", control=False,
+                 prompt="Can you tell me the time?", literal_reading="", intended_reading="",
+                 literal_continuation="Yes.", intended_continuation="Noon.",
+                 versions={"full": "Can you tell me the time?", "embedded": "Before. Can you tell me the time? After."})]
+
+
+def test_embedded_version_is_always_raw_and_rows_carry_stimulus_text(tmp_path: Path):
+    G.run_generate(FakeLM("fake"), spec(), items_with_embedded(), template=True, gen_cfg=GEN,
+                   stimuli_checksum="abc", root=tmp_path)
+    rows = read_jsonl(G.response_path("fake", True, tmp_path))
+    emb = [r for r in rows if r["version"] == "embedded"]
+    full = [r for r in rows if r["version"] == "full"]
+    assert emb and all(r["template"] is False and not r["prompt_text"].startswith("<user>") for r in emb)
+    assert all(r["template"] is True and r["prompt_text"].startswith("<user>") for r in full)
+    assert all(r["stimulus_text"] == items_with_embedded()[0].versions[r["version"]] for r in rows)
+
+
+def test_raw_pass_of_tuned_model_skips_embedded_but_base_keeps_it(tmp_path: Path):
+    G.run_generate(FakeLM("fake"), spec(), items_with_embedded(), template=False, gen_cfg=GEN,
+                   stimuli_checksum="abc", root=tmp_path)
+    assert {r["version"] for r in read_jsonl(G.response_path("fake", False, tmp_path))} == {"full"}
+    base = ModelSpec(name="base", repo="r", revision="v1", family="f", template="none")
+    G.run_generate(FakeLM("base"), base, items_with_embedded(), template=False, gen_cfg=GEN,
+                   stimuli_checksum="abc", root=tmp_path)
+    assert {r["version"] for r in read_jsonl(G.response_path("base", False, tmp_path))} == {"full", "embedded"}

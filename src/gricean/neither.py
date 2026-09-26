@@ -9,7 +9,8 @@ from .stimuli import Item
 
 KEY = ("item_id", "version", "mode", "seed")   # version/mode/seed are constant here
 FLAG_THRESHOLD = 0.5
-RULE = "containment-v1"   # bump when the selection rule changes so stale rows recompute
+RULE = "containment-v2"
+MIN_WORDS = 2             # samples shorter than this (e.g. an immediate newline) are never chosen   # bump when the selection rule changes so stale rows recompute
 
 
 def neither_path(family: str, root: Path = Path("stimuli/neither")) -> Path:
@@ -55,14 +56,20 @@ def sample_neither(source: LM, source_spec: ModelSpec, family: str, items: list[
         samples = [truncate(source.generate(it.prompt, max_new_tokens=cfg["max_new_tokens"],
                                             temperature=cfg["temperature"], seed=s), cfg["max_new_tokens"])
                    for s in seeds]
+        valid = [s for s in samples if len(s.split()) >= MIN_WORDS]
         scored = [(max(token_overlap(s, it.literal_continuation), token_overlap(s, it.intended_continuation)), s)
-                  for s in samples]
-        overlap, chosen = min(scored, key=lambda t: t[0])
+                  for s in valid]
+        if scored:
+            overlap, chosen = min(scored, key=lambda t: t[0])
+            flag = overlap >= FLAG_THRESHOLD
+        else:                      # nothing usable: keep the longest sample, force author review
+            chosen = max(samples, key=len) or "(no usable sample)"
+            overlap, flag = 1.0, True
         new_rows.append({
             "item_id": it.id, "version": "full", "mode": "neither", "seed": None,
             "family": family, "source_model": source_spec.name, "source_revision": source_spec.revision,
             "seeds": seeds, "samples": samples, "chosen": chosen, "overlap": overlap,
-            "flag": overlap >= FLAG_THRESHOLD, "stamp": stamp, "stimuli_checksum": stimuli_checksum,
+            "flag": flag, "approved": False, "stamp": stamp, "stimuli_checksum": stimuli_checksum,
         })
     if new_rows:
         write_jsonl(path, keep + new_rows)
@@ -70,4 +77,11 @@ def sample_neither(source: LM, source_spec: ModelSpec, family: str, items: list[
 
 
 def load_neither(family: str, root: Path = Path("stimuli/neither")) -> dict[str, str]:
-    return {r["item_id"]: r["chosen"] for r in read_jsonl(neither_path(family, root))}
+    """item_id -> chosen continuation. Flagged rows must carry `approved: true` (author's pass)."""
+    rows = read_jsonl(neither_path(family, root))
+    blocked = [r["item_id"] for r in rows if r.get("flag") and not r.get("approved")]
+    if blocked:
+        raise ValueError(
+            f"flagged neither continuations for {blocked} in {neither_path(family, root)}: review each row, "
+            "then either edit `chosen` or set `approved: true`")
+    return {r["item_id"]: r["chosen"] for r in rows}

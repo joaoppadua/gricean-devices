@@ -29,3 +29,17 @@ def test_prepare_subsets_and_format_only():
 def test_prepare_is_deterministic():
     kept = F.filter_dolly(records())
     assert F.prepare(kept, sizes=[4], seed=1, shuffle_responses=True) == F.prepare(kept, sizes=[4], seed=1, shuffle_responses=True)
+
+
+class _CharTok:
+    eos_token = "E"
+    eos_token_id = ord("E")
+    def __call__(self, texts, truncation, max_length):
+        ids = [[ord(c) for c in t][:max_length] for t in texts]
+        return {"input_ids": ids, "attention_mask": [[1] * len(x) for x in ids]}
+
+
+def test_tokenize_rows_keeps_eos_in_labels():
+    out = F.tokenize_rows([{"text": "ab"}, {"text": "cde"}], _CharTok(), max_len=16)
+    assert all(ex["labels"] == ex["input_ids"] for ex in out)
+    assert all(ex["labels"][-1] == ord("E") for ex in out)

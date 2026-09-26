@@ -54,3 +54,39 @@ def test_rerun_noop(tmp_path: Path):
     spec = ModelSpec(name="fake", repo="r", revision="v1", family="f", template="none")
     LP.run_logprobs(lm, spec, [item()], {"a": "x"}, template=False, stimuli_checksum="abc", root=tmp_path)
     assert LP.run_logprobs(lm, spec, [item()], {"a": "x"}, template=False, stimuli_checksum="abc", root=tmp_path) == 0
+
+
+def test_raw_prompts_prefix_continuations_with_separator(tmp_path: Path):
+    lm = FakeLM("fake", logprob_rules={" Yes.": -3.0, " It is noon.": -1.5, " blah blah": -2.0})
+    spec = ModelSpec(name="fake", repo="r", revision="v1", family="f", template="none")
+    LP.run_logprobs(lm, spec, [item()], {"a": "blah blah"}, template=False, stimuli_checksum="abc",
+                    root=tmp_path, raw_separator=" ")
+    r = read_jsonl(LP.logprob_path("fake", False, tmp_path))[0]
+    assert r["lp_intended"] == -1.5 and r["lp_literal"] == -3.0 and r["raw_separator"] == " "
+
+
+def test_templated_prompts_get_no_separator(tmp_path: Path):
+    lm = FakeLM("fake", logprob_rules={"Yes.": -3.0, "It is noon.": -1.5})
+    spec = ModelSpec(name="fake", repo="r", revision="v1", family="f", template="chat")
+    LP.run_logprobs(lm, spec, [item()], {"a": "x"}, template=True, stimuli_checksum="abc", root=tmp_path)
+    rows = read_jsonl(LP.logprob_path("fake", True, tmp_path))
+    assert all(r["lp_intended"] == -1.5 for r in rows)
+
+
+def test_embedded_scored_raw_even_in_template_pass_and_skipped_in_tuned_raw_pass(tmp_path: Path):
+    emb = Item(id="e", category="indirect_request", language="en", control=False, prompt="p",
+               literal_reading="", intended_reading="", literal_continuation="Yes.",
+               intended_continuation="It is noon.", versions={"full": "p", "embedded": "Before. p After."})
+    spec = ModelSpec(name="fake", repo="r", revision="v1", family="f", template="chat")
+    LP.run_logprobs(FakeLM("fake"), spec, [emb], {"e": "x"}, template=True, stimuli_checksum="abc", root=tmp_path)
+    rows = {r["version"]: r for r in read_jsonl(LP.logprob_path("fake", True, tmp_path))}
+    assert rows["embedded"]["template"] is False and not rows["embedded"]["prompt_text"].startswith("<user>")
+    assert rows["full"]["template"] is True
+    LP.run_logprobs(FakeLM("fake"), spec, [emb], {"e": "x"}, template=False, stimuli_checksum="abc", root=tmp_path)
+    assert {r["version"] for r in read_jsonl(LP.logprob_path("fake", False, tmp_path))} == {"full"}
+
+
+def test_rejects_empty_continuation(tmp_path: Path):
+    spec = ModelSpec(name="fake", repo="r", revision="v1", family="f", template="none")
+    with pytest.raises(ValueError, match="empty"):
+        LP.run_logprobs(FakeLM("fake"), spec, [item()], {"a": ""}, template=False, stimuli_checksum="abc", root=tmp_path)

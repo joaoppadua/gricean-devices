@@ -42,6 +42,23 @@ def test_full_pipeline_with_fakes(tmp_path: Path, monkeypatch):
     assert (root / "data/coding/coder1.csv").exists()
     assert cli.main(["sheet", "--coder2", "--frac", "0.5"]) == 0
     assert (root / "data/coding/coder2.key.csv").exists()
+    import pandas as pd
+    sheet = pd.read_csv(root / "data/coding/coder1.csv")
+    sheet["intent"] = "intended"; sheet["correctness"] = "na"
+    sheet.to_csv(root / "data/coding/coder1.csv", index=False)
+    assert cli.main(["report", "--ladder", "t"]) == 0
+    assert (root / "paper/t/intent.csv").exists() and (root / "paper/t/examples.md").exists()
+
+
+def test_generate_refuses_stale_stimuli(tmp_path: Path, monkeypatch):
+    root = project(tmp_path)
+    monkeypatch.chdir(root)
+    cli.main(["freeze"])
+    f = root / "stimuli/en/indirect_request.yaml"
+    f.write_text(f.read_text().replace("Brazil", "Chile"))
+    import pytest
+    with pytest.raises(ValueError, match="freeze"):
+        cli.main(["generate", "--model", "b"], loader=fake_loader)
 
 
 def test_unknown_stage_returns_2(tmp_path: Path, monkeypatch):

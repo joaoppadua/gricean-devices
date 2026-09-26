@@ -12,7 +12,8 @@ def make_responses(root: Path):
         for i in range(4):
             rows.append({"item_id": f"a{i}", "category": "indirect_request", "language": "en",
                          "control": False, "version": "full", "model": model, "template": True,
-                         "mode": "greedy", "seed": None, "prompt_text": "p", "response": f"r{i}{model}",
+                         "mode": "greedy", "seed": None, "prompt_text": f"<tmpl>{model} p", "stimulus_text": "p",
+                         "response": f"r{i}{model}",
                          "stamp": "s", "stimuli_checksum": "c"})
         write_jsonl(root / f"{model}__tmpl.jsonl", rows[-4:])
 
@@ -30,7 +31,8 @@ def test_export_blind_sample_hides_model(tmp_path: Path):
     n = C.export_sheet(tmp_path / "resp", tmp_path / "coder2.csv", coder="coder2", sample_frac=0.5, seed=0)
     df = pd.read_csv(tmp_path / "coder2.csv")
     key = pd.read_csv(tmp_path / "coder2.key.csv")
-    assert n == 4 and "model" not in df.columns and set(key.columns) >= {"row_id", "model", "template"}
+    assert n == 4 and "model" not in df.columns and set(key.columns) >= {"row_id", "model", "template", "prompt_text"}
+    assert "prompt_text" not in df.columns and (df["stimulus_text"] == "p").all()
 
 
 def test_load_rejects_blank_or_invalid(tmp_path: Path):

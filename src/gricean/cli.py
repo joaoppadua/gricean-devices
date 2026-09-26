@@ -7,7 +7,7 @@ from pathlib import Path
 import yaml
 
 from . import coding, generate, logprobs, neither, report, stimuli
-from .lm import ladders, load_model, load_registry, neither_source
+from .lm import expected_templates, ladders, load_model, load_registry, neither_source
 
 CONFIGS = Path("configs")
 
@@ -41,7 +41,9 @@ def cmd_neither(args, loader) -> int:
     chk = stimuli.current_checksum()
     for family in args.family:
         src = reg[neither_source()[family]]
-        n = neither.sample_neither(loader(src), src, family, items, cfg=cfg, stimuli_checksum=chk)
+        lm = loader(src)
+        src = getattr(lm, "spec", src)          # HF backend resolves 'main' to a commit sha
+        n = neither.sample_neither(lm, src, family, items, cfg=cfg, stimuli_checksum=chk)
         print(f"neither[{family}] from {src.name}: {n} rows")
     return 0
 
@@ -50,19 +52,22 @@ def cmd_generate(args, loader) -> int:
     reg, items, cfg = load_registry(), stimuli.load_all(), _gen_cfg()
     chk = stimuli.current_checksum()
     for name, template in _models_for(args, reg):
-        spec = reg[name]
-        n = generate.run_generate(loader(spec), spec, items, template=template, gen_cfg=cfg, stimuli_checksum=chk)
+        lm = loader(reg[name])
+        spec = getattr(lm, "spec", reg[name])
+        n = generate.run_generate(lm, spec, items, template=template, gen_cfg=cfg, stimuli_checksum=chk)
         print(f"generate[{name}, template={template}]: {n} rows")
     return 0
 
 
 def cmd_logprobs(args, loader) -> int:
-    reg, items = load_registry(), stimuli.load_all()
+    reg, items, cfg = load_registry(), stimuli.load_all(), _gen_cfg()
     chk = stimuli.current_checksum()
     for name, template in _models_for(args, reg):
-        spec = reg[name]
-        nei = neither.load_neither(spec.family)
-        n = logprobs.run_logprobs(loader(spec), spec, items, nei, template=template, stimuli_checksum=chk)
+        nei = neither.load_neither(reg[name].family)
+        lm = loader(reg[name])
+        spec = getattr(lm, "spec", reg[name])
+        n = logprobs.run_logprobs(lm, spec, items, nei, template=template, stimuli_checksum=chk,
+                                  raw_separator=cfg.get("raw_separator", " "))
         print(f"logprobs[{name}, template={template}]: {n} rows")
     return 0
 
@@ -80,7 +85,7 @@ def cmd_report(args, loader) -> int:
     c2 = Path("data/coding/coder2.csv")
     summary = report.build(Path("data/coding/coder1.csv"), Path("data/coding/coder2.key.csv") if c2.exists() else None,
                            c2 if c2.exists() else None, Path("data/responses"), Path("data/logprobs"),
-                           models, Path("paper") / args.ladder)
+                           models, Path("paper") / args.ladder, expected_templates())
     print(summary)
     return 0
 

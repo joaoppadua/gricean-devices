@@ -1,4 +1,7 @@
 max_new_tokens: 150
+# Prefix for scored continuations after an untemplated prompt (which ends mid-line), so the
+# first token takes its ordinary space-prefixed form. Templated prompts get no separator.
+raw_separator: " "
 greedy: true
 samples:
   n: 3

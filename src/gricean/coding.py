@@ -10,8 +10,8 @@ from .io import read_jsonl
 INTENT = ("literal", "intended", "neither")
 CORRECT = ("correct", "incorrect", "na")
 PUBLIC = ["row_id", "item_id", "category", "language", "control", "version", "mode", "seed",
-          "prompt_text", "response"]
-HIDDEN = ["model", "template"]
+          "stimulus_text", "response"]
+HIDDEN = ["model", "template", "prompt_text"]   # prompt_text reveals the chat template, hence the stage
 
 
 def _all_responses(response_root: Path) -> pd.DataFrame:

@@ -10,9 +10,9 @@ def _():
     import marimo as mo
     import pandas as pd
     from pathlib import Path
-    from gricean.lm import ladders
+    from gricean.lm import ladders, expected_templates
     from gricean.report import logodds_table
-    return Path, json, ladders, logodds_table, mo, pd
+    return Path, expected_templates, json, ladders, logodds_table, mo, pd
 
 
 @app.cell
@@ -42,9 +42,9 @@ def _(logs, mo):
 
 
 @app.cell
-def _(Path, ladders, logodds_table, mo):
+def _(Path, expected_templates, ladders, logodds_table, mo):
     try:
-        _out = mo.ui.table(logodds_table(Path("data/logprobs"), ladders()["smollm"]).round(3).reset_index())
+        _out = mo.ui.table(logodds_table(Path("data/logprobs"), ladders()["smollm"], expected_templates()).round(3).reset_index())
     except Exception as e:
         _out = mo.md(f"No smollm log-prob data yet: {e}")
     _out

@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
+from .generate import plan_versions
 from .io import item_stamp, merge_fresh, write_jsonl
 from .lm import LM, ModelSpec, spec_stamp
 from .stimuli import Item
@@ -25,30 +26,39 @@ def three_way(lp: dict[str, tuple[float, int]]) -> dict:
 
 
 def run_logprobs(model: LM, spec: ModelSpec, items: list[Item], neither: dict[str, str], *,
-                 template: bool, stimuli_checksum: str, root: Path = Path("data/logprobs")) -> int:
+                 template: bool, stimuli_checksum: str, root: Path = Path("data/logprobs"),
+                 raw_separator: str = " ") -> int:
+    """Score literal / intended / neither continuations for every dissociation item.
+
+    Raw (untemplated) prompts end mid-line, so continuations get `raw_separator` prefixed to
+    them, giving the first token its ordinary space-prefixed form; templated prompts end the
+    assistant turn already and get no separator."""
     path = logprob_path(spec.name, template, root)
     targets = [it for it in items if not it.control]
     for it in targets:
         if it.id not in neither:
             raise KeyError(f"no neither continuation for item {it.id!r}")
+        if not neither[it.id].strip():
+            raise ValueError(f"empty neither continuation for item {it.id!r}")
     wanted, by_key = {}, {}
     for it in targets:
-        for version in it.versions:
-            prompt_text = model.format(it.versions[version], template)
-            conts = {"literal": it.literal_continuation, "intended": it.intended_continuation,
-                     "neither": neither[it.id]}
+        for version, use_template in plan_versions(it, spec, template):
+            prompt_text = model.format(it.versions[version], use_template)
+            sep = "" if use_template else raw_separator
+            conts = {"literal": sep + it.literal_continuation, "intended": sep + it.intended_continuation,
+                     "neither": sep + neither[it.id]}
             stamp = item_stamp(prompt_text, *conts.values(), spec_stamp(spec))
             key = (it.id, version, "logprob", None)
-            wanted[key], by_key[key] = stamp, (it, prompt_text, conts, stamp)
+            wanted[key], by_key[key] = stamp, (it, use_template, prompt_text, conts, sep, stamp)
     keep, todo = merge_fresh(path, KEY, "stamp", wanted)
     new_rows = []
     for key in todo:
-        it, prompt_text, conts, stamp = by_key[key]
+        it, use_template, prompt_text, conts, sep, stamp = by_key[key]
         lp = {k: model.continuation_logprob(prompt_text, v) for k, v in conts.items()}
         tw = three_way(lp)
         row = {"item_id": it.id, "category": it.category, "language": it.language,
-               "version": key[1], "model": spec.name, "template": template,
-               "mode": "logprob", "seed": None}
+               "version": key[1], "model": spec.name, "template": use_template,
+               "mode": "logprob", "seed": None, "prompt_text": prompt_text, "raw_separator": sep}
         for k in OPTIONS:
             row[f"lp_{k}"], row[f"n_{k}"] = lp[k]
             row[f"norm_{k}"], row[f"share_{k}"] = tw["norm"][k], tw["share"][k]

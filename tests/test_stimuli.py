@@ -124,3 +124,11 @@ def test_freeze_writes_checksums_and_is_stable(root):
     (root / "en/rhetorical_question.yaml").write_text(
         (root / "en/rhetorical_question.yaml").read_text().replace("waiting", "queuing"))
     assert S.freeze(root) != a
+
+
+def test_current_checksum_raises_when_stimuli_changed_since_freeze(root):
+    S.freeze(root)
+    (root / "en/rhetorical_question.yaml").write_text(
+        (root / "en/rhetorical_question.yaml").read_text().replace("waiting", "queuing"))
+    with pytest.raises(ValueError, match="freeze"):
+        S.current_checksum(root)

@@ -108,5 +108,11 @@ def freeze(root: Path = Path("stimuli")) -> str:
 
 
 def current_checksum(root: Path = Path("stimuli")) -> str:
-    last = (Path(root) / "CHECKSUMS").read_text().strip().splitlines()[-1]
-    return last.split()[0]
+    """The frozen checksum, verified against the stimulus files on disk."""
+    root = Path(root)
+    last = (root / "CHECKSUMS").read_text().strip().splitlines()[-1]
+    frozen = last.split()[0]
+    live = _digest(root)[1]
+    if live != frozen:
+        raise ValueError("stimuli changed since they were frozen; run `gricean freeze` first")
+    return frozen

@@ -1,13 +1,17 @@
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass
+import re
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Protocol
 
 import yaml
 
 ALPACA = "### Instruction:\n{prompt}\n\n### Response:\n"
+# Every decoding knob pinned explicitly, so a checkpoint's generation_config.json
+# (e.g. Qwen2.5-Instruct ships top_k=20, top_p=0.8, repetition_penalty=1.05) cannot leak in.
+DECODING = {"top_k": 0, "top_p": 1.0, "repetition_penalty": 1.0, "num_beams": 1}
 
 
 class LM(Protocol):
@@ -45,6 +49,23 @@ def ladders(path: Path = Path("configs/models.yaml")) -> dict[str, list[str]]:
 
 def neither_source(path: Path = Path("configs/models.yaml")) -> dict[str, str]:
     return _cfg(path)["neither_source"]
+
+
+def expected_templates(path: Path = Path("configs/models.yaml")) -> dict[str, bool]:
+    """model name -> whether its main condition is the templated one (False for base models)."""
+    return {name: spec.template != "none" for name, spec in load_registry(path).items()}
+
+
+def resolve_revision(repo: str, revision: str) -> str:
+    """Pin a symbolic revision (e.g. 'main') to its commit sha, from the local HF cache or the Hub."""
+    if re.fullmatch(r"[0-9a-f]{40}", revision):
+        return revision
+    from huggingface_hub import constants
+    ref = Path(constants.HF_HUB_CACHE) / f"models--{repo.replace('/', '--')}" / "refs" / revision
+    if ref.exists():
+        return ref.read_text().strip()
+    from huggingface_hub import HfApi
+    return HfApi().model_info(repo, revision=revision).sha
 
 
 def render_template(spec: ModelSpec, prompt: str, tokenizer) -> str:
@@ -103,11 +124,11 @@ class HFLM:
         ids = self._ids(prompt, special=True).to(self.device)
         if seed is not None:
             torch.manual_seed(seed)
-        kwargs = dict(max_new_tokens=max_new_tokens, pad_token_id=self.tokenizer.pad_token_id)
+        kwargs = dict(max_new_tokens=max_new_tokens, pad_token_id=self.tokenizer.pad_token_id, **DECODING)
         if temperature is None:
             kwargs.update(do_sample=False)
         else:
-            kwargs.update(do_sample=True, temperature=temperature, top_p=1.0)
+            kwargs.update(do_sample=True, temperature=temperature)
         with torch.no_grad():
             out = self.model.generate(ids, **kwargs)
         return self.tokenizer.decode(out[0, ids.shape[1]:], skip_special_tokens=True)
@@ -117,6 +138,8 @@ class HFLM:
         torch = self._torch
         p_ids = self._ids(prompt, special=True)
         c_ids = self._ids(continuation, special=False)
+        if c_ids.shape[1] == 0:
+            raise ValueError(f"empty continuation for prompt {prompt[:60]!r}")
         ids = torch.cat([p_ids, c_ids], dim=1).to(self.device)
         with torch.no_grad():
             logits = self.model(ids).logits.float()
@@ -141,6 +164,7 @@ def load_model(spec: ModelSpec, device: str | None = None) -> HFLM:
     from transformers import AutoModelForCausalLM, AutoTokenizer
     device = device or pick_device()
     dtype = torch.float16 if device != "cpu" else torch.float32
+    spec = replace(spec, revision=resolve_revision(spec.repo, spec.revision))
     tok = AutoTokenizer.from_pretrained(spec.repo, revision=spec.revision)
     model = AutoModelForCausalLM.from_pretrained(spec.repo, revision=spec.revision, dtype=dtype)
     if spec.adapter:
@@ -151,6 +175,10 @@ def load_model(spec: ModelSpec, device: str | None = None) -> HFLM:
 
 
 def spec_stamp(spec: ModelSpec) -> str:
-    """Stable identifier of a model configuration, for cache stamps."""
+    """Stable identifier of a model configuration (repo, revision, template, adapter weights)."""
+    weights = ""
+    if spec.adapter:
+        f = Path(spec.adapter) / "adapter_model.safetensors"
+        weights = hashlib.sha256(f.read_bytes()).hexdigest() if f.exists() else "missing"
     return hashlib.sha256(
-        f"{spec.repo}@{spec.revision}|{spec.template}|{spec.adapter}".encode()).hexdigest()[:16]
+        f"{spec.repo}@{spec.revision}|{spec.template}|{spec.adapter}|{weights}".encode()).hexdigest()[:16]

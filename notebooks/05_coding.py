@@ -8,10 +8,10 @@ app = marimo.App(width="full")
 def _():
     import marimo as mo
     from pathlib import Path
-    from gricean.lm import ladders
+    from gricean.lm import ladders, expected_templates
     from gricean.coding import load_sheet, cohen_kappa
     from gricean.report import build
-    return Path, build, cohen_kappa, ladders, load_sheet, mo
+    return Path, build, cohen_kappa, expected_templates, ladders, load_sheet, mo
 
 
 @app.cell
@@ -36,12 +36,12 @@ def _(ladders, mo):
 
 
 @app.cell
-def _(Path, build, go, ladder, ladders, mo):
+def _(Path, build, expected_templates, go, ladder, ladders, mo):
     mo.stop(not go.value)
     _c2 = Path("data/coding/coder2.csv")
     summary = build(Path("data/coding/coder1.csv"), Path("data/coding/coder2.key.csv") if _c2.exists() else None,
                     _c2 if _c2.exists() else None, Path("data/responses"), Path("data/logprobs"),
-                    ladders()[ladder.value], Path("paper") / ladder.value)
+                    ladders()[ladder.value], Path("paper") / ladder.value, expected_templates())
     mo.md(f"`{summary}`")
     return
 

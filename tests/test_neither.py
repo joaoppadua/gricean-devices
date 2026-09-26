@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path
 from gricean import neither as N
 from gricean.io import read_jsonl
@@ -56,8 +57,8 @@ def test_flags_when_every_sample_answers(tmp_path: Path):
     spec = ModelSpec(name="qwen_base", repo="q", revision="r1", family="qwen", template="none")
     N.sample_neither(src, spec, "olmo", [item()], cfg=CFG, stimuli_checksum="abc", root=tmp_path)
     r = read_jsonl(N.neither_path("olmo", tmp_path))[0]
-    assert r["flag"] is True
-    assert N.load_neither("olmo", tmp_path) == {"a": "Brazil became independent in 1822."}
+    assert r["flag"] is True and r["approved"] is False
+    assert r["chosen"] == "Brazil became independent in 1822."
 
 
 def test_controls_are_skipped_and_rerun_is_noop(tmp_path: Path):
@@ -68,3 +69,27 @@ def test_controls_are_skipped_and_rerun_is_noop(tmp_path: Path):
     spec = ModelSpec(name="qwen_base", repo="q", revision="r1", family="qwen", template="none")
     assert N.sample_neither(src, spec, "olmo", [item(), c], cfg=CFG, stimuli_checksum="abc", root=tmp_path) == 1
     assert N.sample_neither(src, spec, "olmo", [item(), c], cfg=CFG, stimuli_checksum="abc", root=tmp_path) == 0
+
+
+def test_short_or_empty_samples_are_never_chosen(tmp_path: Path):
+    class Src(FakeLM):
+        def generate(self, prompt, *, max_new_tokens, temperature, seed):
+            return {11: "", 12: "\nSome other continuation text here", 13: "x"}[seed]
+    spec = ModelSpec(name="qwen_base", repo="q", revision="r1", family="qwen", template="none")
+    N.sample_neither(Src("qwen_base"), spec, "olmo", [item()], cfg=CFG, stimuli_checksum="abc", root=tmp_path)
+    r = read_jsonl(N.neither_path("olmo", tmp_path))[0]
+    # sample 12 truncates to "" at the newline, so no sample has 2+ words: flagged, and chosen is never empty
+    assert r["flag"] is True and r["chosen"] != ""
+
+
+def test_load_neither_refuses_flagged_rows_unless_approved(tmp_path: Path):
+    src = FakeLM("qwen_base", canned={"Can you tell me what year Brazil became independent?": "Brazil became independent in 1822."})
+    spec = ModelSpec(name="qwen_base", repo="q", revision="r1", family="qwen", template="none")
+    N.sample_neither(src, spec, "olmo", [item()], cfg=CFG, stimuli_checksum="abc", root=tmp_path)
+    with pytest.raises(ValueError, match="approved"):
+        N.load_neither("olmo", tmp_path)
+    rows = read_jsonl(N.neither_path("olmo", tmp_path))
+    rows[0]["approved"] = True
+    from gricean.io import write_jsonl
+    write_jsonl(N.neither_path("olmo", tmp_path), rows)
+    assert N.load_neither("olmo", tmp_path) == {"a": "Brazil became independent in 1822."}

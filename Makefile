@@ -1,4 +1,4 @@
-.PHONY: install test freeze neither generate logprobs sheet report all finetune
+.PHONY: install test freeze neither generate logprobs sheet report all finetune determinism
 install:
 	uv sync --extra dev
 test:
@@ -18,3 +18,5 @@ report:
 all: report
 finetune:
 	uv run gricean finetune
+determinism:
+	uv run python scripts/determinism_check.py olmo_base

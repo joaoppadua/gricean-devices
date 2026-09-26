@@ -19,9 +19,20 @@ def test_truncate_cuts_at_newline_then_words():
     assert N.truncate(" ".join(str(i) for i in range(30)), 5) == "0 1 2 3 4"
 
 
-def test_overlap_is_jaccard():
+def test_overlap_is_containment_of_reference_words():
     assert N.token_overlap("Yes, I can.", "yes i can") == 1.0
     assert N.token_overlap("apple", "pear") == 0.0
+    # a long sample that contains the whole reference answer must score 1.0, not a diluted Jaccard
+    long = "According to historical records, Brazil became independent from Portugal on September 7, 1822"
+    assert N.token_overlap(long, "Brazil became independent in 1822.") == 0.8   # 4 of 5 reference words ("on" != "in")
+
+
+def test_flags_long_sample_that_contains_the_answer(tmp_path: Path):
+    src = FakeLM("qwen_base", canned={"Can you tell me what year Brazil became independent?":
+                                      "According to historical records, Brazil became independent from Portugal on September 7, 1822"})
+    spec = ModelSpec(name="qwen_base", repo="q", revision="r1", family="qwen", template="none")
+    N.sample_neither(src, spec, "olmo", [item()], cfg=CFG, stimuli_checksum="abc", root=tmp_path)
+    assert read_jsonl(N.neither_path("olmo", tmp_path))[0]["flag"] is True
 
 
 def test_picks_lowest_overlap_and_flags_when_all_overlap(tmp_path: Path):

@@ -9,6 +9,7 @@ from .stimuli import Item
 
 KEY = ("item_id", "version", "mode", "seed")   # version/mode/seed are constant here
 FLAG_THRESHOLD = 0.5
+RULE = "containment-v1"   # bump when the selection rule changes so stale rows recompute
 
 
 def neither_path(family: str, root: Path = Path("stimuli/neither")) -> Path:
@@ -19,11 +20,15 @@ def _words(text: str) -> set[str]:
     return set(re.findall(r"\w+", text.lower()))
 
 
-def token_overlap(a: str, b: str) -> float:
-    wa, wb = _words(a), _words(b)
-    if not wa and not wb:
+def token_overlap(sample: str, reference: str) -> float:
+    """Fraction of the reference continuation's words that appear in the sample.
+
+    Containment rather than Jaccard: a long sample that embeds the whole intended
+    answer must score 1.0, not be diluted by its extra words."""
+    ws, wr = _words(sample), _words(reference)
+    if not wr:
         return 1.0
-    return len(wa & wb) / len(wa | wb)
+    return len(ws & wr) / len(wr)
 
 
 def truncate(text: str, max_tokens: int = 20) -> str:
@@ -39,7 +44,7 @@ def sample_neither(source: LM, source_spec: ModelSpec, family: str, items: list[
     for it in targets:
         stamp = item_stamp(it.prompt, it.literal_continuation, it.intended_continuation,
                            spec_stamp(source_spec), cfg["temperature"], cfg["max_new_tokens"],
-                           ",".join(map(str, cfg["seeds"][: cfg["n"]])))
+                           ",".join(map(str, cfg["seeds"][: cfg["n"]])), RULE)
         key = (it.id, "full", "neither", None)
         wanted[key], by_key[key] = stamp, (it, stamp)
     keep, todo = merge_fresh(path, KEY, "stamp", wanted)

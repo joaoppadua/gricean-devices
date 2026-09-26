@@ -85,6 +85,22 @@ def cmd_report(args, loader) -> int:
     return 0
 
 
+def cmd_finetune(args, loader) -> int:
+    from . import finetune
+    cfg = yaml.safe_load((CONFIGS / "finetune.yaml").read_text())
+    reg = load_registry()
+    base = reg[cfg["base"]]
+    records = finetune.load_dolly()
+    sets = finetune.prepare(records, sizes=cfg["sizes"], seed=cfg["seed"], shuffle_responses=True)
+    names = args.set or list(sets)
+    for name in names:
+        out = Path("adapters") / f"smollm_{name}"
+        finetune.write_jsonl(sets[name], out / "train.jsonl")
+        finetune.train_lora(base, sets[name], out, cfg)
+        print(f"finetune[{name}]: {len(sets[name])} rows -> {out}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="gricean")
     sub = p.add_subparsers(dest="cmd")
@@ -97,6 +113,7 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("sheet"); s.add_argument("--coder2", action="store_true"); s.add_argument("--frac", type=float, default=0.25)
     s.set_defaults(fn=cmd_sheet)
     r = sub.add_parser("report"); r.add_argument("--ladder", default="olmo"); r.set_defaults(fn=cmd_report)
+    f = sub.add_parser("finetune"); f.add_argument("--set", action="append"); f.set_defaults(fn=cmd_finetune)
     return p
 
 

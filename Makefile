@@ -1,4 +1,4 @@
-.PHONY: install test freeze neither generate logprobs sheet report all
+.PHONY: install test freeze neither generate logprobs sheet report all finetune
 install:
 	uv sync --extra dev
 test:
@@ -16,3 +16,5 @@ sheet:
 report:
 	uv run gricean report
 all: report
+finetune:
+	uv run gricean finetune

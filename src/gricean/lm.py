@@ -142,7 +142,7 @@ def load_model(spec: ModelSpec, device: str | None = None) -> HFLM:
     device = device or pick_device()
     dtype = torch.float16 if device != "cpu" else torch.float32
     tok = AutoTokenizer.from_pretrained(spec.repo, revision=spec.revision)
-    model = AutoModelForCausalLM.from_pretrained(spec.repo, revision=spec.revision, torch_dtype=dtype)
+    model = AutoModelForCausalLM.from_pretrained(spec.repo, revision=spec.revision, dtype=dtype)
     if spec.adapter:
         from peft import PeftModel
         model = PeftModel.from_pretrained(model, spec.adapter)

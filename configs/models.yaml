@@ -35,10 +35,34 @@ models:
     revision: main
     family: smollm
     template: alpaca
+  smollm_n500:
+    repo: HuggingFaceTB/SmolLM2-360M
+    revision: main
+    family: smollm
+    template: alpaca
+    adapter: adapters/smollm_n500
+  smollm_n2000:
+    repo: HuggingFaceTB/SmolLM2-360M
+    revision: main
+    family: smollm
+    template: alpaca
+    adapter: adapters/smollm_n2000
+  smollm_full:
+    repo: HuggingFaceTB/SmolLM2-360M
+    revision: main
+    family: smollm
+    template: alpaca
+    adapter: adapters/smollm_full
+  smollm_format_only:
+    repo: HuggingFaceTB/SmolLM2-360M
+    revision: main
+    family: smollm
+    template: alpaca
+    adapter: adapters/smollm_format_only
 ladders:
   olmo: [olmo_base, olmo_sft, olmo_dpo, olmo_instruct]
   qwen: [qwen_base, qwen_instruct]
-  smollm: [smollm_base]
+  smollm: [smollm_base, smollm_n500, smollm_n2000, smollm_full, smollm_format_only]
 neither_source:
   olmo: qwen_base
   qwen: olmo_base

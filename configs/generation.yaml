@@ -1,0 +1,14 @@
+max_new_tokens: 150
+# Prefix for scored continuations after an untemplated prompt (which ends mid-line), so the
+# first token takes its ordinary space-prefixed form. Templated prompts get no separator.
+raw_separator: " "
+greedy: true
+samples:
+  n: 3
+  temperature: 0.7
+  seeds: [1, 2, 3]
+neither:
+  n: 3
+  temperature: 1.0
+  max_new_tokens: 20
+  seeds: [11, 12, 13]

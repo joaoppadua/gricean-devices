@@ -1,0 +1,161 @@
+row_id,item_id,category,language,control,version,mode,seed,stimulus_text,response,model,template,prompt_text,coder,intent,correctness
+olmo_base|0|en_ir_01|embedded|greedy|nan,en_ir_01,indirect_request,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.", The rain stopped at 5:30 pm and the sun came out. The day was overcast and the temperature was 20 degrees. The day was overcast and the temperature was 20 degrees. The day was overcast and the temperature was 20 degrees. The day was overcast and the temperature was 20 degrees. The day was overcast and the temperature was 20 degrees. The day was overcast and the temperature was 20 degrees. The day was overcast and the temperature was 20 degrees. The day was overcast and the temperature was 20 degrees. The day was overcast and the temperature was 20 degrees. The day was overcast and the temperature was 20 degrees. The day was overcast,olmo_base,False,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",coder1,,
+olmo_base|0|en_ir_01|embedded|sample|1.0,en_ir_01,indirect_request,en,False,embedded,sample,1.0,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded."," I went home and, as usual, watched TV for a few more minutes, but then my eyes fell on the clock. It was 4:50 in the morning, time to get up and get ready for the day. What was the weather like? How did the office look like at that time? I found the answers in the newspaper I had left at home. Question: The rain in the afternoon   _  . Options: A: made the writer feel happy B: made the writer sad C: made the writer angry D: made the writer tired
+Ans: C
+
+Ques: Read the article and select the best answer. Article: ""Close your eyes,"" said my partner, ""fold your arms, and tell me what",olmo_base,False,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",coder1,,
+olmo_base|0|en_ir_01|embedded|sample|2.0,en_ir_01,indirect_request,en,False,embedded,sample,2.0,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded."," Now the whole town has been quiet for several hours. It is almost strange. The day must have been very hot. In the morning, the kids were shouting, running in the streets, but now it is so quiet that I feel weird. For the past few weeks, I have been at home in Singapore, and I use the Internet to have a walk around the city and in other places. What do I see? Yes, a lot of old people. Where are the children? I can't hear any. They aren't here! I am I right? I go to the supermarket and see that there are a lot of old people there. I go to the bank and many of the staff are old and even sleep on the job.",olmo_base,False,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",coder1,,
+olmo_base|0|en_ir_01|embedded|sample|3.0,en_ir_01,indirect_request,en,False,embedded,sample,3.0,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded."," It was a fun day at the office.
+
+Who said that a day in the office is the worst time to have a conversation with your spouse? Is it not possible to have a conversation in the office? I work in a very busy office and I don’t use my phone for anything else. I usually sit at the back and have a conversation with my spouse. I love a good conversation and I prefer it to be a face-to-face conversation. A lot of people have said that it is quite difficult to have a conversation with your spouse. I find it very easy.
+
+Who says that a conversation with your spouse is a waste of time? I think this is just a silly statement. It’s not a waste of time. I think it’s",olmo_base,False,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",coder1,,
+olmo_base|0|en_ir_01|full|greedy|nan,en_ir_01,indirect_request,en,False,full,greedy,,Can you tell me what year Brazil became independent?,,olmo_base,False,Can you tell me what year Brazil became independent?,coder1,,
+olmo_base|0|en_ir_01|full|sample|1.0,en_ir_01,indirect_request,en,False,full,sample,1.0,Can you tell me what year Brazil became independent?," I am not sure, but I think it was in the 19th century. Or, if you want to be more specific, it was in the 1820s. It is very interesting how the United States, which was a British colony, also became independent in the 19th century.
+
+The British colonies in North America separated from the mother country in 1776. The proclamation of independence by George Washington and John Hancock was a very significant moment, but it took a long period of time after that to become independent.
+
+It is also interesting to note the different processes of colonisation, because the American colonies were not colonised by a single power, but by a group of powers. The British were the main colonialist power, but",olmo_base,False,Can you tell me what year Brazil became independent?,coder1,,
+olmo_base|0|en_ir_01|full|sample|2.0,en_ir_01,indirect_request,en,False,full,sample,2.0,Can you tell me what year Brazil became independent?,""". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year Brazil became independent?"". Can you tell me what year",olmo_base,False,Can you tell me what year Brazil became independent?,coder1,,
+olmo_base|0|en_ir_01|full|sample|3.0,en_ir_01,indirect_request,en,False,full,sample,3.0,Can you tell me what year Brazil became independent?,,olmo_base,False,Can you tell me what year Brazil became independent?,coder1,,
+olmo_base|0|en_ir_01|stripped|greedy|nan,en_ir_01,indirect_request,en,False,stripped,greedy,,Can you tell me what year Brazil became independent,"?
+A: 1822
+Question: What is the answer for the question: What is the full name of the person who is told that the person he is looking for is not in the building? from the following article ?  In November of 1948, Bob Corey is an American soldier badly wounded at the end of World War II, and undergoing a number of surgical operations on his spine at the Birmingham Veterans Hospital in Van Nuys, California. He is tended by a nurse, Julie Benson, and they have fallen in love. Corey's military pal, Steve Connolly, arrives in early November to discuss plans for the ranch in Scottsdale, Arizona, they plan to purchase and operate together once Corey is out of the hospital. The",olmo_base,False,Can you tell me what year Brazil became independent,coder1,,
+olmo_base|0|en_ir_01|stripped|sample|1.0,en_ir_01,indirect_request,en,False,stripped,sample,1.0,Can you tell me what year Brazil became independent,"?
+  25. When was Brazil the first country to have an armed force with black soldiers?
+  26. In 2010, Brazil was the 5th largest economy in the world. What was the GDP in 2009?
+  27. In 2012, Brazil was the 4th largest economy in the world. What was the GDP in 2008?
+  28. In 2013, Brazil was the 3rd largest economy in the world. What was the GDP in 2007?
+  29. In 2014, Brazil was the 2nd largest economy in the world. What was the GDP in 2009?
+  30. In 2005, Brazil",olmo_base,False,Can you tell me what year Brazil became independent,coder1,,
+olmo_base|0|en_ir_01|stripped|sample|2.0,en_ir_01,indirect_request,en,False,stripped,sample,2.0,Can you tell me what year Brazil became independent,"?
+What happened in 1821?
+Who raised an army to fight the Portuguese?
+What was the name of the war?
+What is the name given to the period of 1870-1940?
+Who was the emperor of Brazil?
+What was the name of the explorer who discovered Brazil?
+What is the name of the South American country of Brazil?
+What was Brazil's first capital city?
+What is the official language of Brazil?
+What is the name of the country to the north of Brazil?
+What was the first country to claim Brazil as a colony?
+What is the population of Brazil?
+What is the name of the country directly south of Brazil?
+What country does Brazil share a border with?
+What is the main river in Brazil?
+What is",olmo_base,False,Can you tell me what year Brazil became independent,coder1,,
+olmo_base|0|en_ir_01|stripped|sample|3.0,en_ir_01,indirect_request,en,False,stripped,sample,3.0,Can you tell me what year Brazil became independent,"?
+  • What made Brazil become independent?
+  • What events lead to the idea of the Brazilian Republic?
+  • How did it happen that Brazil became a republic?
+  • What were the consequences of this event?
+  • What was the first president of Brazil?
+
+All questions that allow to talk about two things that happened in this country.
+
+Brazil being a great country, you can find many interesting facts. The first president of the new country was the Frenchman who left the country after the French Revolution. He was a very popular hero. He had big influence from the conservatives and he was very strict with the liberals. He was a good president, but he wasn't a very good revolutionary. For example, he persecuted the priests and the Catholics",olmo_base,False,Can you tell me what year Brazil became independent,coder1,,
+olmo_base|0|en_ir_c01|full|greedy|nan,en_ir_c01,indirect_request,en,True,full,greedy,,What year did Brazil become independent?,,olmo_base,False,What year did Brazil become independent?,coder1,,
+olmo_base|0|en_ir_c01|full|sample|1.0,en_ir_c01,indirect_request,en,True,full,sample,1.0,What year did Brazil become independent?,,olmo_base,False,What year did Brazil become independent?,coder1,,
+olmo_base|0|en_ir_c01|full|sample|2.0,en_ir_c01,indirect_request,en,True,full,sample,2.0,What year did Brazil become independent?," 1589
+
+When was Brazil discovered? 1500
+
+When did the Portuguese colonize Brazil? 16th century
+
+When was Brazil given its independence? 1889
+
+How many years does Brazil's calendar have? 365
+
+How many days does Brazil's calendar have? 365
+
+What is Brazil's official language? Portuguese
+
+What is Brazil's currency? Real
+
+What is Brazil's official bird? The toucan
+
+What is Brazil's official flower? Rose
+
+What is Brazil's official fruit? Bananas
+
+What is Brazil's official animal/ reptile? Ostrich
+
+What is Brazil's official insect? Mosquito
+
+What is Brazil's capital city? Brasilia
+
+What is Brazil's largest city? Sao",olmo_base,False,What year did Brazil become independent?,coder1,,
+olmo_base|0|en_ir_c01|full|sample|3.0,en_ir_c01,indirect_request,en,True,full,sample,3.0,What year did Brazil become independent?,,olmo_base,False,What year did Brazil become independent?,coder1,,
+olmo_sft|0|en_ir_01|full|greedy|nan,en_ir_01,indirect_request,en,False,full,greedy,,Can you tell me what year Brazil became independent?,,olmo_sft,False,Can you tell me what year Brazil became independent?,coder1,,
+olmo_sft|0|en_ir_01|full|sample|1.0,en_ir_01,indirect_request,en,False,full,sample,1.0,Can you tell me what year Brazil became independent?,,olmo_sft,False,Can you tell me what year Brazil became independent?,coder1,,
+olmo_sft|0|en_ir_01|full|sample|2.0,en_ir_01,indirect_request,en,False,full,sample,2.0,Can you tell me what year Brazil became independent?,,olmo_sft,False,Can you tell me what year Brazil became independent?,coder1,,
+olmo_sft|0|en_ir_01|full|sample|3.0,en_ir_01,indirect_request,en,False,full,sample,3.0,Can you tell me what year Brazil became independent?,,olmo_sft,False,Can you tell me what year Brazil became independent?,coder1,,
+olmo_sft|0|en_ir_01|stripped|greedy|nan,en_ir_01,indirect_request,en,False,stripped,greedy,,Can you tell me what year Brazil became independent, from Portugal?,olmo_sft,False,Can you tell me what year Brazil became independent,coder1,,
+olmo_sft|0|en_ir_01|stripped|sample|1.0,en_ir_01,indirect_request,en,False,stripped,sample,1.0,Can you tell me what year Brazil became independent, from Portugal? ,olmo_sft,False,Can you tell me what year Brazil became independent,coder1,,
+olmo_sft|0|en_ir_01|stripped|sample|2.0,en_ir_01,indirect_request,en,False,stripped,sample,2.0,Can you tell me what year Brazil became independent," from Portugal?
+
+Brazil has been independent since 1822; so it's also known as the ""Year of the Independence.
+
+If you mean that the ""Year of the Independence"" in Brazil is the 7th of June, you're correct. But you should also note that the 7th of June is also the day the independence of Brazil was declared in 1822.
+
+This means that you can celebrate both the 7th of June and the 1822 date, but in different ways. For example, you can have a national celebration on the 7th of June, and another one on the 1822 date.
+
+If you mean that 1822 was the year of independence in Brazil and the 7th of June",olmo_sft,False,Can you tell me what year Brazil became independent,coder1,,
+olmo_sft|0|en_ir_01|stripped|sample|3.0,en_ir_01,indirect_request,en,False,stripped,sample,3.0,Can you tell me what year Brazil became independent,?,olmo_sft,False,Can you tell me what year Brazil became independent,coder1,,
+olmo_sft|0|en_ir_c01|full|greedy|nan,en_ir_c01,indirect_request,en,True,full,greedy,,What year did Brazil become independent?,,olmo_sft,False,What year did Brazil become independent?,coder1,,
+olmo_sft|0|en_ir_c01|full|sample|1.0,en_ir_c01,indirect_request,en,True,full,sample,1.0,What year did Brazil become independent?,,olmo_sft,False,What year did Brazil become independent?,coder1,,
+olmo_sft|0|en_ir_c01|full|sample|2.0,en_ir_c01,indirect_request,en,True,full,sample,2.0,What year did Brazil become independent?, ,olmo_sft,False,What year did Brazil become independent?,coder1,,
+olmo_sft|0|en_ir_c01|full|sample|3.0,en_ir_c01,indirect_request,en,True,full,sample,3.0,What year did Brazil become independent?,,olmo_sft,False,What year did Brazil become independent?,coder1,,
+olmo_sft|0|en_ir_01|embedded|greedy|nan,en_ir_01,indirect_request,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",,olmo_sft,False,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",coder1,,
+olmo_sft|0|en_ir_01|embedded|sample|1.0,en_ir_01,indirect_request,en,False,embedded,sample,1.0,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.", Does this mean that at least one person stayed?,olmo_sft,False,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",coder1,,
+olmo_sft|0|en_ir_01|embedded|sample|2.0,en_ir_01,indirect_request,en,False,embedded,sample,2.0,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",,olmo_sft,False,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",coder1,,
+olmo_sft|0|en_ir_01|embedded|sample|3.0,en_ir_01,indirect_request,en,False,embedded,sample,3.0,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",,olmo_sft,False,"The afternoon had been slow at the office and the printer jammed twice. Can you tell me what year Brazil became independent? Later the rain started and most people left early, which nobody minded.",coder1,,
+olmo_sft|1|en_ir_01|full|greedy|nan,en_ir_01,indirect_request,en,False,full,greedy,,Can you tell me what year Brazil became independent?,Brazil became independent in 1822.,olmo_sft,True,"<|endoftext|><|user|>
+Can you tell me what year Brazil became independent?
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_01|full|sample|1.0,en_ir_01,indirect_request,en,False,full,sample,1.0,Can you tell me what year Brazil became independent?,Brazil became independent in 1822.,olmo_sft,True,"<|endoftext|><|user|>
+Can you tell me what year Brazil became independent?
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_01|full|sample|2.0,en_ir_01,indirect_request,en,False,full,sample,2.0,Can you tell me what year Brazil became independent?,Brazil gained its independence from Portugal in the year 1822.,olmo_sft,True,"<|endoftext|><|user|>
+Can you tell me what year Brazil became independent?
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_01|full|sample|3.0,en_ir_01,indirect_request,en,False,full,sample,3.0,Can you tell me what year Brazil became independent?,"Brazil became independent of Portugal on September 7, 1822. This is also the date when the first Emperor of Brazil, Pedro I, was crowned. Pedro was the first emperor of a unified Brazil, which was then a colony of Portugal. After Pedro I's death in 1831, Brazil declared itself an independent republic.",olmo_sft,True,"<|endoftext|><|user|>
+Can you tell me what year Brazil became independent?
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_01|stripped|greedy|nan,en_ir_01,indirect_request,en,False,stripped,greedy,,Can you tell me what year Brazil became independent,"Yes, Brazil became independent in 1822.",olmo_sft,True,"<|endoftext|><|user|>
+Can you tell me what year Brazil became independent
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_01|stripped|sample|1.0,en_ir_01,indirect_request,en,False,stripped,sample,1.0,Can you tell me what year Brazil became independent,Brazil became independent in 1822.,olmo_sft,True,"<|endoftext|><|user|>
+Can you tell me what year Brazil became independent
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_01|stripped|sample|2.0,en_ir_01,indirect_request,en,False,stripped,sample,2.0,Can you tell me what year Brazil became independent,"Yes, Brazil became independent in 1822. After a protracted struggle against Portuguese rule, Brazil declared its independence from Portugal on May 12, 1822.",olmo_sft,True,"<|endoftext|><|user|>
+Can you tell me what year Brazil became independent
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_01|stripped|sample|3.0,en_ir_01,indirect_request,en,False,stripped,sample,3.0,Can you tell me what year Brazil became independent,"Yes, Brazil became independent in 1822 when Emperor Pedro I of Brazil officially declared the country's independence from Portugal.",olmo_sft,True,"<|endoftext|><|user|>
+Can you tell me what year Brazil became independent
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_c01|full|greedy|nan,en_ir_c01,indirect_request,en,True,full,greedy,,What year did Brazil become independent?,Brazil became independent in 1822.,olmo_sft,True,"<|endoftext|><|user|>
+What year did Brazil become independent?
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_c01|full|sample|1.0,en_ir_c01,indirect_request,en,True,full,sample,1.0,What year did Brazil become independent?,Brazil became independent in 1822.,olmo_sft,True,"<|endoftext|><|user|>
+What year did Brazil become independent?
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_c01|full|sample|2.0,en_ir_c01,indirect_request,en,True,full,sample,2.0,What year did Brazil become independent?,Brazil gained its independence from Portugal in the year 1822.,olmo_sft,True,"<|endoftext|><|user|>
+What year did Brazil become independent?
+<|assistant|>
+",coder1,,
+olmo_sft|1|en_ir_c01|full|sample|3.0,en_ir_c01,indirect_request,en,True,full,sample,3.0,What year did Brazil become independent?,"Brazil became independent of Portugal on September 7, 1822.",olmo_sft,True,"<|endoftext|><|user|>
+What year did Brazil become independent?
+<|assistant|>
+",coder1,,

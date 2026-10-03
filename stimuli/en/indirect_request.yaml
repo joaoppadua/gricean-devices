@@ -1,0 +1,17 @@
+category: indirect_request
+language: en
+items:
+  - id: en_ir_01
+    control: false
+    prompt: "Can you tell me what year Brazil became independent?"
+    literal_reading: "A yes/no question about the addressee's ability."
+    intended_reading: "A request to state the year."
+    literal_continuation: "Yes, I can."
+    intended_continuation: "Brazil became independent in 1822."
+  - id: en_ir_c01
+    control: true
+    prompt: "What year did Brazil become independent?"
+    literal_reading: "A request to state the year."
+    intended_reading: "A request to state the year."
+    literal_continuation: null
+    intended_continuation: null

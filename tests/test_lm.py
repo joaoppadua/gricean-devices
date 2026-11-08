@@ -121,3 +121,23 @@ def test_registry_has_pythia_neither_candidate_outside_every_ladder():
     reg, lad = L.load_registry(cfg), L.ladders(cfg)
     assert reg["pythia_base"].template == "none"
     assert all("pythia_base" not in models for models in lad.values())
+
+
+def test_pin_registry_rewrites_symbolic_revisions_only(tmp_path: Path):
+    import textwrap
+    p = tmp_path / "models.yaml"
+    p.write_text(textwrap.dedent("""
+        # keep me
+        models:
+          a: {repo: org/a, revision: main, family: f, template: none}
+          b: {repo: org/b, revision: 0123456789abcdef0123456789abcdef01234567, family: f, template: none}
+        ladders: {f: [a, b]}
+        neither_source: {f: a}
+    """))
+    changed = L.pin_registry(p, resolver=lambda repo, rev: "f" * 40)
+    assert changed == {"a": "f" * 40}
+    text = p.read_text()
+    assert "# keep me" in text
+    reg = L.load_registry(p)
+    assert reg["a"].revision == "f" * 40
+    assert reg["b"].revision == "0123456789abcdef0123456789abcdef01234567"

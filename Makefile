@@ -1,8 +1,10 @@
-.PHONY: install test freeze neither generate logprobs sheet report all finetune determinism
+.PHONY: install test pin freeze neither generate logprobs sheet report all finetune determinism
 install:
 	uv sync --extra dev
 test:
 	uv run pytest
+pin:
+	uv run python scripts/pin_revisions.py
 freeze:
 	uv run gricean freeze
 neither:

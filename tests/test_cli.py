@@ -71,3 +71,15 @@ def test_freeze_without_partial_fails_on_seed_set(tmp_path: Path, monkeypatch):
     monkeypatch.chdir(project(tmp_path))
     with pytest.raises(ValueError, match="dissociation"):
         cli.main(["freeze"])
+
+
+def test_all_skips_registry_models_outside_every_ladder(tmp_path: Path, monkeypatch):
+    root = project(tmp_path)
+    cfg = yaml.safe_load((root / "configs/models.yaml").read_text())
+    cfg["models"]["n"] = {"repo": "w", "revision": "1", "family": "v", "template": "none"}   # neither-only source
+    yaml.safe_dump(cfg, (root / "configs/models.yaml").open("w"))
+    monkeypatch.chdir(root)
+    cli.main(["freeze", "--partial"])
+    assert cli.main(["generate", "--all"], loader=fake_loader) == 0
+    assert not (root / "data/responses/n__raw.jsonl").exists()
+    assert (root / "data/responses/q__raw.jsonl").exists()

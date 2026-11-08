@@ -17,8 +17,15 @@ def _gen_cfg() -> dict:
 
 
 def _models_for(args, reg) -> list[tuple[str, bool]]:
-    """(model_name, template) pairs to run. Tuned models run templated and raw; base only raw."""
-    names = list(reg) if args.all else [args.model]
+    """(model_name, template) pairs to run. Tuned models run templated and raw; base only raw.
+
+    `--all` means every model in some ladder, in ladder order: registry entries that serve only as a
+    `neither` source are never generated or scored.
+    """
+    if args.all:
+        names = list(dict.fromkeys(n for ms in ladders().values() for n in ms))
+    else:
+        names = [args.model]
     pairs = []
     for n in names:
         spec = reg[n]

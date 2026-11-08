@@ -1,4 +1,4 @@
-# revision: fill with the exact commit hash from the Hugging Face model page before running.
+# revision: `make pin` replaces every `main` with the commit hash before the real run.
 models:
   olmo_base:
     repo: allenai/OLMo-2-0425-1B

@@ -114,8 +114,10 @@ def check_ablation(items: list[Item]) -> None:
     for it in items:
         if it.control or it.category not in ABLATED_CATEGORIES:
             continue
-        if it.prompt.rstrip()[-1:] not in tuple("?!."):
-            bad.append(f"{it.id}: prompt must end in ? ! or .")
+        core = re.sub(r"""["'\u201d\u2019\u00bb)\]]+$""", "", it.prompt.rstrip())   # ignore closing quotes/brackets
+        if core[-1:] not in tuple("?!."):
+            bad.append(f"{it.id}: prompt must end in ? ! or . (closing quotes and brackets may follow)")
+        # Defence in case ablation.yaml's strip_punctuation ever stops covering the terminal mark.
         if it.versions["stripped"] == it.versions["full"]:
             bad.append(f"{it.id}: stripped version equals full (no punctuation or politeness marker to remove)")
     if bad:

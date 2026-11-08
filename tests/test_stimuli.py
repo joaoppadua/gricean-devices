@@ -164,3 +164,26 @@ def test_freeze_refuses_incomplete_set_unless_partial(root):
     with pytest.raises(ValueError, match="dissociation"):
         S.freeze(root)
     assert S.freeze(root, partial=True)
+
+
+def test_check_ablation_accepts_prompt_ending_in_closing_quote(root):
+    write(root, "en/embedded_instruction.yaml", """
+        category: embedded_instruction
+        language: en
+        items:
+          - id: en_ei_01
+            control: false
+            prompt: "She asked: 'Summarize this for me, please.' The text was short."
+            literal_reading: "narrative"
+            intended_reading: "task"
+            literal_continuation: "He nodded."
+            intended_continuation: "The text says little."
+          - id: en_ei_02
+            control: false
+            prompt: "He said: \\"Can you count to three?\\""
+            literal_reading: "narrative"
+            intended_reading: "task"
+            literal_continuation: "She laughed."
+            intended_continuation: "One, two, three."
+    """)
+    S.check_ablation([it for it in S.load_all(root) if it.category == "embedded_instruction"])

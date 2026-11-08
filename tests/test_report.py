@@ -105,3 +105,12 @@ def test_build_tolerates_uncoded_sheet_and_missing_logprobs(tmp_path: Path):
     assert summary["n_coded"] == 0 and summary["warnings"]
     assert (tmp_path / "paper" / "examples.md").exists()
     assert not (tmp_path / "paper" / "intent.csv").exists()
+
+
+def test_examples_marks_empty_greedy_response(tmp_path: Path):
+    resp = tmp_path / "resp"
+    write_jsonl(resp / "m_base__raw.jsonl", [{"item_id": "a0", "category": "indirect_request", "language": "en",
+        "control": False, "version": "full", "model": "m_base", "template": False, "mode": "greedy", "seed": None,
+        "stimulus_text": "Can you?", "prompt_text": "Can you?", "response": "", "stamp": "s", "stimuli_checksum": "c"}])
+    md = R.examples(resp, ["m_base"], ["a0"], {"m_base": False})
+    assert f"**m_base:** {R.EMPTY_RESPONSE}" in md

@@ -17,22 +17,35 @@ def _gen_cfg() -> dict:
 
 
 def _models_for(args, reg) -> list[tuple[str, bool]]:
-    """(model_name, template) pairs to run. Tuned models run templated and raw; base only raw."""
-    names = list(reg) if args.all else [args.model]
+    """(model_name, template) pairs to run. Tuned models run templated and raw; base only raw.
+
+    `--all` means every model in some ladder, in ladder order: registry entries that serve only as a
+    `neither` source are never generated or scored. Templated models also run raw (the template
+    control) unless the registry marks them `raw_control: false` (self-run ladder, spec §3.4).
+    """
+    if args.all:
+        names = list(dict.fromkeys(n for ms in ladders().values() for n in ms))
+    else:
+        names = [args.model]
     pairs = []
     for n in names:
         spec = reg[n]
+        if args.all and spec.adapter and not (Path(spec.adapter) / "adapter_model.safetensors").exists():
+            print(f"skip[{n}]: adapter {spec.adapter} not trained yet (run `make finetune`)")
+            continue
         if spec.template == "none":
             pairs.append((n, False))
         elif args.all:
-            pairs += [(n, True), (n, False)]
+            pairs += [(n, True)] + ([(n, False)] if spec.raw_control else [])
         else:
+            if args.raw and not spec.raw_control:
+                raise ValueError(f"{n} has raw_control: false (self-run ladder, spec §3.4); it never runs raw")
             pairs.append((n, not args.raw))
     return pairs
 
 
 def cmd_freeze(args, loader) -> int:
-    print(stimuli.freeze())
+    print(stimuli.freeze(partial=args.partial))
     return 0
 
 
@@ -99,7 +112,7 @@ def cmd_finetune(args, loader) -> int:
     sets = finetune.prepare(records, sizes=cfg["sizes"], seed=cfg["seed"], shuffle_responses=True)
     names = args.set or list(sets)
     for name in names:
-        out = Path("adapters") / f"smollm_{name}"
+        out = Path("adapters") / f"{cfg['adapter_prefix']}_{name}"
         finetune.write_jsonl(sets[name], out / "train.jsonl")
         finetune.train_lora(base, sets[name], out, cfg)
         print(f"finetune[{name}]: {len(sets[name])} rows -> {out}")
@@ -109,7 +122,7 @@ def cmd_finetune(args, loader) -> int:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="gricean")
     sub = p.add_subparsers(dest="cmd")
-    sub.add_parser("freeze").set_defaults(fn=cmd_freeze)
+    fz = sub.add_parser("freeze"); fz.add_argument("--partial", action="store_true"); fz.set_defaults(fn=cmd_freeze)
     n = sub.add_parser("neither"); n.add_argument("--family", action="append", required=True); n.set_defaults(fn=cmd_neither)
     for name, fn in (("generate", cmd_generate), ("logprobs", cmd_logprobs)):
         s = sub.add_parser(name)

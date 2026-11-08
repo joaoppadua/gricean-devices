@@ -33,6 +33,7 @@ class ModelSpec:
     family: str
     template: str            # "none" | "chat" | "alpaca"
     adapter: str | None = None
+    raw_control: bool = True  # False: never run raw (self-run ladder; spec §3.4). Needs a template.
 
 
 def _cfg(path: Path) -> dict:
@@ -40,7 +41,11 @@ def _cfg(path: Path) -> dict:
 
 
 def load_registry(path: Path = Path("configs/models.yaml")) -> dict[str, ModelSpec]:
-    return {name: ModelSpec(name=name, **m) for name, m in _cfg(path)["models"].items()}
+    reg = {name: ModelSpec(name=name, **m) for name, m in _cfg(path)["models"].items()}
+    for name, spec in reg.items():
+        if spec.template == "none" and not spec.raw_control:
+            raise ValueError(f"{name}: raw_control: false needs a template (a base model's only run is raw)")
+    return reg
 
 
 def ladders(path: Path = Path("configs/models.yaml")) -> dict[str, list[str]]:
@@ -66,6 +71,31 @@ def resolve_revision(repo: str, revision: str) -> str:
         return ref.read_text().strip()
     from huggingface_hub import HfApi
     return HfApi().model_info(repo, revision=revision).sha
+
+
+def pin_registry(path: Path = Path("configs/models.yaml"), resolver=resolve_revision) -> dict[str, str]:
+    """Rewrite every symbolic `revision:` in models.yaml to its commit sha, in place.
+
+    Edits the text rather than re-dumping YAML so comments and key order survive.
+    Returns {model_name: sha} for the entries that changed; already-pinned entries are left alone.
+    """
+    path = Path(path)
+    text = path.read_text()
+    changed: dict[str, str] = {}
+    for name, m in _cfg(path)["models"].items():
+        rev = str(m["revision"])
+        if re.fullmatch(r"[0-9a-f]{40}", rev):
+            continue
+        sha = resolver(m["repo"], rev)
+        start = re.search(rf"^\s*{re.escape(name)}:", text, re.M).start()
+        head, tail = text[:start], text[start:]
+        tail, n = re.subn(rf"(revision:\s*){re.escape(rev)}\b", rf"\g<1>{sha}", tail, count=1)
+        if n != 1:
+            raise ValueError(f"{path}: could not find `revision: {rev}` for model {name!r}")
+        text = head + tail
+        changed[name] = sha
+    path.write_text(text)
+    return changed
 
 
 def render_template(spec: ModelSpec, prompt: str, tokenizer) -> str:

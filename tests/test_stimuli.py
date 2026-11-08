@@ -117,18 +117,73 @@ def test_validate_rejects_unknown_category(root):
 
 
 def test_freeze_writes_checksums_and_is_stable(root):
-    a = S.freeze(root)
+    a = S.freeze(root, partial=True)
     assert (root / "CHECKSUMS").exists()
     assert S.current_checksum(root) == a
-    assert S.freeze(root) == a
+    assert S.freeze(root, partial=True) == a
     (root / "en/rhetorical_question.yaml").write_text(
         (root / "en/rhetorical_question.yaml").read_text().replace("waiting", "queuing"))
-    assert S.freeze(root) != a
+    assert S.freeze(root, partial=True) != a
 
 
 def test_current_checksum_raises_when_stimuli_changed_since_freeze(root):
-    S.freeze(root)
+    S.freeze(root, partial=True)
     (root / "en/rhetorical_question.yaml").write_text(
         (root / "en/rhetorical_question.yaml").read_text().replace("waiting", "queuing"))
     with pytest.raises(ValueError, match="freeze"):
         S.current_checksum(root)
+
+
+def test_check_quotas_reports_every_short_cell(root):
+    items = S.load_all(root)
+    with pytest.raises(ValueError) as e:
+        S.check_quotas(items)
+    msg = str(e.value)
+    assert "en/indirect_request: 1/8 dissociation, 1/2 controls" in msg
+    assert "pt/rhetorical_question: 0/2 dissociation, 0/1 controls" in msg
+
+
+def test_check_ablation_rejects_vacuous_strip(root):
+    write(root, "en/pattern_continuation.yaml", """
+        category: pattern_continuation
+        language: en
+        items:
+          - id: en_pc_01
+            control: false
+            prompt: "Explain the moon landing to a child"
+            literal_reading: "list"
+            intended_reading: "task"
+            literal_continuation: "Explain gravity to a child"
+            intended_continuation: "In 1969 people flew to the moon"
+    """)
+    with pytest.raises(ValueError, match="en_pc_01"):
+        S.check_ablation(S.load_all(root))
+
+
+def test_freeze_refuses_incomplete_set_unless_partial(root):
+    with pytest.raises(ValueError, match="dissociation"):
+        S.freeze(root)
+    assert S.freeze(root, partial=True)
+
+
+def test_check_ablation_accepts_prompt_ending_in_closing_quote(root):
+    write(root, "en/embedded_instruction.yaml", """
+        category: embedded_instruction
+        language: en
+        items:
+          - id: en_ei_01
+            control: false
+            prompt: "She asked: 'Summarize this for me, please.' The text was short."
+            literal_reading: "narrative"
+            intended_reading: "task"
+            literal_continuation: "He nodded."
+            intended_continuation: "The text says little."
+          - id: en_ei_02
+            control: false
+            prompt: "He said: \\"Can you count to three?\\""
+            literal_reading: "narrative"
+            intended_reading: "task"
+            literal_continuation: "She laughed."
+            intended_continuation: "One, two, three."
+    """)
+    S.check_ablation([it for it in S.load_all(root) if it.category == "embedded_instruction"])

@@ -18,7 +18,7 @@ def _():
 @app.cell
 def _(Path, json, mo, pd):
     logs = {}
-    for _d in sorted(Path("adapters").glob("smollm_*")):
+    for _d in sorted(Path("adapters").glob("olmo_*")):
         _f = _d / "train_log.json"
         if _f.exists():
             logs[_d.name] = pd.DataFrame([_r for _r in json.loads(_f.read_text()) if "loss" in _r])
@@ -44,9 +44,9 @@ def _(logs, mo):
 @app.cell
 def _(Path, expected_templates, ladders, logodds_table, mo):
     try:
-        _out = mo.ui.table(logodds_table(Path("data/logprobs"), ladders()["smollm"], expected_templates()).round(3).reset_index())
+        _out = mo.ui.table(logodds_table(Path("data/logprobs"), ladders()["selfrun"], expected_templates()).round(3).reset_index())
     except Exception as e:
-        _out = mo.md(f"No smollm log-prob data yet: {e}")
+        _out = mo.md(f"No selfrun log-prob data yet: {e}")
     _out
     return
 

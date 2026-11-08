@@ -66,3 +66,23 @@ def test_cohen_kappa_known_value():
     # po = 25/50 = 0.5 ; pa(y)=30/50, pb(y)=35/50 ; pe = 0.6*0.7 + 0.4*0.3 = 0.54
     assert math.isclose(C.cohen_kappa(a, b), (0.5 - 0.54) / (1 - 0.54))
     assert C.cohen_kappa(["a", "b"], ["a", "b"]) == 1.0
+
+
+def test_export_preserves_existing_codes_and_appends_new_rows(tmp_path: Path):
+    make_responses(tmp_path / "resp")
+    out = tmp_path / "coder1.csv"
+    C.export_sheet(tmp_path / "resp", out, coder="coder1", sample_frac=None, seed=0)
+    sheet = pd.read_csv(out, dtype=str, keep_default_na=False)
+    first = sheet.loc[0, "row_id"]
+    sheet.loc[0, ["intent", "correctness"]] = ["intended", "correct"]
+    sheet.to_csv(out, index=False)
+    write_jsonl(tmp_path / "resp" / "zz__raw.jsonl", [{"item_id": "new1", "category": "indirect_request",
+        "language": "en", "control": False, "version": "full", "model": "zz", "template": False,
+        "mode": "greedy", "seed": None, "stimulus_text": "p", "prompt_text": "p", "response": "r",
+        "stamp": "s", "stimuli_checksum": "c"}])
+    n = C.export_sheet(tmp_path / "resp", out, coder="coder1", sample_frac=None, seed=0)
+    again = pd.read_csv(out, dtype=str, keep_default_na=False).set_index("row_id")
+    assert n == len(again) == len(sheet) + 1
+    assert again.loc[first, "intent"] == "intended" and again.loc[first, "correctness"] == "correct"
+    new_id = next(i for i in again.index if i.startswith("zz|0|new1|"))
+    assert again.loc[new_id, "intent"] == "" and again.loc[new_id, "coder"] == "coder1"

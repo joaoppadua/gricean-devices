@@ -114,3 +114,10 @@ def test_spec_stamp_tracks_adapter_weights(tmp_path: Path):
     a = L.spec_stamp(spec)
     (ad / "adapter_model.safetensors").write_bytes(b"v2")
     assert L.spec_stamp(spec) != a
+
+
+def test_registry_has_pythia_neither_candidate_outside_every_ladder():
+    cfg = Path("configs/models.yaml")
+    reg, lad = L.load_registry(cfg), L.ladders(cfg)
+    assert reg["pythia_base"].template == "none"
+    assert all("pythia_base" not in models for models in lad.values())

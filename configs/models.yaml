@@ -30,6 +30,13 @@ models:
     revision: main
     family: qwen
     template: chat
+  # GPT-3-era base, candidate `neither` source for the OLMo ladder (Qwen2.5 base tends to
+  # answer indirect requests). Not in any ladder; never scored.
+  pythia_base:
+    repo: EleutherAI/pythia-1.4b
+    revision: main
+    family: pythia
+    template: none
   smollm_base:
     repo: HuggingFaceTB/SmolLM2-360M
     revision: main

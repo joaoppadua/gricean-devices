@@ -21,12 +21,36 @@ def test_fake_format_template_flag(fake_lm):
     assert fake_lm.format("hi", template=True) == "<user>hi</user><assistant>"
 
 
-def test_registry_loads_specs_and_ladders():
-    reg = L.load_registry(Path("configs/models.yaml"))
-    assert reg["olmo_sft"].template == "chat"
-    assert reg["olmo_base"].family == "olmo"
-    assert L.ladders(Path("configs/models.yaml"))["olmo"] == ["olmo_base", "olmo_sft", "olmo_dpo", "olmo_instruct"]
-    assert L.neither_source(Path("configs/models.yaml"))["olmo"] == "qwen_base"
+CFG = Path("configs/models.yaml")
+
+
+def test_registry_rev2_ladders_and_neither_source():
+    reg, lad = L.load_registry(CFG), L.ladders(CFG)
+    assert lad["olmo"] == ["olmo_stage1", "olmo_base", "olmo_sft", "olmo_dpo", "olmo_instruct"]
+    assert lad["selfrun"] == ["olmo_stage1_alpaca", "olmo_n500", "olmo_n2000", "olmo_full", "olmo_format_only"]
+    assert set(lad) == {"olmo", "selfrun"}
+    assert L.neither_source(CFG) == {"olmo": "pythia_base"}
+    s1, s1a = reg["olmo_stage1"], reg["olmo_stage1_alpaca"]
+    assert (s1.repo, s1.revision) == (s1a.repo, s1a.revision) == ("allenai/OLMo-2-0425-1B", "stage1-step1907359-tokens4001B")
+    assert s1.template == "none" and s1.raw_control is True
+    assert s1a.template == "alpaca" and s1a.raw_control is False
+    assert all(reg[n].family == "olmo" and reg[n].raw_control is False and reg[n].adapter == f"adapters/{n}"
+               for n in lad["selfrun"][1:])
+    assert not any(n.startswith("smollm") for n in reg)
+
+
+def test_registry_rejects_raw_control_false_on_base_model(tmp_path: Path):
+    p = tmp_path / "m.yaml"
+    p.write_text("models:\n  b: {repo: x, revision: main, family: f, template: none, raw_control: false}\n")
+    with pytest.raises(ValueError, match="raw_control"):
+        L.load_registry(p)
+
+
+def test_pin_registry_resolves_branch_style_revision(tmp_path: Path):
+    p = tmp_path / "m.yaml"
+    p.write_text("models:\n  s1: {repo: org/a, revision: stage1-step1907359-tokens4001B, family: f, template: none}\n")
+    assert L.pin_registry(p, resolver=lambda repo, rev: "a" * 40) == {"s1": "a" * 40}
+    assert L.load_registry(p)["s1"].revision == "a" * 40
 
 
 def test_alpaca_format():

@@ -12,8 +12,9 @@ def project(tmp_path: Path) -> Path:
     yaml.safe_dump({
         "models": {"b": {"repo": "x", "revision": "1", "family": "t", "template": "none"},
                    "s": {"repo": "y", "revision": "1", "family": "t", "template": "chat"},
-                   "q": {"repo": "z", "revision": "1", "family": "u", "template": "none"}},
-        "ladders": {"t": ["b", "s"], "u": ["q"]},
+                   "q": {"repo": "z", "revision": "1", "family": "u", "template": "none"},
+                   "a": {"repo": "x", "revision": "1", "family": "t", "template": "alpaca", "raw_control": False}},
+        "ladders": {"t": ["b", "s", "a"], "u": ["q"]},
         "neither_source": {"t": "q", "u": "b"},
     }, (tmp_path / "configs/models.yaml").open("w"))
     return tmp_path
@@ -83,3 +84,15 @@ def test_all_skips_registry_models_outside_every_ladder(tmp_path: Path, monkeypa
     assert cli.main(["generate", "--all"], loader=fake_loader) == 0
     assert not (root / "data/responses/n__raw.jsonl").exists()
     assert (root / "data/responses/q__raw.jsonl").exists()
+
+
+def test_all_skips_raw_pass_for_raw_control_false(tmp_path: Path, monkeypatch):
+    root = project(tmp_path); monkeypatch.chdir(root)
+    cli.main(["freeze", "--partial"])
+    assert cli.main(["neither", "--family", "t", "--family", "u"], loader=fake_loader) == 0
+    assert cli.main(["generate", "--all"], loader=fake_loader) == 0
+    assert (root / "data/responses/a__tmpl.jsonl").exists()
+    assert not (root / "data/responses/a__raw.jsonl").exists()
+    assert (root / "data/responses/s__raw.jsonl").exists()        # official-ladder tuned model still runs raw
+    assert cli.main(["logprobs", "--all"], loader=fake_loader) == 0
+    assert (root / "data/logprobs/a__tmpl.jsonl").exists()        # neither found via family

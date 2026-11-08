@@ -33,6 +33,7 @@ class ModelSpec:
     family: str
     template: str            # "none" | "chat" | "alpaca"
     adapter: str | None = None
+    raw_control: bool = True  # False: never run raw (self-run ladder; spec §3.4). Needs a template.
 
 
 def _cfg(path: Path) -> dict:
@@ -40,7 +41,11 @@ def _cfg(path: Path) -> dict:
 
 
 def load_registry(path: Path = Path("configs/models.yaml")) -> dict[str, ModelSpec]:
-    return {name: ModelSpec(name=name, **m) for name, m in _cfg(path)["models"].items()}
+    reg = {name: ModelSpec(name=name, **m) for name, m in _cfg(path)["models"].items()}
+    for name, spec in reg.items():
+        if spec.template == "none" and not spec.raw_control:
+            raise ValueError(f"{name}: raw_control: false needs a template (a base model's only run is raw)")
+    return reg
 
 
 def ladders(path: Path = Path("configs/models.yaml")) -> dict[str, list[str]]:

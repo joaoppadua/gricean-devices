@@ -20,7 +20,8 @@ def _models_for(args, reg) -> list[tuple[str, bool]]:
     """(model_name, template) pairs to run. Tuned models run templated and raw; base only raw.
 
     `--all` means every model in some ladder, in ladder order: registry entries that serve only as a
-    `neither` source are never generated or scored.
+    `neither` source are never generated or scored. Templated models also run raw (the template
+    control) unless the registry marks them `raw_control: false` (self-run ladder, spec §3.4).
     """
     if args.all:
         names = list(dict.fromkeys(n for ms in ladders().values() for n in ms))
@@ -32,7 +33,7 @@ def _models_for(args, reg) -> list[tuple[str, bool]]:
         if spec.template == "none":
             pairs.append((n, False))
         elif args.all:
-            pairs += [(n, True), (n, False)]
+            pairs += [(n, True)] + ([(n, False)] if spec.raw_control else [])
         else:
             pairs.append((n, not args.raw))
     return pairs

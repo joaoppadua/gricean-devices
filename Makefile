@@ -8,7 +8,7 @@ pin:
 freeze:
 	uv run gricean freeze
 neither:
-	uv run gricean neither --family olmo --family qwen --family smollm
+	uv run gricean neither --family olmo
 generate:
 	uv run gricean generate --all
 logprobs:

@@ -1,5 +1,13 @@
-# revision: `make pin` replaces every `main` with the commit hash before the real run.
+# revision: `make pin` replaces every `main` or branch name with the commit hash before the real run.
 models:
+  # --- Official OLMo 2 1B ladder (spec §3.1). Same repo, tokenizer and pretraining at every rung.
+  # Stage 1: phase-1 stand-in. 4.0T tokens, no mid-training, no instruction data documented. fp32 on the Hub.
+  olmo_stage1:
+    repo: allenai/OLMo-2-0425-1B
+    revision: stage1-step1907359-tokens4001B
+    family: olmo
+    template: none
+  # Released base: adds 50B-token mid-training incl. ~8B FLAN tokens. Descriptive rung, not a dose test.
   olmo_base:
     repo: allenai/OLMo-2-0425-1B
     revision: main
@@ -20,6 +28,50 @@ models:
     revision: main
     family: olmo
     template: chat
+  # --- Self-run ladder (spec §7): LoRA adapters trained by `make finetune` from olmo_stage1 on Dolly.
+  # Alpaca template throughout, baseline included, so format is held constant; no raw pass (spec §3.4).
+  olmo_stage1_alpaca:
+    repo: allenai/OLMo-2-0425-1B
+    revision: stage1-step1907359-tokens4001B
+    family: olmo
+    template: alpaca
+    raw_control: false
+  olmo_n500:
+    repo: allenai/OLMo-2-0425-1B
+    revision: stage1-step1907359-tokens4001B
+    family: olmo
+    template: alpaca
+    raw_control: false
+    adapter: adapters/olmo_n500
+  olmo_n2000:
+    repo: allenai/OLMo-2-0425-1B
+    revision: stage1-step1907359-tokens4001B
+    family: olmo
+    template: alpaca
+    raw_control: false
+    adapter: adapters/olmo_n2000
+  olmo_full:
+    repo: allenai/OLMo-2-0425-1B
+    revision: stage1-step1907359-tokens4001B
+    family: olmo
+    template: alpaca
+    raw_control: false
+    adapter: adapters/olmo_full
+  olmo_format_only:
+    repo: allenai/OLMo-2-0425-1B
+    revision: stage1-step1907359-tokens4001B
+    family: olmo
+    template: alpaca
+    raw_control: false
+    adapter: adapters/olmo_format_only
+  # --- `neither` source (spec §5.3): GPT-3-era base trained on the Pile only. In no ladder; never scored.
+  pythia_base:
+    repo: EleutherAI/pythia-1.4b
+    revision: main
+    family: pythia
+    template: none
+  # --- Optional contrast run, not in any ladder and not reported (spec §3.2): a "base" whose own
+  # technical reports document instruction data in pretraining. `gricean generate --model qwen_base`.
   qwen_base:
     repo: Qwen/Qwen2.5-1.5B
     revision: main
@@ -30,47 +82,8 @@ models:
     revision: main
     family: qwen
     template: chat
-  # GPT-3-era base, candidate `neither` source for the OLMo ladder (Qwen2.5 base tends to
-  # answer indirect requests). Not in any ladder; never scored.
-  pythia_base:
-    repo: EleutherAI/pythia-1.4b
-    revision: main
-    family: pythia
-    template: none
-  smollm_base:
-    repo: HuggingFaceTB/SmolLM2-360M
-    revision: main
-    family: smollm
-    template: alpaca
-  smollm_n500:
-    repo: HuggingFaceTB/SmolLM2-360M
-    revision: main
-    family: smollm
-    template: alpaca
-    adapter: adapters/smollm_n500
-  smollm_n2000:
-    repo: HuggingFaceTB/SmolLM2-360M
-    revision: main
-    family: smollm
-    template: alpaca
-    adapter: adapters/smollm_n2000
-  smollm_full:
-    repo: HuggingFaceTB/SmolLM2-360M
-    revision: main
-    family: smollm
-    template: alpaca
-    adapter: adapters/smollm_full
-  smollm_format_only:
-    repo: HuggingFaceTB/SmolLM2-360M
-    revision: main
-    family: smollm
-    template: alpaca
-    adapter: adapters/smollm_format_only
 ladders:
-  olmo: [olmo_base, olmo_sft, olmo_dpo, olmo_instruct]
-  qwen: [qwen_base, qwen_instruct]
-  smollm: [smollm_base, smollm_n500, smollm_n2000, smollm_full, smollm_format_only]
+  olmo: [olmo_stage1, olmo_base, olmo_sft, olmo_dpo, olmo_instruct]
+  selfrun: [olmo_stage1_alpaca, olmo_n500, olmo_n2000, olmo_full, olmo_format_only]
 neither_source:
-  olmo: qwen_base
-  qwen: olmo_base
-  smollm: olmo_base
+  olmo: pythia_base

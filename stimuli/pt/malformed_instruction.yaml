@@ -8,4 +8,25 @@
 # Politeness markers available for stripping: por favor, obrigado, obrigada (edit ablation.yaml BEFORE the final freeze if more are needed).
 category: malformed_instruction
 language: pt
-items: []
+items:
+  - id: pt_mi_01
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: pt_mi_02
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: pt_mi_c01
+    control: true
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: null
+    intended_continuation: null

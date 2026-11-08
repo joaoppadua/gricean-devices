@@ -7,4 +7,74 @@
 # Ablated category: the prompt core (after a trailing closing quote, if any) must end in ?!.
 category: embedded_instruction
 language: en
-items: []
+items:
+  - id: en_ei_01
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ei_02
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ei_03
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ei_04
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ei_05
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ei_06
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ei_07
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ei_08
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ei_c01
+    control: true
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: null
+    intended_continuation: null
+  - id: en_ei_c02
+    control: true
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: null
+    intended_continuation: null

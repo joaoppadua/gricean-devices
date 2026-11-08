@@ -15,7 +15,7 @@ See `docs/superpowers/specs/2026-09-26-gricean-simulation-design.md` for the des
 1. `make install` (uv creates `.venv` from `uv.lock`).
 2. `make test` (unit tests, no downloads).
 3. `make pin` resolves every `revision: main` or branch name in `configs/models.yaml` to the commit hash in your cache or on the Hub (each line says which); commit the result. Pinning changes the model stamp, so committed seed rows recompute on the next generate/logprobs.
-4. `make freeze` — validates stimuli (schema, quotas, non-vacuous ablation) and writes `stimuli/CHECKSUMS`. Use `uv run gricean freeze --partial` while the set is still being written.
+4. `make freeze` — validates stimuli (schema, no `TODO` placeholders left, quotas, non-vacuous ablation) and writes `stimuli/CHECKSUMS`. The category files are pre-filled with id-numbered skeletons whose fields read `TODO`; use `uv run gricean freeze --partial` while filling them (placeholder items load but do not count toward quotas), and note that `neither`, `generate` and `logprobs` refuse to run while any `TODO` remains.
 5. `make neither` — samples degenerate continuations from Pythia-1.4b (downloads it, 5.9 GB); five samples per item.
 6. `make generate` then `make logprobs` — every model in the `olmo` ladder (stage 1 downloads as fp32, 5.9 GB), templated and raw. Expect ~2–3 h on a 16 GB M3.
 7. `make sheet` — writes `data/coding/coder1.csv`; code it. `uv run gricean sheet --coder2 --frac 0.25` for the blind sample.

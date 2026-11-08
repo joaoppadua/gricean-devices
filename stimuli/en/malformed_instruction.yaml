@@ -6,4 +6,74 @@
 # Controls: the same instruction, well-formed. Not ablated.
 category: malformed_instruction
 language: en
-items: []
+items:
+  - id: en_mi_01
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_mi_02
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_mi_03
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_mi_04
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_mi_05
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_mi_06
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_mi_07
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_mi_08
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_mi_c01
+    control: true
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: null
+    intended_continuation: null
+  - id: en_mi_c02
+    control: true
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: null
+    intended_continuation: null

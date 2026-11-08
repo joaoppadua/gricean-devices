@@ -16,7 +16,8 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - Notebooks display, the package computes: no helper `def`s in `notebooks/*.py` (a test enforces it);
   run `uv run marimo check notebooks/` after editing them.
 - TDD: write the failing test first. `uv run pytest` (fast suite); `uv run pytest -m slow` downloads a tiny model.
-- Stimuli are frozen before any model run (`make freeze`); every stage refuses drifted stimuli.
+- Stimuli are frozen before any model run (`make freeze`); every stage refuses drifted stimuli and
+  any item still carrying the `TODO` placeholder (`stimuli.PLACEHOLDER`).
 - Stages are idempotent per item; re-running recomputes only rows whose inputs changed.
 - Protocol invariants baked into the code (do not silently change): `embedded` version is never
   chat-templated; tuned models also run raw as the template control, except self-run models

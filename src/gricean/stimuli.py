@@ -16,6 +16,8 @@ ABLATED_CATEGORIES = ("indirect_request", "embedded_instruction", "pattern_conti
 LANGUAGES = ("en", "pt")
 # (dissociation items, controls) required per category, by language (spec §4.1, §4.2, §4.4).
 QUOTAS = {"en": (8, 2), "pt": (2, 1)}
+# Scaffolded items carry this in every unfilled field; they load, but never count or freeze.
+PLACEHOLDER = "TODO"
 
 
 @dataclass(frozen=True)
@@ -93,10 +95,22 @@ def validate(items: list[Item]) -> None:
             raise ValueError(f"{it.id}: dissociation items need both continuations")
 
 
+def _is_placeholder(it: Item) -> bool:
+    fields = (it.prompt, it.literal_reading, it.intended_reading, it.literal_continuation, it.intended_continuation)
+    return any(f is not None and PLACEHOLDER in f for f in fields)
+
+
+def check_placeholders(items: list[Item]) -> list[str]:
+    """Ids of items with a PLACEHOLDER left in any field, in file order."""
+    return [it.id for it in items if _is_placeholder(it)]
+
+
 def check_quotas(items: list[Item]) -> None:
-    """Every (language, category) cell must meet QUOTAS; report every short cell at once."""
+    """Every (language, category) cell must meet QUOTAS; report every short cell at once. Placeholders do not count."""
     counts: dict[tuple[str, str, bool], int] = {}
     for it in items:
+        if _is_placeholder(it):
+            continue
         counts[(it.language, it.category, it.control)] = counts.get((it.language, it.category, it.control), 0) + 1
     short = []
     for lang, (need_d, need_c) in QUOTAS.items():
@@ -132,10 +146,12 @@ def _digest(root: Path) -> tuple[list[tuple[str, str]], str]:
 
 
 def freeze(root: Path = Path("stimuli"), *, partial: bool = False) -> str:
-    """Validate and write CHECKSUMS. `partial` skips the quota and ablation checks while the set is being written."""
+    """Validate and write CHECKSUMS. `partial` skips the placeholder, quota and ablation checks while the set is being written."""
     root = Path(root)
     items = load_all(root)  # validates
     if not partial:
+        if left := check_placeholders(items):
+            raise ValueError("unfilled placeholder items:\n  " + "\n  ".join(left))
         check_quotas(items)
         check_ablation(items)
     rows, combined = _digest(root)

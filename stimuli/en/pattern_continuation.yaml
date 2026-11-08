@@ -7,4 +7,74 @@
 # Ablated category: every dissociation prompt must end in ?!. (the stripped version removes it).
 category: pattern_continuation
 language: en
-items: []
+items:
+  - id: en_pc_01
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_pc_02
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_pc_03
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_pc_04
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_pc_05
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_pc_06
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_pc_07
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_pc_08
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_pc_c01
+    control: true
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: null
+    intended_continuation: null
+  - id: en_pc_c02
+    control: true
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: null
+    intended_continuation: null

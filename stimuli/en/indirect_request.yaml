@@ -15,3 +15,59 @@ items:
     intended_reading: "A request to state the year."
     literal_continuation: null
     intended_continuation: null
+  - id: en_ir_02
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ir_03
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ir_04
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ir_05
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ir_06
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ir_07
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ir_08
+    control: false
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: "TODO"
+    intended_continuation: "TODO"
+  - id: en_ir_c02
+    control: true
+    prompt: "TODO"
+    literal_reading: "TODO"
+    intended_reading: "TODO"
+    literal_continuation: null
+    intended_continuation: null

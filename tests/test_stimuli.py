@@ -187,3 +187,76 @@ def test_check_ablation_accepts_prompt_ending_in_closing_quote(root):
             intended_continuation: "One, two, three."
     """)
     S.check_ablation([it for it in S.load_all(root) if it.category == "embedded_instruction"])
+
+
+def test_check_placeholders_lists_unfilled_items(root):
+    write(root, "en/malformed_instruction.yaml", """
+        category: malformed_instruction
+        language: en
+        items:
+          - id: en_mi_01
+            control: false
+            prompt: "TODO"
+            literal_reading: "TODO"
+            intended_reading: "TODO"
+            literal_continuation: "TODO"
+            intended_continuation: "TODO"
+          - id: en_mi_02
+            control: false
+            prompt: "tel me the tiem"
+            literal_reading: "garble"
+            intended_reading: "request"
+            literal_continuation: "TODO"
+            intended_continuation: "It is noon."
+          - id: en_mi_c01
+            control: true
+            prompt: "TODO"
+            literal_reading: "TODO"
+            intended_reading: "TODO"
+            literal_continuation: null
+            intended_continuation: null
+    """)
+    assert S.check_placeholders(S.load_all(root)) == ["en_mi_01", "en_mi_02", "en_mi_c01"]
+
+
+def test_quotas_do_not_count_placeholder_items(root):
+    write(root, "en/rhetorical_question.yaml", """
+        category: rhetorical_question
+        language: en
+        items:
+          - id: en_rq_01
+            control: false
+            prompt: "Who likes waiting?"
+            literal_reading: "question"
+            intended_reading: "complaint"
+            literal_continuation: "Some people do."
+            intended_continuation: "Nobody."
+          - id: en_rq_02
+            control: false
+            prompt: "TODO"
+            literal_reading: "TODO"
+            intended_reading: "TODO"
+            literal_continuation: "TODO"
+            intended_continuation: "TODO"
+    """)
+    with pytest.raises(ValueError) as e:
+        S.check_quotas(S.load_all(root))
+    assert "en/rhetorical_question: 1/8 dissociation" in str(e.value)
+
+
+def test_full_freeze_refuses_placeholders_partial_tolerates_them(root):
+    write(root, "en/underspecified_request.yaml", """
+        category: underspecified_request
+        language: en
+        items:
+          - id: en_ur_01
+            control: false
+            prompt: "TODO"
+            literal_reading: "TODO"
+            intended_reading: "TODO"
+            literal_continuation: "TODO"
+            intended_continuation: "TODO"
+    """)
+    assert S.freeze(root, partial=True)
+    with pytest.raises(ValueError, match="en_ur_01"):
+        S.freeze(root)

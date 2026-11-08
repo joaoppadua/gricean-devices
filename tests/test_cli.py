@@ -26,7 +26,7 @@ def fake_loader(spec):
 def test_full_pipeline_with_fakes(tmp_path: Path, monkeypatch):
     root = project(tmp_path)
     monkeypatch.chdir(root)
-    assert cli.main(["freeze"]) == 0
+    assert cli.main(["freeze", "--partial"]) == 0
     assert (root / "stimuli/CHECKSUMS").exists()
     assert cli.main(["neither", "--family", "t", "--family", "u"], loader=fake_loader) == 0
     assert (root / "stimuli/neither/t.jsonl").exists()
@@ -53,7 +53,7 @@ def test_full_pipeline_with_fakes(tmp_path: Path, monkeypatch):
 def test_generate_refuses_stale_stimuli(tmp_path: Path, monkeypatch):
     root = project(tmp_path)
     monkeypatch.chdir(root)
-    cli.main(["freeze"])
+    cli.main(["freeze", "--partial"])
     f = root / "stimuli/en/indirect_request.yaml"
     f.write_text(f.read_text().replace("Brazil", "Chile"))
     import pytest
@@ -64,3 +64,10 @@ def test_generate_refuses_stale_stimuli(tmp_path: Path, monkeypatch):
 def test_unknown_stage_returns_2(tmp_path: Path, monkeypatch):
     monkeypatch.chdir(project(tmp_path))
     assert cli.main(["nope"]) == 2
+
+
+def test_freeze_without_partial_fails_on_seed_set(tmp_path: Path, monkeypatch):
+    import pytest
+    monkeypatch.chdir(project(tmp_path))
+    with pytest.raises(ValueError, match="dissociation"):
+        cli.main(["freeze"])

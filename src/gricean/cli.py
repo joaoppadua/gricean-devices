@@ -32,7 +32,7 @@ def _models_for(args, reg) -> list[tuple[str, bool]]:
 
 
 def cmd_freeze(args, loader) -> int:
-    print(stimuli.freeze())
+    print(stimuli.freeze(partial=args.partial))
     return 0
 
 
@@ -109,7 +109,7 @@ def cmd_finetune(args, loader) -> int:
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="gricean")
     sub = p.add_subparsers(dest="cmd")
-    sub.add_parser("freeze").set_defaults(fn=cmd_freeze)
+    fz = sub.add_parser("freeze"); fz.add_argument("--partial", action="store_true"); fz.set_defaults(fn=cmd_freeze)
     n = sub.add_parser("neither"); n.add_argument("--family", action="append", required=True); n.set_defaults(fn=cmd_neither)
     for name, fn in (("generate", cmd_generate), ("logprobs", cmd_logprobs)):
         s = sub.add_parser(name)

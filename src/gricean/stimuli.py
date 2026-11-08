@@ -14,6 +14,8 @@ CATEGORIES = (
 VERSIONS = ("full", "stripped", "embedded")
 ABLATED_CATEGORIES = ("indirect_request", "embedded_instruction", "pattern_continuation")
 LANGUAGES = ("en", "pt")
+# (dissociation items, controls) required per category, by language (spec §4.1, §4.2, §4.4).
+QUOTAS = {"en": (8, 2), "pt": (2, 1)}
 
 
 @dataclass(frozen=True)
@@ -91,6 +93,35 @@ def validate(items: list[Item]) -> None:
             raise ValueError(f"{it.id}: dissociation items need both continuations")
 
 
+def check_quotas(items: list[Item]) -> None:
+    """Every (language, category) cell must meet QUOTAS; report every short cell at once."""
+    counts: dict[tuple[str, str, bool], int] = {}
+    for it in items:
+        counts[(it.language, it.category, it.control)] = counts.get((it.language, it.category, it.control), 0) + 1
+    short = []
+    for lang, (need_d, need_c) in QUOTAS.items():
+        for cat in CATEGORIES:
+            d, c = counts.get((lang, cat, False), 0), counts.get((lang, cat, True), 0)
+            if d < need_d or c < need_c:
+                short.append(f"{lang}/{cat}: {d}/{need_d} dissociation, {c}/{need_c} controls")
+    if short:
+        raise ValueError("stimulus set incomplete:\n  " + "\n  ".join(short))
+
+
+def check_ablation(items: list[Item]) -> None:
+    """Ablated dissociation items must end in terminal punctuation and strip to something different."""
+    bad = []
+    for it in items:
+        if it.control or it.category not in ABLATED_CATEGORIES:
+            continue
+        if it.prompt.rstrip()[-1:] not in tuple("?!."):
+            bad.append(f"{it.id}: prompt must end in ? ! or .")
+        if it.versions["stripped"] == it.versions["full"]:
+            bad.append(f"{it.id}: stripped version equals full (no punctuation or politeness marker to remove)")
+    if bad:
+        raise ValueError("vacuous ablation:\n  " + "\n  ".join(bad))
+
+
 def _digest(root: Path) -> tuple[list[tuple[str, str]], str]:
     files = [root / "ablation.yaml", *_stimulus_files(root)]
     rows = [(str(p.relative_to(root)), hashlib.sha256(p.read_bytes()).hexdigest()) for p in files]
@@ -98,9 +129,13 @@ def _digest(root: Path) -> tuple[list[tuple[str, str]], str]:
     return rows, combined
 
 
-def freeze(root: Path = Path("stimuli")) -> str:
+def freeze(root: Path = Path("stimuli"), *, partial: bool = False) -> str:
+    """Validate and write CHECKSUMS. `partial` skips the quota and ablation checks while the set is being written."""
     root = Path(root)
-    load_all(root)  # validates
+    items = load_all(root)  # validates
+    if not partial:
+        check_quotas(items)
+        check_ablation(items)
     rows, combined = _digest(root)
     lines = [f"{h}  {n}" for n, h in rows] + [f"{combined}  COMBINED"]
     (root / "CHECKSUMS").write_text("\n".join(lines) + "\n")

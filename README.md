@@ -15,7 +15,7 @@ See `docs/superpowers/specs/2026-09-26-gricean-simulation-design.md` for the des
 1. `make install` (uv creates `.venv` from `uv.lock`).
 2. `make test` (unit tests, no downloads).
 3. Fill `revision:` in `configs/models.yaml` with the commit hashes you used.
-4. `make freeze` — validates stimuli and writes `stimuli/CHECKSUMS`.
+4. `make freeze` — validates stimuli (schema, quotas, non-vacuous ablation) and writes `stimuli/CHECKSUMS`. Use `uv run gricean freeze --partial` while the set is still being written.
 5. `make neither` — samples degenerate continuations (downloads two base models).
 6. `make generate` then `make logprobs` — all models, templated and raw. Expect ~1–2 h on a 16 GB M3.
 7. `make sheet` — writes `data/coding/coder1.csv`; code it. `uv run gricean sheet --coder2 --frac 0.25` for the blind sample.

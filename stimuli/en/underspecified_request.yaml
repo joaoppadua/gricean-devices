@@ -1,0 +1,9 @@
+# Quota: 8 dissociation + 2 control. Ids: en_ur_01..08, controls en_ur_c01..c02.
+# Dissociation: a request with a missing slot ("Translate 'obrigado'.").
+# intended_continuation: the most plausible completion (here: into the prompt's language).
+# literal_continuation: the clarifying question or refusal to choose ("Into which language?").
+# Vary the missing slot: target language, unit, audience, format, date range.
+# Controls: the same request with the slot filled. Not ablated.
+category: underspecified_request
+language: en
+items: []

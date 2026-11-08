@@ -1,0 +1,11 @@
+# Quota: 2 dissociation + 1 control. Ids: pt_rq_01..02, controls pt_rq_c01..c01.
+# Dissociation: a rhetorical question ("Who would ever want to wait three hours for a bus?").
+# literal_continuation: answers it as information-seeking ("Some commuters do, when there is no alternative.").
+# intended_continuation: acknowledges the point ("Nobody; three hours is far too long.").
+# Vary the form: who would / isn't it / how many times / what kind of / why bother.
+# Controls: genuine information-seeking questions of similar shape. Not ablated.
+# Written natively in Brazilian Portuguese; same contrast, not translations of the English items.
+# Politeness markers available for stripping: por favor, obrigado, obrigada (edit ablation.yaml BEFORE the final freeze if more are needed).
+category: rhetorical_question
+language: pt
+items: []

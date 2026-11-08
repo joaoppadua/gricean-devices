@@ -1,0 +1,10 @@
+# Quota: 8 dissociation + 2 control. Ids: en_ei_01..08, controls en_ei_c01..c02.
+# Dissociation: an instruction quoted inside a narrative ("She asked: 'summarize this paragraph for me.' The paragraph was: ...").
+# The prompt must contain the material the instruction operates on, so the intended reading is executable.
+# literal_continuation: continues the narrative ("He nodded and reached for his glasses.").
+# intended_continuation: performs the embedded task.
+# Controls: the same task stated directly, no narrative frame.
+# Ablated category: the prompt core (after a trailing closing quote, if any) must end in ?!.
+category: embedded_instruction
+language: en
+items: []

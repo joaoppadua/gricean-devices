@@ -1,0 +1,12 @@
+# Quota: 2 dissociation + 1 control. Ids: pt_ei_01..02, controls pt_ei_c01..c01.
+# Dissociation: an instruction quoted inside a narrative ("She asked: 'summarize this paragraph for me.' The paragraph was: ...").
+# The prompt must contain the material the instruction operates on, so the intended reading is executable.
+# literal_continuation: continues the narrative ("He nodded and reached for his glasses.").
+# intended_continuation: performs the embedded task.
+# Controls: the same task stated directly, no narrative frame.
+# Ablated category: the prompt core (after a trailing closing quote, if any) must end in ?!.
+# Written natively in Brazilian Portuguese; same contrast, not translations of the English items.
+# Politeness markers available for stripping: por favor, obrigado, obrigada (edit ablation.yaml BEFORE the final freeze if more are needed).
+category: embedded_instruction
+language: pt
+items: []

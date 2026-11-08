@@ -1,0 +1,9 @@
+# Quota: 8 dissociation + 2 control. Ids: en_mi_01..08, controls en_mi_c01..c02.
+# Dissociation: a damaged instruction ("tel me hw many days febuary has").
+# Vary the damage: typos, dropped words, no spaces, wrong word order, mixed case. Terminal punctuation optional.
+# literal_continuation: more garbled text or a comment on the typos ("i dont no wat u mean").
+# intended_continuation: the repaired answer ("February has 28 days, or 29 in a leap year.").
+# Controls: the same instruction, well-formed. Not ablated.
+category: malformed_instruction
+language: en
+items: []

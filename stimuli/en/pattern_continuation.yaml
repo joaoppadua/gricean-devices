@@ -1,0 +1,10 @@
+# Quota: 8 dissociation + 2 control. Ids: en_pc_01..08, controls en_pc_c01..c02.
+# Dissociation: a bare imperative task (Ouyang et al. 2022, Fig. 1: "Explain the moon landing to a 6-year-old.").
+# literal_continuation: another task in the same imperative form ("Explain the theory of gravity to a 6-year-old.").
+# intended_continuation: the first sentence of an actual answer.
+# Vary the task type: explain, list, summarize, write, describe.
+# Controls: the same imperative under an explicit frame ("Answer the following. Explain ...").
+# Ablated category: every dissociation prompt must end in ?!. (the stripped version removes it).
+category: pattern_continuation
+language: en
+items: []

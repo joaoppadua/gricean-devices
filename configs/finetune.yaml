@@ -1,0 +1,14 @@
+base: smollm_base
+seed: 0
+sizes: [500, 2000]        # plus "full" (all kept rows) and "format_only" (full, responses shuffled)
+max_seq_len: 384
+epochs: 2
+batch_size: 4
+grad_accum: 4
+dtype: bfloat16      # fp32 at batch 4 x 384 exceeds 16 GB unified memory on MPS
+lr: 2.0e-4
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]

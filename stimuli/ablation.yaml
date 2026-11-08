@@ -1,0 +1,5 @@
+politeness: ["please", "kindly", "thanks", "thank you", "if you don't mind", "por favor", "obrigado", "obrigada"]
+strip_punctuation: "?!.,;:"
+embedding:
+  en: "The afternoon had been slow at the office and the printer jammed twice. {prompt} Later the rain started and most people left early, which nobody minded."
+  pt: "A tarde no escritório tinha sido lenta e a impressora travou duas vezes. {prompt} Mais tarde começou a chover e a maioria foi embora cedo, o que ninguém lamentou."

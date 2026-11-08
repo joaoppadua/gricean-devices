@@ -1,0 +1,6 @@
+,,olmo_base,olmo_base,olmo_base,olmo_base,olmo_sft,olmo_sft,olmo_sft,olmo_sft,olmo_dpo,olmo_dpo,olmo_dpo,olmo_dpo,olmo_instruct,olmo_instruct,olmo_instruct,olmo_instruct
+,,mean,ci_low,ci_high,share_neither,mean,ci_low,ci_high,share_neither,mean,ci_low,ci_high,share_neither,mean,ci_low,ci_high,share_neither
+category,condition,,,,,,,,,,,,,,,,
+indirect_request,embedded,1.547204852104187,1.547204852104187,1.547204852104187,0.20139029335613134,1.7099326014518739,1.7099326014518739,1.7099326014518739,0.19060294805912248,,,,,,,,
+indirect_request,full,0.3787731409072874,0.3787731409072874,0.3787731409072874,0.2474781188931747,1.5557099342346192,1.5557099342346192,1.5557099342346192,0.1350657889840993,,,,,,,,
+indirect_request,stripped,1.2469554424285887,1.2469554424285887,1.2469554424285887,0.4075473921643362,1.5518886983394622,1.5518886983394622,1.5518886983394622,0.1364920313240787,,,,,,,,

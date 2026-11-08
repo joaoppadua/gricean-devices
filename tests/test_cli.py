@@ -96,3 +96,19 @@ def test_all_skips_raw_pass_for_raw_control_false(tmp_path: Path, monkeypatch):
     assert (root / "data/responses/s__raw.jsonl").exists()        # official-ladder tuned model still runs raw
     assert cli.main(["logprobs", "--all"], loader=fake_loader) == 0
     assert (root / "data/logprobs/a__tmpl.jsonl").exists()        # neither found via family
+
+
+def test_finetune_writes_adapters_under_prefix(tmp_path: Path, monkeypatch):
+    from gricean import finetune as F
+    root = project(tmp_path); monkeypatch.chdir(root)
+    shutil.copy(Path(__file__).parents[1] / "configs/finetune.yaml", root / "configs/finetune.yaml")
+    cfg = yaml.safe_load((root / "configs/finetune.yaml").read_text())
+    reg = yaml.safe_load((root / "configs/models.yaml").read_text())
+    reg["models"][cfg["base"]] = {"repo": "x", "revision": "1", "family": "t", "template": "none"}
+    yaml.safe_dump(reg, (root / "configs/models.yaml").open("w"))
+    monkeypatch.setattr(F, "load_dolly", lambda: [
+        {"category": "open_qa", "instruction": f"q{i}", "response": f"a{i}", "context": ""} for i in range(600)])
+    monkeypatch.setattr(F, "train_lora", lambda base, rows, out, cfg: Path(out).mkdir(parents=True, exist_ok=True))
+    assert cli.main(["finetune", "--set", "n500"]) == 0
+    assert (root / "adapters/olmo_n500/train.jsonl").exists()
+    assert cfg["base"] == "olmo_stage1"

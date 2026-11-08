@@ -107,7 +107,7 @@ def cmd_finetune(args, loader) -> int:
     sets = finetune.prepare(records, sizes=cfg["sizes"], seed=cfg["seed"], shuffle_responses=True)
     names = args.set or list(sets)
     for name in names:
-        out = Path("adapters") / f"smollm_{name}"
+        out = Path("adapters") / f"{cfg['adapter_prefix']}_{name}"
         finetune.write_jsonl(sets[name], out / "train.jsonl")
         finetune.train_lora(base, sets[name], out, cfg)
         print(f"finetune[{name}]: {len(sets[name])} rows -> {out}")

@@ -37,7 +37,14 @@ def export_sheet(response_root: Path, out: Path, *, coder: str, sample_frac: flo
     sheet["coder"] = coder
     sheet["intent"] = pd.NA
     sheet["correctness"] = pd.NA
-    Path(out).parent.mkdir(parents=True, exist_ok=True)
+    out = Path(out)
+    if out.exists():                     # re-export keeps codes already entered; new rows arrive blank
+        old = pd.read_csv(out, dtype=str, keep_default_na=False).set_index("row_id")
+        for col in ("intent", "correctness"):
+            if col in old.columns:
+                carried = sheet["row_id"].map(old[col]).replace("", pd.NA)
+                sheet[col] = carried.where(carried.notna(), sheet[col])
+    out.parent.mkdir(parents=True, exist_ok=True)
     sheet.to_csv(out, index=False)
     return len(sheet)
 

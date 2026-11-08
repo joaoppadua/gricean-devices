@@ -30,11 +30,16 @@ def _models_for(args, reg) -> list[tuple[str, bool]]:
     pairs = []
     for n in names:
         spec = reg[n]
+        if args.all and spec.adapter and not (Path(spec.adapter) / "adapter_model.safetensors").exists():
+            print(f"skip[{n}]: adapter {spec.adapter} not trained yet (run `make finetune`)")
+            continue
         if spec.template == "none":
             pairs.append((n, False))
         elif args.all:
             pairs += [(n, True)] + ([(n, False)] if spec.raw_control else [])
         else:
+            if args.raw and not spec.raw_control:
+                raise ValueError(f"{n} has raw_control: false (self-run ladder, spec §3.4); it never runs raw")
             pairs.append((n, not args.raw))
     return pairs
 

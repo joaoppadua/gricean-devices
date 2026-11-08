@@ -112,3 +112,28 @@ def test_finetune_writes_adapters_under_prefix(tmp_path: Path, monkeypatch):
     assert cli.main(["finetune", "--set", "n500"]) == 0
     assert (root / "adapters/olmo_n500/train.jsonl").exists()
     assert cfg["base"] == "olmo_stage1"
+
+
+def test_all_skips_adapter_models_whose_adapter_is_not_trained_yet(tmp_path: Path, monkeypatch, capsys):
+    root = project(tmp_path); monkeypatch.chdir(root)
+    cfg = yaml.safe_load((root / "configs/models.yaml").read_text())
+    cfg["models"]["ad"] = {"repo": "x", "revision": "1", "family": "t", "template": "alpaca",
+                          "raw_control": False, "adapter": "adapters/ad"}
+    cfg["ladders"]["t"].append("ad")
+    yaml.safe_dump(cfg, (root / "configs/models.yaml").open("w"))
+    cli.main(["freeze", "--partial"])
+    assert cli.main(["generate", "--all"], loader=fake_loader) == 0
+    assert not (root / "data/responses/ad__tmpl.jsonl").exists()
+    assert "ad" in capsys.readouterr().out            # a printed notice names the skipped model
+    (root / "adapters/ad").mkdir(parents=True)
+    (root / "adapters/ad/adapter_model.safetensors").write_bytes(b"")
+    assert cli.main(["generate", "--all"], loader=fake_loader) == 0
+    assert (root / "data/responses/ad__tmpl.jsonl").exists()
+
+
+def test_explicit_raw_refused_for_raw_control_false(tmp_path: Path, monkeypatch):
+    import pytest
+    root = project(tmp_path); monkeypatch.chdir(root)
+    cli.main(["freeze", "--partial"])
+    with pytest.raises(ValueError, match="raw_control"):
+        cli.main(["generate", "--model", "a", "--raw"], loader=fake_loader)

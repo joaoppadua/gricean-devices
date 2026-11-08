@@ -90,6 +90,11 @@ def logodds_table(lp_root: Path, models: list[str], expected: dict[str, bool]) -
     return table.reindex(columns=cols)
 
 
+# Printed when the greedy response is empty (EOS was the top first token). A finding, not a gap: the
+# model treated the prompt as complete. Spec §5.1.
+EMPTY_RESPONSE = "⟨empty: model emitted end-of-sequence⟩"
+
+
 def examples(resp_root: Path, models: list[str], item_ids: list[str], expected: dict[str, bool]) -> str:
     rows = []
     for path in sorted(Path(resp_root).glob("*.jsonl")):
@@ -109,7 +114,7 @@ def examples(resp_root: Path, models: list[str], item_ids: list[str], expected: 
         for model in models:
             r = sub[sub["model"] == model]
             if not r.empty:
-                blocks.append(f"**{model}:** {r.iloc[0]['response'].strip()}\n")
+                blocks.append(f"**{model}:** {r.iloc[0]['response'].strip() or EMPTY_RESPONSE}\n")
     return "\n".join(blocks)
 
 

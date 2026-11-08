@@ -145,7 +145,9 @@ Two independent lines, both from the frozen stimuli.
 
 For every model stage × stimulus version: one greedy response (printed in the
 paper) and three sampled responses (temperature 0.7, fixed seeds; feed the
-counts). Max 150 new tokens.
+counts). Max 150 new tokens. An empty greedy response is printed as such
+(`⟨empty: model emitted end-of-sequence⟩`); it is a finding (the base model
+treats the prompt as complete), not a gap.
 
 Rubric, per response:
 

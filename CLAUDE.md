@@ -30,8 +30,8 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - Author's open tasks: (1) write the 48 + 12 English items and the 12 + 6 Portuguese mirror;
   (2) choose the `neither` source model — Qwen2.5-1.5B base answered the seed question in 2 of 3
   samples; a GPT-3-era base (e.g. `EleutherAI/pythia-1.4b`) is the suggested alternative
-  (edit `neither_source` in `configs/models.yaml`); (3) decide whether printed base examples use
-  greedy (empty on the seed prompt: EOS is the top first token) or sampled responses.
+  (edit `neither_source` in `configs/models.yaml`); (3) decided 2026-11-08: printed examples stay greedy;
+  an empty greedy response prints as `⟨empty: model emitted end-of-sequence⟩` (`report.EMPTY_RESPONSE`).
 - Then: pin `revision:` hashes in `configs/models.yaml`, `make freeze`, `make neither`,
   `make generate`, `make logprobs`, `make sheet`, code, `make finetune`, `make report`.
 - Deferred minors from review: row ids render seeds as `1.0`/`nan`; Line 1 pools greedy with

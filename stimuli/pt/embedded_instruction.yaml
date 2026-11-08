@@ -12,11 +12,11 @@ language: pt
 items:
   - id: pt_ei_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "O professor pediu: 'defina a palavra efêmero.' A turma ficou em silêncio."
+    literal_reading: "Prosa narrativa relatando um pedido entre personagens."
+    intended_reading: "Uma instrução para definir a palavra citada."
+    literal_continuation: "Ele esperou mais um pouco e repetiu a pergunta."
+    intended_continuation: "Efêmero é aquilo que dura pouco tempo."
   - id: pt_ei_02
     control: false
     prompt: "TODO"
@@ -26,8 +26,8 @@ items:
     intended_continuation: "TODO"
   - id: pt_ei_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Defina a palavra efêmero."
+    literal_reading: "Uma instrução para definir a palavra."
+    intended_reading: "Uma instrução para definir a palavra."
     literal_continuation: null
     intended_continuation: null

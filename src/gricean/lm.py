@@ -126,7 +126,8 @@ class FakeLM:
         if prompt in self.canned:
             return self.canned[prompt]
         tag = "" if seed is None else f" s{seed}"
-        return f"[{self.name}{tag}] {prompt[:20]}"
+        digest = hashlib.sha1(prompt.encode()).hexdigest()[:6]   # distinct per prompt, shares no words with it
+        return f"[{self.name}{tag}] sample {digest}"
 
     def continuation_logprob(self, prompt: str, continuation: str) -> tuple[float, int]:
         n = max(1, len(continuation.split()))

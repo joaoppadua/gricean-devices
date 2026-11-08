@@ -9,11 +9,11 @@ language: en
 items:
   - id: en_rq_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Who would ever want to wait three hours for a bus?"
+    literal_reading: "An information-seeking question about who wants this."
+    intended_reading: "A complaint that three hours is far too long."
+    literal_continuation: "Some commuters do, when there is no alternative."
+    intended_continuation: "Nobody; three hours is far too long."
   - id: en_rq_02
     control: false
     prompt: "TODO"
@@ -65,9 +65,9 @@ items:
     intended_continuation: "TODO"
   - id: en_rq_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "How long is the wait for the number 12 bus?"
+    literal_reading: "An information-seeking question about the waiting time."
+    intended_reading: "An information-seeking question about the waiting time."
     literal_continuation: null
     intended_continuation: null
   - id: en_rq_c02

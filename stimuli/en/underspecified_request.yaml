@@ -9,11 +9,11 @@ language: en
 items:
   - id: en_ur_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Translate 'obrigado'."
+    literal_reading: "An incomplete request: the target language is missing, so one asks for it."
+    intended_reading: "A request to translate into English, the language of the prompt."
+    literal_continuation: "Into which language?"
+    intended_continuation: "'Obrigado' means 'thank you'."
   - id: en_ur_02
     control: false
     prompt: "TODO"
@@ -65,9 +65,9 @@ items:
     intended_continuation: "TODO"
   - id: en_ur_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Translate 'obrigado' into English."
+    literal_reading: "A request to translate into English."
+    intended_reading: "A request to translate into English."
     literal_continuation: null
     intended_continuation: null
   - id: en_ur_c02

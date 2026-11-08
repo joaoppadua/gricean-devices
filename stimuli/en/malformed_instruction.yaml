@@ -9,11 +9,11 @@ language: en
 items:
   - id: en_mi_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "tel me hw many days febuary has"
+    literal_reading: "Garbled text, continued with more garbled text or a remark on the typos."
+    intended_reading: "A request to state how many days February has."
+    literal_continuation: "i dont no wat u mean"
+    intended_continuation: "February has 28 days, or 29 in a leap year."
   - id: en_mi_02
     control: false
     prompt: "TODO"
@@ -65,9 +65,9 @@ items:
     intended_continuation: "TODO"
   - id: en_mi_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Tell me how many days February has."
+    literal_reading: "A request to state how many days February has."
+    intended_reading: "A request to state how many days February has."
     literal_continuation: null
     intended_continuation: null
   - id: en_mi_c02

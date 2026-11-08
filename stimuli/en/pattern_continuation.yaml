@@ -10,11 +10,11 @@ language: en
 items:
   - id: en_pc_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Explain the moon landing to a 6-year-old."
+    literal_reading: "One line of a list of tasks, to be continued with another task of the same form."
+    intended_reading: "An instruction to produce the explanation."
+    literal_continuation: "Explain the theory of gravity to a 6-year-old."
+    intended_continuation: "A long time ago, astronauts flew to the moon in a rocket and walked on it."
   - id: en_pc_02
     control: false
     prompt: "TODO"
@@ -66,9 +66,9 @@ items:
     intended_continuation: "TODO"
   - id: en_pc_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Answer the following. Explain the moon landing to a 6-year-old."
+    literal_reading: "An instruction to produce the explanation."
+    intended_reading: "An instruction to produce the explanation."
     literal_continuation: null
     intended_continuation: null
   - id: en_pc_c02

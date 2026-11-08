@@ -11,11 +11,11 @@ language: pt
 items:
   - id: pt_rq_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Quem é que gosta de ficar duas horas numa fila de banco?"
+    literal_reading: "Uma pergunta que busca informação sobre quem gosta disso."
+    intended_reading: "Uma reclamação de que duas horas de fila é tempo demais."
+    literal_continuation: "Algumas pessoas não se importam, quando não têm alternativa."
+    intended_continuation: "Ninguém; duas horas de fila é tempo demais."
   - id: pt_rq_02
     control: false
     prompt: "TODO"
@@ -25,8 +25,8 @@ items:
     intended_continuation: "TODO"
   - id: pt_rq_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Quanto tempo costuma levar a fila desse banco?"
+    literal_reading: "Uma pergunta que busca informação sobre o tempo de espera."
+    intended_reading: "Uma pergunta que busca informação sobre o tempo de espera."
     literal_continuation: null
     intended_continuation: null

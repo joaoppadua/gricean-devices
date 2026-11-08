@@ -11,11 +11,11 @@ language: pt
 items:
   - id: pt_ur_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Traduza 'thank you'."
+    literal_reading: "Um pedido incompleto: falta o idioma de destino, então pergunta-se qual é."
+    intended_reading: "Um pedido para traduzir para o português, o idioma do prompt."
+    literal_continuation: "Para qual idioma?"
+    intended_continuation: "'Thank you' significa 'obrigado'."
   - id: pt_ur_02
     control: false
     prompt: "TODO"
@@ -25,8 +25,8 @@ items:
     intended_continuation: "TODO"
   - id: pt_ur_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Traduza 'thank you' para o português."
+    literal_reading: "Um pedido para traduzir para o português."
+    intended_reading: "Um pedido para traduzir para o português."
     literal_continuation: null
     intended_continuation: null

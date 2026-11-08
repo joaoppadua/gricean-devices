@@ -12,11 +12,11 @@ language: pt
 items:
   - id: pt_ir_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Você poderia me dizer qual é a capital da Austrália?"
+    literal_reading: "Uma pergunta sim/não sobre a capacidade do interlocutor."
+    intended_reading: "Um pedido para dizer qual é a capital."
+    literal_continuation: "Poderia, sim."
+    intended_continuation: "A capital da Austrália é Camberra."
   - id: pt_ir_02
     control: false
     prompt: "TODO"
@@ -26,8 +26,8 @@ items:
     intended_continuation: "TODO"
   - id: pt_ir_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Qual é a capital da Austrália?"
+    literal_reading: "Um pedido para dizer qual é a capital."
+    intended_reading: "Um pedido para dizer qual é a capital."
     literal_continuation: null
     intended_continuation: null

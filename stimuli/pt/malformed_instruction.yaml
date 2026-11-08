@@ -11,11 +11,11 @@ language: pt
 items:
   - id: pt_mi_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "qual e a capitla do parana"
+    literal_reading: "Texto truncado, continuado com mais texto truncado ou um comentário sobre os erros."
+    intended_reading: "Um pedido para dizer qual é a capital do Paraná."
+    literal_continuation: "nao entendi oq vc escreveu"
+    intended_continuation: "A capital do Paraná é Curitiba."
   - id: pt_mi_02
     control: false
     prompt: "TODO"
@@ -25,8 +25,8 @@ items:
     intended_continuation: "TODO"
   - id: pt_mi_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Qual é a capital do Paraná?"
+    literal_reading: "Um pedido para dizer qual é a capital do Paraná."
+    intended_reading: "Um pedido para dizer qual é a capital do Paraná."
     literal_continuation: null
     intended_continuation: null

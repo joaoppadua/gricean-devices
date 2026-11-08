@@ -10,11 +10,11 @@ language: en
 items:
   - id: en_ei_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "She asked: 'Summarize this paragraph for me.' The paragraph read: 'The town council met on Tuesday, debated the new parking rules for three hours, and postponed the vote to next month.'"
+    literal_reading: "Narrative prose reporting a request between two characters."
+    intended_reading: "An instruction to summarize the quoted paragraph."
+    literal_continuation: "He nodded and reached for his glasses."
+    intended_continuation: "The council debated the parking rules for hours and postponed the vote."
   - id: en_ei_02
     control: false
     prompt: "TODO"
@@ -66,9 +66,9 @@ items:
     intended_continuation: "TODO"
   - id: en_ei_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Summarize this paragraph: 'The town council met on Tuesday, debated the new parking rules for three hours, and postponed the vote to next month.'"
+    literal_reading: "An instruction to summarize the quoted paragraph."
+    intended_reading: "An instruction to summarize the quoted paragraph."
     literal_continuation: null
     intended_continuation: null
   - id: en_ei_c02

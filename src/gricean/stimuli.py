@@ -126,7 +126,7 @@ def check_ablation(items: list[Item]) -> None:
     """Ablated dissociation items must end in terminal punctuation and strip to something different."""
     bad = []
     for it in items:
-        if it.control or it.category not in ABLATED_CATEGORIES:
+        if it.control or it.category not in ABLATED_CATEGORIES or _is_placeholder(it):
             continue
         core = re.sub(r"""["'\u201d\u2019\u00bb)\]]+$""", "", it.prompt.rstrip())   # ignore closing quotes/brackets
         if core[-1:] not in tuple("?!."):

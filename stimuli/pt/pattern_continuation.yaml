@@ -12,11 +12,11 @@ language: pt
 items:
   - id: pt_pc_01
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Explique o que é a fotossíntese para uma criança de seis anos."
+    literal_reading: "Uma linha de uma lista de tarefas, a ser continuada com outra tarefa da mesma forma."
+    intended_reading: "Uma instrução para produzir a explicação."
+    literal_continuation: "Descreva o ciclo da água para uma criança de seis anos."
+    intended_continuation: "A fotossíntese é o jeito que as plantas usam a luz do sol para fazer a própria comida."
   - id: pt_pc_02
     control: false
     prompt: "TODO"
@@ -26,8 +26,8 @@ items:
     intended_continuation: "TODO"
   - id: pt_pc_c01
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Responda ao que se pede. Explique o que é a fotossíntese para uma criança de seis anos."
+    literal_reading: "Uma instrução para produzir a explicação."
+    intended_reading: "Uma instrução para produzir a explicação."
     literal_continuation: null
     intended_continuation: null

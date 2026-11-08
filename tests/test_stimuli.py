@@ -260,3 +260,26 @@ def test_full_freeze_refuses_placeholders_partial_tolerates_them(root):
     assert S.freeze(root, partial=True)
     with pytest.raises(ValueError, match="en_ur_01"):
         S.freeze(root)
+
+
+def test_check_ablation_skips_placeholder_items(root):
+    write(root, "en/pattern_continuation.yaml", """
+        category: pattern_continuation
+        language: en
+        items:
+          - id: en_pc_01
+            control: false
+            prompt: "Explain the moon landing to a child."
+            literal_reading: "list"
+            intended_reading: "task"
+            literal_continuation: "Explain gravity to a child."
+            intended_continuation: "In 1969 people flew to the moon."
+          - id: en_pc_02
+            control: false
+            prompt: "TODO"
+            literal_reading: "TODO"
+            intended_reading: "TODO"
+            literal_continuation: "TODO"
+            intended_continuation: "TODO"
+    """)
+    S.check_ablation([it for it in S.load_all(root) if it.category == "pattern_continuation"])

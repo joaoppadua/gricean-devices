@@ -19,21 +19,29 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - Stimuli are frozen before any model run (`make freeze`); every stage refuses drifted stimuli.
 - Stages are idempotent per item; re-running recomputes only rows whose inputs changed.
 - Protocol invariants baked into the code (do not silently change): `embedded` version is never
-  chat-templated; tuned models also run raw as the template control; untemplated prompts get
+  chat-templated; tuned models also run raw as the template control, except self-run models
+  (`raw_control: false`), which never run raw; untemplated prompts get
   `raw_separator` before scored continuations; decoding knobs are pinned in `lm.DECODING`;
   flagged `neither` rows block scoring until `approved: true`.
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
-## Current status (2026-09-27)
-- Pipeline complete and reviewed (PR #1, branch `pipeline` → `main`).
-- Seed stimuli only (`stimuli/en/indirect_request.yaml`, 2 items). Seed dry run on OLMo base + SFT committed.
-- Author's open tasks: (1) write the 48 + 12 English items and the 12 + 6 Portuguese mirror;
-  (2) choose the `neither` source model — Qwen2.5-1.5B base answered the seed question in 2 of 3
-  samples; a GPT-3-era base (e.g. `EleutherAI/pythia-1.4b`) is the suggested alternative
-  (edit `neither_source` in `configs/models.yaml`); (3) decided 2026-11-08: printed examples stay greedy;
-  an empty greedy response prints as `⟨empty: model emitted end-of-sequence⟩` (`report.EMPTY_RESPONSE`).
-- Then: pin `revision:` hashes in `configs/models.yaml`, `make freeze`, `make neither`,
-  `make generate`, `make logprobs`, `make sheet`, code, `make finetune`, `make report`.
+## Current status (2026-11-08)
+- PR #1 (pipeline) merged. PR #2 (`pre-run-tasks`) holds: freeze quota/ablation gates with `--partial`,
+  `make pin`, empty-greedy marker, spec revision 2 and its implementation.
+- Spec rev. 2: one documented OLMo 2 1B lineage. Phase 1 = stage-1 checkpoint
+  (`stage1-step1907359-tokens4001B`, no instruction data documented); released base is a descriptive
+  mid-training rung (≈8B FLAN tokens); SFT → DPO → Instruct as before. Self-run LoRA trains from stage 1
+  (`adapters/olmo_*`, `selfrun` ladder, Alpaca template, no raw pass). `neither` from Pythia-1.4b, five
+  samples, chosen by the documentary criterion (no instruction data in training). Qwen pair retired
+  from the paper, kept as an optional contrast; SmolLM2 removed. GPT-3 → InstructGPT is quoted, not run.
+- Stimuli: still the two seed items. Author's next task: write the 48 + 12 English items and the
+  12 + 6 Portuguese mirror (`docs/superpowers/plans/2026-11-08-pre-run-tasks.md`, Tasks 5–11), validating
+  with `uv run gricean freeze --partial`.
+- Then: `make freeze`, `make pin`, `make neither`, approval pass over `stimuli/neither/olmo.jsonl`,
+  `make generate`, `make logprobs`, `make sheet`, code, `make finetune` (overnight), rerun 6–7,
+  `make report` (`--ladder olmo`, `--ladder selfrun`).
 - Deferred minors from review: row ids render seeds as `1.0`/`nan`; Line 1 pools greedy with
   samples; rows of deleted stimuli persist until another row recomputes; responses notebook run
-  button only does `--raw`; ladder figure omits CIs; `_strip` removes every period.
+  button only does `--raw`; ladder figure omits CIs; `_strip` removes every period; `pin_registry`
+  rejects quoted `revision: "main"`; no `--hub` flag to bypass a stale local cache; the
+  stripped-equals-full ablation check cannot fire alone while `strip_punctuation` covers `?!.`.

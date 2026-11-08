@@ -93,3 +93,16 @@ def test_load_neither_refuses_flagged_rows_unless_approved(tmp_path: Path):
     from gricean.io import write_jsonl
     write_jsonl(N.neither_path("olmo", tmp_path), rows)
     assert N.load_neither("olmo", tmp_path) == {"a": "Brazil became independent in 1822."}
+
+
+def test_sample_neither_rejects_more_samples_than_seeds(tmp_path):
+    spec = ModelSpec(name="p", repo="q", revision="r1", family="pythia", template="none")
+    cfg = dict(CFG, n=5, seeds=[11, 12, 13])
+    with pytest.raises(ValueError, match="seeds"):
+        N.sample_neither(FakeLM("p"), spec, "olmo", [item()], cfg=cfg, stimuli_checksum="abc", root=tmp_path)
+
+
+def test_generation_config_samples_five_neither():
+    import yaml
+    cfg = yaml.safe_load(Path("configs/generation.yaml").read_text())["neither"]
+    assert cfg["n"] == 5 and len(cfg["seeds"]) >= 5

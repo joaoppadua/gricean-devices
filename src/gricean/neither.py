@@ -39,6 +39,8 @@ def truncate(text: str, max_tokens: int = 20) -> str:
 
 def sample_neither(source: LM, source_spec: ModelSpec, family: str, items: list[Item], *,
                    cfg: dict, stimuli_checksum: str, root: Path = Path("stimuli/neither")) -> int:
+    if cfg["n"] > len(cfg["seeds"]):
+        raise ValueError(f"neither.n={cfg['n']} exceeds {len(cfg['seeds'])} seeds in generation.yaml")
     path = neither_path(family, root)
     targets = [it for it in items if not it.control]
     wanted, by_key = {}, {}

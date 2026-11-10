@@ -17,53 +17,53 @@ items:
     intended_continuation: "The council debated the parking rules for hours and postponed the vote."
   - id: en_ei_02
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "I said: 'Tell me, what is Einstein's famous equation connecting energy and mass?' He could not answer that."
+    literal_reading: "A story about a person asking a question and not receiving an answer."
+    intended_reading: "An instruction to provide Einstein's famous equation connecting energy and mass."
+    literal_continuation: "I shrugged and walked away."
+    intended_continuation: "Einstein's famous equation is E=mc^2."
   - id: en_ei_03
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "He demanded of me: 'List 5 capital cities in Europe.' I had to look it up..."
+    literal_reading: "Narrative about a personal interaction."
+    intended_reading: "An instruction to list 5 capital cities in Europe (to compare choices)."
+    literal_continuation: "I found the information and recited the list."
+    intended_continuation: "Here are 5 capital cities in Europe: Paris, Berlin, Madrid, Rome, and London. Which ones did you list?"
   - id: en_ei_04
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Here is what he requested from us: 'Explain the process of photosynthesis in simple terms. The explanation should be clear and concise.'"
+    literal_reading: "Narrative about a request for an explanation of photosynthesis."
+    intended_reading: "An instruction to explain the process of photosynthesis in simple terms (to comply with the other's request)."
+    literal_continuation: "We took a moment to gather our thoughts before responding."
+    intended_continuation: "Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to create their own food and release oxygen."
   - id: en_ei_05
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "They asked: 'Explain the O.J. Simpson trial in a few sentences.'"
+    literal_reading: "Narrative about a request for an explanation of the O.J. Simpson trial."
+    intended_reading: "An instruction to explain the O.J. Simpson trial in a few sentences."
+    literal_continuation: "The board members listened attentively as we began our explanation."
+    intended_continuation: "The O.J. Simpson trial was a highly publicized criminal trial in the 1990s that ended with Simpson being acquitted of murder."
   - id: en_ei_06
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?'"
+    literal_reading: "Narrative about a person being asked a question and being expected to know the answer."
+    intended_reading: "An instruction to provide the capital of France."
+    literal_continuation: "I hesitated for a moment before responding."
+    intended_continuation: "The capital of France is Paris. As you should probably know by now."
   - id: en_ei_07
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "I noted: 'Please provide a summary of the following article.' The article read: 'Central banks in several developing countries raised interest rates this year. Inflation slowed in most of them, but so did growth.'"
+    literal_reading: "Narrative about a request for a summary of an article."
+    intended_reading: "An instruction to summarize the quoted article."
+    literal_continuation: "I read the article carefully and prepared my summary."
+    intended_continuation: "Rate rises slowed inflation in several developing countries, at some cost to growth."
   - id: en_ei_08
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "She said: 'Go out and find me 5 surprising nuggets about quantum mechanics'."
+    literal_reading: "A narrative about a request for interesting facts about quantum mechanics."
+    intended_reading: "An instruction to find 5 surprising facts about quantum mechanics."
+    literal_continuation: "I went to the library and started researching quantum mechanics."
+    intended_continuation: "Here are 5 surprising nuggets about quantum mechanics: 1) Particles can exist in multiple states at once (superposition)."
   - id: en_ei_c01
     control: true
     prompt: "Summarize this paragraph: 'The town council met on Tuesday, debated the new parking rules for three hours, and postponed the vote to next month.'"
@@ -73,8 +73,8 @@ items:
     intended_continuation: null
   - id: en_ei_c02
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Give me Einstein's famous equation connecting energy and mass."
+    literal_reading: "An instruction to provide Einstein's famous equation connecting energy and mass."
+    intended_reading: "An instruction to provide Einstein's famous equation connecting energy and mass."
     literal_continuation: null
     intended_continuation: null

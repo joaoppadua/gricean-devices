@@ -19,11 +19,11 @@ items:
     intended_continuation: "A capital da Austrália é Camberra."
   - id: pt_ir_02
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Sabe como é o clima típico no Rio de Janeiro?"
+    literal_reading: "Uma pergunta sim/não sobre o interlocutor ter conhecimento sobre o clima."
+    intended_reading: "Um pedido para dizer como é o clima."
+    literal_continuation: "Sim, sei."
+    intended_continuation: "É quente e úmido."
   - id: pt_ir_c01
     control: true
     prompt: "Qual é a capital da Austrália?"

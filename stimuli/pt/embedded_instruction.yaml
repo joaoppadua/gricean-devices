@@ -19,11 +19,11 @@ items:
     intended_continuation: "Efêmero é aquilo que dura pouco tempo."
   - id: pt_ei_02
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Ela me perguntou: 'Qual é a teoria mais famosa de Albert Einstein?' Eu não sabia a resposta."
+    literal_reading: "Uma história sobre uma pessoa fazendo uma pergunta e não recebendo uma resposta."
+    intended_reading: "Uma instrução para fornecer a teoria mais famosa de Albert Einstein."
+    literal_continuation: "Eu fiquei sem palavras e apenas balancei a cabeça."
+    intended_continuation: "A teoria mais famosa de Albert Einstein é a Teoria da Relatividade."
   - id: pt_ei_c01
     control: true
     prompt: "Defina a palavra efêmero."

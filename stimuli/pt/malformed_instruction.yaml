@@ -18,11 +18,11 @@ items:
     intended_continuation: "A capital do Paraná é Curitiba."
   - id: pt_mi_02
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "queria sabe se agente pode vim direto de carro do mato grosso pro parana em 1 dia"
+    literal_reading: "Texto truncado, continuado com mais texto truncado ou um comentário sobre os erros."
+    intended_reading: "Um pedido para dizer se é possível ir diretamente de carro do Mato Grosso para o Paraná em um dia."
+    literal_continuation: "não entendi o que você quer dizer"
+    intended_continuation: "É possível, dependendo das cidades de partida e de chegada."
   - id: pt_mi_c01
     control: true
     prompt: "Qual é a capital do Paraná?"

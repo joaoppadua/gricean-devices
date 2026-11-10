@@ -17,53 +17,53 @@ items:
     intended_continuation: "A long time ago, astronauts flew to the moon in a rocket and walked on it."
   - id: en_pc_02
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Create a list of 5 fruits that are red."
+    literal_reading: "One line of a list of tasks, to be continued with another task of the same form."
+    intended_reading: "An instruction to create a list of red fruits."
+    literal_continuation: "Create a list of 5 fruits that are green."
+    intended_continuation: "Here are 5 fruits that are red: apples, strawberries, cherries, raspberries, and cranberries."
   - id: en_pc_03
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Give me a simple explanation of the central findings of quantum mechanics."
+    literal_reading: "One line of a list of tasks, to be continued with another task of the same form."
+    intended_reading: "An instruction to provide a simple explanation of the central findings of quantum mechanics."
+    literal_continuation: "Give me a simple explanation of the central findings of relativity."
+    intended_continuation: "Quantum mechanics is a branch of physics that studies the behavior of very small particles, like atoms and electrons."
   - id: en_pc_04
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Explain to me as a layperson what the presumption of innocence is in law."
+    literal_reading: "One line of a list of tasks, to be continued with another task of the same form."
+    intended_reading: "An instruction to explain the presumption of innocence in law in non-technical terms."
+    literal_continuation: "Explain to me as a layperson what the burden of proof is in law."
+    intended_continuation: "The presumption of innocence is a legal principle that means a person accused of a crime is considered innocent until proven guilty."
   - id: en_pc_05
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Summarize the plot of Romeo and Juliet in one sentence."
+    literal_reading: "One line of a list of tasks, to be continued with another task of the same form."
+    intended_reading: "An instruction to produce the summary."
+    literal_continuation: "Summarize the plot of Hamlet in one sentence."
+    intended_continuation: "Two teenagers from feuding families fall in love and die because of a misunderstanding."
   - id: en_pc_06
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Write a sentence using the word 'reluctant'."
+    literal_reading: "One line of a list of tasks, to be continued with another task of the same form."
+    intended_reading: "An instruction to write a sentence containing the word."
+    literal_continuation: "Write a sentence using the word 'grateful'."
+    intended_continuation: "She was reluctant to leave the party so early."
   - id: en_pc_07
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Describe the taste of a lemon."
+    literal_reading: "One line of a list of tasks, to be continued with another task of the same form."
+    intended_reading: "An instruction to produce the description."
+    literal_continuation: "Describe the taste of a mango."
+    intended_continuation: "A lemon tastes sharply sour, with a slightly bitter edge."
   - id: en_pc_08
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Name the three largest oceans on Earth."
+    literal_reading: "One line of a list of tasks, to be continued with another task of the same form."
+    intended_reading: "An instruction to name the three oceans."
+    literal_continuation: "Name the three largest deserts on Earth."
+    intended_continuation: "The three largest oceans are the Pacific, the Atlantic, and the Indian."
   - id: en_pc_c01
     control: true
     prompt: "Answer the following. Explain the moon landing to a 6-year-old."
@@ -73,8 +73,8 @@ items:
     intended_continuation: null
   - id: en_pc_c02
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Answer the following. Create a list of 5 fruits that are red."
+    literal_reading: "An instruction to create a list of red fruits."
+    intended_reading: "An instruction to create a list of red fruits."
     literal_continuation: null
     intended_continuation: null

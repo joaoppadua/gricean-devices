@@ -18,11 +18,11 @@ items:
     intended_continuation: "'Thank you' significa 'obrigado'."
   - id: pt_ur_02
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Crie uma carta para reclamar de um produto defeituoso."
+    literal_reading: "Um pedido incompleto: falta o destinatário, então pergunta-se quem é."
+    intended_reading: "Um pedido para criar uma carta de reclamação sobre um produto defeituoso, dirigida à loja ou ao fabricante."
+    literal_continuation: "Para quem é a carta?"
+    intended_continuation: "Aqui está uma carta de reclamação dirigida à loja ou ao fabricante:"
   - id: pt_ur_c01
     control: true
     prompt: "Traduza 'thank you' para o português."

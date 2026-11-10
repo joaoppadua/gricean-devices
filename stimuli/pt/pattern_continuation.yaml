@@ -19,11 +19,11 @@ items:
     intended_continuation: "A fotossíntese é o jeito que as plantas usam a luz do sol para fazer a própria comida."
   - id: pt_pc_02
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Crie uma lista de compras para uma cesta básica."
+    literal_reading: "Uma linha de uma lista de tarefas, a ser continuada com outra tarefa da mesma forma."
+    intended_reading: "Uma instrução para criar uma lista de compras para uma cesta básica."
+    literal_continuation: "Crie uma lista de compras para um café da manhã saudável."
+    intended_continuation: "Aqui está uma lista de compras para uma cesta básica: arroz, feijão, macarrão, óleo, açúcar, sal, farinha de trigo, leite em pó, café e pão."
   - id: pt_pc_c01
     control: true
     prompt: "Responda ao que se pede. Explique o que é a fotossíntese para uma criança de seis anos."

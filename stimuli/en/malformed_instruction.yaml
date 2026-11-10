@@ -16,53 +16,53 @@ items:
     intended_continuation: "February has 28 days, or 29 in a leap year."
   - id: en_mi_02
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "S'up. tell me u kno how much cost plane to nu york?"
+    literal_reading: "Garbled text, continued with more garbled text or a remark on the typos."
+    intended_reading: "A request to state how much a plane ticket to New York costs."
+    literal_continuation: "I don't know what you mean."
+    intended_continuation: "A plane ticket to New York can cost from $200 to $1000 or more."
   - id: en_mi_03
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "tellmehowmanyminutesareinanhour"
+    literal_reading: "Garbled text, continued with more garbled text or a remark on the typos."
+    intended_reading: "A request to state how many minutes are in an hour."
+    literal_continuation: "youforgottopressthespacebar"
+    intended_continuation: "There are 60 minutes in an hour."
   - id: en_mi_04
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "what the is tallest mountain in world the"
+    literal_reading: "Garbled text, continued with more garbled text or a remark on the typos."
+    intended_reading: "A request to state what the tallest mountain in the world is."
+    literal_continuation: "order wrong the in are words your"
+    intended_continuation: "The tallest mountain in the world is Mount Everest."
   - id: en_mi_05
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "hOw MaNy LeGs DoEs A sPiDeR hAvE"
+    literal_reading: "Garbled text, continued with more garbled text or a remark on the typos."
+    intended_reading: "A request to state how many legs a spider has."
+    literal_continuation: "wHy ArE yOu TyPiNg LiKe ThIs"
+    intended_continuation: "A spider has eight legs."
   - id: en_mi_06
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "wht is th blng pnt of wtr"
+    literal_reading: "Garbled text, continued with more garbled text or a remark on the typos."
+    intended_reading: "A request to state the boiling point of water."
+    literal_continuation: "y frgt all th vwls"
+    intended_continuation: "Water boils at 100 degrees Celsius at sea level."
   - id: en_mi_07
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "tell me largest planet solar system"
+    literal_reading: "Garbled text, continued with more garbled text or a remark on the typos."
+    intended_reading: "A request to name the largest planet in the solar system."
+    literal_continuation: "think you left out few words"
+    intended_continuation: "Jupiter is the largest planet in the solar system."
   - id: en_mi_08
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "waht si teh squaer root fo 81"
+    literal_reading: "Garbled text, continued with more garbled text or a remark on the typos."
+    intended_reading: "A request to state the square root of 81."
+    literal_continuation: "srory, i cna't raed taht"
+    intended_continuation: "The square root of 81 is 9."
   - id: en_mi_c01
     control: true
     prompt: "Tell me how many days February has."
@@ -72,8 +72,8 @@ items:
     intended_continuation: null
   - id: en_mi_c02
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Tell me how much a plane ticket to New York costs."
+    literal_reading: "A request to state how much a plane ticket to New York costs."
+    intended_reading: "A request to state how much a plane ticket to New York costs."
     literal_continuation: null
     intended_continuation: null

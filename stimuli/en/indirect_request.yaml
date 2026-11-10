@@ -17,57 +17,57 @@ items:
     intended_continuation: null
   - id: en_ir_02
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Do you know what the capital of France is?"
+    literal_reading: "A yes/no question about the addressee's knowledge."
+    intended_reading: "A request to state the capital of France."
+    literal_continuation: "Yes, I do."
+    intended_continuation: "The capital of France is Paris."
   - id: en_ir_03
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "What can you teach me about those melting polar caps?"
+    literal_reading: "A question about the addressee's ability to provide information."
+    intended_reading: "A request to provide information or an opinion about melting polar caps."
+    literal_continuation: "I can tell you a bit about them."
+    intended_continuation: "The melting polar caps are a significant concern due to climate change, leading to rising sea levels."
   - id: en_ir_04
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "What do you know about the transformer architecture?"
+    literal_reading: "A question about the addressee's knowledge of the transformer architecture."
+    intended_reading: "A request to provide information about the transformer architecture."
+    literal_continuation: "I know a bit about it."
+    intended_continuation: "The transformer architecture is a deep learning model that uses self-attention mechanisms to process sequential data."
   - id: en_ir_05
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Can you tell the difference between an alligator and a crocodile?"
+    literal_reading: "A question about the addressee's ability to distinguish between the two animals."
+    intended_reading: "A request to state the differences between an alligator and a crocodile."
+    literal_continuation: "Yes, I can."
+    intended_continuation: "An alligator has a broad snout, while a crocodile's is narrow."
   - id: en_ir_06
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Can you keep a secret?"
+    literal_reading: "A question about the addressee's ability to keep a secret."
+    intended_reading: "A request to keep a secret."
+    literal_continuation: "Yes, I can keep a secret."
+    intended_continuation: "Sure, what do you want to share? I promise to keep it confidential."
   - id: en_ir_07
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "I may want to ask you a sensitive question."
+    literal_reading: "A statement about the speaker's possible future wants."
+    intended_reading: "An indirect request and invitation to be encouraged to ask a sensitive question."
+    literal_continuation: "Ok, good to know."
+    intended_continuation: "Please feel free to ask your sensitive question whenever you're ready."
   - id: en_ir_08
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "Could you tell me what the weather is typically like in New York City?"
+    literal_reading: "A question about the addressee's ability to provide information about the weather in New York City."
+    intended_reading: "A request to provide information about the weather in New York City."
+    literal_continuation: "Yes, I could."
+    intended_continuation: "New York City typically has warm summers and cold winters."
   - id: en_ir_c02
     control: true
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
+    prompt: "Tell me about melting polar caps."
+    literal_reading: "A request to provide information about melting polar caps."
+    intended_reading: "A request to provide information about melting polar caps."
     literal_continuation: null
     intended_continuation: null

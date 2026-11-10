@@ -18,11 +18,11 @@ items:
     intended_continuation: "Ninguém; duas horas de fila é tempo demais."
   - id: pt_rq_02
     control: false
-    prompt: "TODO"
-    literal_reading: "TODO"
-    intended_reading: "TODO"
-    literal_continuation: "TODO"
-    intended_continuation: "TODO"
+    prompt: "É possível esperar que o governo melhore mesmo com esse Congresso Nacional?"
+    literal_reading: "Uma pergunta que busca informação sobre a possibilidade de melhoria do governo."
+    intended_reading: "Uma reclamação de que o governo não vai melhorar com esse Congresso Nacional, buscando concordância."
+    literal_continuation: "Sim, é possível que o governo melhore, mas pode ser um desafio com o atual Congresso Nacional."
+    intended_continuation: "Concordo; é difícil esperar melhorias significativas do governo com o atual Congresso Nacional."
   - id: pt_rq_c01
     control: true
     prompt: "Quanto tempo costuma levar a fila desse banco?"

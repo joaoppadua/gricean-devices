@@ -71,10 +71,15 @@ def test_unknown_stage_returns_2(tmp_path: Path, monkeypatch):
     assert cli.main(["nope"]) == 2
 
 
-def test_freeze_without_partial_fails_on_seed_set(tmp_path: Path, monkeypatch):
+def test_freeze_without_partial_fails_on_incomplete_set(tmp_path: Path, monkeypatch):
     import pytest
-    monkeypatch.chdir(project(tmp_path))
-    with pytest.raises(ValueError, match="placeholder|dissociation"):
+    root = project(tmp_path)
+    f = root / "stimuli/en/indirect_request.yaml"
+    doc = yaml.safe_load(f.read_text())
+    doc["items"] = doc["items"][:1]            # below quota, whatever the real set holds
+    yaml.safe_dump(doc, f.open("w"), allow_unicode=True, sort_keys=False)
+    monkeypatch.chdir(root)
+    with pytest.raises(ValueError, match="dissociation"):
         cli.main(["freeze"])
 
 

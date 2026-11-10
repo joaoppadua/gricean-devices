@@ -1,0 +1,33 @@
+# Quota: 2 dissociation + 1 control. Ids: pt_ir_01..02, controls pt_ir_c01..c01.
+# Dissociation: a yes/no question about ability/knowledge that is meant as a request.
+# Vary the modal: can / could / would you mind / do you know / is it possible to / are you able to / I wonder if you could.
+# literal_continuation: "Yes, I can." / "Yes, I know."   intended_continuation: the answer itself.
+# Controls: the same request asked directly ("What year did ...?").
+# Ablated category: the prompt core must end in ?!. and must contain a politeness marker or terminal punctuation
+# so that the stripped version differs from the full one (see ablation.yaml).
+# Written natively in Brazilian Portuguese; same contrast, not translations of the English items.
+# Politeness markers available for stripping: por favor, obrigado, obrigada (edit ablation.yaml BEFORE the final freeze if more are needed).
+category: indirect_request
+language: pt
+items:
+  - id: pt_ir_01
+    control: false
+    prompt: "Você poderia me dizer qual é a capital da Austrália?"
+    literal_reading: "Uma pergunta sim/não sobre a capacidade do interlocutor."
+    intended_reading: "Um pedido para dizer qual é a capital."
+    literal_continuation: "Poderia, sim."
+    intended_continuation: "A capital da Austrália é Camberra."
+  - id: pt_ir_02
+    control: false
+    prompt: "Sabe como é o clima típico no Rio de Janeiro?"
+    literal_reading: "Uma pergunta sim/não sobre o interlocutor ter conhecimento sobre o clima."
+    intended_reading: "Um pedido para dizer como é o clima."
+    literal_continuation: "Sim, sei."
+    intended_continuation: "É quente e úmido."
+  - id: pt_ir_c01
+    control: true
+    prompt: "Qual é a capital da Austrália?"
+    literal_reading: "Um pedido para dizer qual é a capital."
+    intended_reading: "Um pedido para dizer qual é a capital."
+    literal_continuation: null
+    intended_continuation: null

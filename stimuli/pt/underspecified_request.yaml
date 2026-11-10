@@ -1,0 +1,32 @@
+# Quota: 2 dissociation + 1 control. Ids: pt_ur_01..02, controls pt_ur_c01..c01.
+# Dissociation: a request with a missing slot ("Translate 'obrigado'.").
+# intended_continuation: the most plausible completion (here: into the prompt's language).
+# literal_continuation: the clarifying question or refusal to choose ("Into which language?").
+# Vary the missing slot: target language, unit, audience, format, date range.
+# Controls: the same request with the slot filled. Not ablated.
+# Written natively in Brazilian Portuguese; same contrast, not translations of the English items.
+# Politeness markers available for stripping: por favor, obrigado, obrigada (edit ablation.yaml BEFORE the final freeze if more are needed).
+category: underspecified_request
+language: pt
+items:
+  - id: pt_ur_01
+    control: false
+    prompt: "Traduza 'thank you'."
+    literal_reading: "Um pedido incompleto: falta o idioma de destino, então pergunta-se qual é."
+    intended_reading: "Um pedido para traduzir para o português, o idioma do prompt."
+    literal_continuation: "Para qual idioma?"
+    intended_continuation: "'Thank you' significa 'obrigado'."
+  - id: pt_ur_02
+    control: false
+    prompt: "Crie uma carta para reclamar de um produto defeituoso."
+    literal_reading: "Um pedido incompleto: falta o destinatário, então pergunta-se quem é."
+    intended_reading: "Um pedido para criar uma carta de reclamação sobre um produto defeituoso, dirigida à loja ou ao fabricante."
+    literal_continuation: "Para quem é a carta?"
+    intended_continuation: "Aqui está uma carta de reclamação dirigida à loja ou ao fabricante:"
+  - id: pt_ur_c01
+    control: true
+    prompt: "Traduza 'thank you' para o português."
+    literal_reading: "Um pedido para traduzir para o português."
+    intended_reading: "Um pedido para traduzir para o português."
+    literal_continuation: null
+    intended_continuation: null

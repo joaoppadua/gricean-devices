@@ -1,0 +1,79 @@
+# Quota: 8 dissociation + 2 control. Ids: en_ur_01..08, controls en_ur_c01..c02.
+# Dissociation: a request with a missing slot ("Translate 'obrigado'.").
+# intended_continuation: the most plausible completion (here: into the prompt's language).
+# literal_continuation: the clarifying question or refusal to choose ("Into which language?").
+# Vary the missing slot: target language, unit, audience, format, date range.
+# Controls: the same request with the slot filled. Not ablated.
+category: underspecified_request
+language: en
+items:
+  - id: en_ur_01
+    control: false
+    prompt: "Translate 'obrigado'."
+    literal_reading: "An incomplete request: the target language is missing, so one asks for it."
+    intended_reading: "A request to translate into English, the language of the prompt."
+    literal_continuation: "Into which language?"
+    intended_continuation: "'Obrigado' means 'thank you'."
+  - id: en_ur_02
+    control: false
+    prompt: "Explain the theory of relativity."
+    literal_reading: "An incomplete request: the audience is missing, so one asks for it."
+    intended_reading: "A request to explain the theory of relativity to a layperson, the probable audience of the prompt."
+    literal_continuation: "To whom should I explain it?"
+    intended_continuation: "The theory of relativity describes the relationship between space and time."
+  - id: en_ur_03
+    control: false
+    prompt: "Give me a letter to ask for sick leave."
+    literal_reading: "An incomplete request: the audience is missing, so one asks for it."
+    intended_reading: "A request to write a letter to ask for sick leave, likely for a supervisor or HR department."
+    literal_continuation: "For whom are you writing this letter?"
+    intended_continuation: "Here is a sample letter to request sick leave:"
+  - id: en_ur_04
+    control: false
+    prompt: "Convert 100 degrees Fahrenheit."
+    literal_reading: "An incomplete request: the target unit is missing, so one asks for it."
+    intended_reading: "A request to convert into degrees Celsius, the usual counterpart of Fahrenheit."
+    literal_continuation: "Into which unit?"
+    intended_continuation: "That is about 37.8 degrees Celsius."
+  - id: en_ur_05
+    control: false
+    prompt: "Tell me how old Mozart was."
+    literal_reading: "An incomplete request: the point in time is missing, so one asks for it."
+    intended_reading: "A request to state Mozart's age at his death, the most plausible point of reference."
+    literal_continuation: "At what point in his life?"
+    intended_continuation: "Mozart was 35 when he died."
+  - id: en_ur_06
+    control: false
+    prompt: "Put these words in order: pear, apple, mango."
+    literal_reading: "An incomplete request: the ordering criterion is missing, so one asks for it."
+    intended_reading: "A request to sort the words alphabetically, the default order for a list of words."
+    literal_continuation: "In what order?"
+    intended_continuation: "Apple, mango, pear."
+  - id: en_ur_07
+    control: false
+    prompt: "How far away is the Moon?"
+    literal_reading: "An incomplete request: the point of reference is missing, so one asks for it."
+    intended_reading: "A request to state the Moon's distance from Earth, the obvious point of reference."
+    literal_continuation: "From where?"
+    intended_continuation: "About 384,000 kilometers from Earth."
+  - id: en_ur_08
+    control: false
+    prompt: "Which is bigger, Texas or France?"
+    literal_reading: "An incomplete request: the dimension of comparison is missing, so one asks for it."
+    intended_reading: "A request to compare the two by area, the default sense of 'bigger' for places."
+    literal_continuation: "Bigger in what sense?"
+    intended_continuation: "Texas is bigger than France in area."
+  - id: en_ur_c01
+    control: true
+    prompt: "Translate 'obrigado' into English."
+    literal_reading: "A request to translate into English."
+    intended_reading: "A request to translate into English."
+    literal_continuation: null
+    intended_continuation: null
+  - id: en_ur_c02
+    control: true
+    prompt: "Explain the theory of relativity to a layperson."
+    literal_reading: "A request to explain the theory of relativity to a layperson."
+    intended_reading: "A request to explain the theory of relativity to a layperson."
+    literal_continuation: null
+    intended_continuation: null

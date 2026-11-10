@@ -1,0 +1,79 @@
+# Quota: 8 dissociation + 2 control. Ids: en_rq_01..08, controls en_rq_c01..c02.
+# Dissociation: a rhetorical question ("Who would ever want to wait three hours for a bus?").
+# literal_continuation: answers it as information-seeking ("Some commuters do, when there is no alternative.").
+# intended_continuation: acknowledges the point ("Nobody; three hours is far too long.").
+# Vary the form: who would / isn't it / how many times / what kind of / why bother.
+# Controls: genuine information-seeking questions of similar shape. Not ablated.
+category: rhetorical_question
+language: en
+items:
+  - id: en_rq_01
+    control: false
+    prompt: "Who would ever want to wait three hours for a bus?"
+    literal_reading: "An information-seeking question about who wants this."
+    intended_reading: "A complaint that three hours is far too long."
+    literal_continuation: "Some commuters do, when there is no alternative."
+    intended_continuation: "Nobody; three hours is far too long."
+  - id: en_rq_02
+    control: false
+    prompt: "Isn't it a drag when people just keep talking and talking and you can't get a word in edgewise?"
+    literal_reading: "An information-seeking question about whether this is a drag."
+    intended_reading: "A complaint that people keep talking and you can't get a word in edgewise, seeking empathy and recognition."
+    literal_continuation: "Yes, it can be frustrating when that happens."
+    intended_continuation: "That's true; it can be very frustrating when people monopolize the conversation and don't let others speak."
+  - id: en_rq_03
+    control: false
+    prompt: "I mean, who would be crazy enough to go out in the middle of a blizzard?"
+    literal_reading: "An information-seeking question about who would be that crazy."
+    intended_reading: "A complaint that going out in the middle of a blizzard is crazy, seeking empathy and recognition."
+    literal_continuation: "Some people might do it for work or emergencies, but it's generally not advisable."
+    intended_continuation: "That's true; going out in the middle of a blizzard is indeed crazy and dangerous."
+  - id: en_rq_04
+    control: false
+    prompt: "What is the big deal about just wanting your sister to spend the weekend with her nephew, so his mother can have a break?"
+    literal_reading: "An information-seeking question about what is the big deal."
+    intended_reading: "A vent about the lack of helpfulness of the sister and a demand for reassurance."
+    literal_continuation: "Some people might see it as a bit of a burden."
+    intended_continuation: "I understand your frustration; it can be challenging when family members are not willing to help out, especially when it comes to spending time with a nephew."
+  - id: en_rq_05
+    control: false
+    prompt: "How many times do I have to restart this computer before it finally works?"
+    literal_reading: "An information-seeking question about the number of restarts needed."
+    intended_reading: "A complaint that the computer keeps failing."
+    literal_continuation: "Usually two or three times."
+    intended_continuation: "Too many; that computer clearly needs to be fixed."
+  - id: en_rq_06
+    control: false
+    prompt: "What kind of person leaves a dog in a hot car?"
+    literal_reading: "An information-seeking question about the type of person who does this."
+    intended_reading: "A condemnation of leaving a dog in a hot car."
+    literal_continuation: "Usually a busy owner who underestimates the heat."
+    intended_continuation: "A careless one; no dog should be left in a hot car."
+  - id: en_rq_07
+    control: false
+    prompt: "Why bother making the bed if you are just going to sleep in it again tonight?"
+    literal_reading: "An information-seeking question about the reasons for making the bed."
+    intended_reading: "A claim that making the bed is pointless."
+    literal_continuation: "Because a made bed keeps dust off the sheets."
+    intended_continuation: "True; it does seem rather pointless."
+  - id: en_rq_08
+    control: false
+    prompt: "How hard can it be to answer a simple email?"
+    literal_reading: "An information-seeking question about the difficulty of answering an email."
+    intended_reading: "A complaint that someone has failed to answer a simple email."
+    literal_continuation: "It can be quite hard when the inbox is full."
+    intended_continuation: "Not hard at all; they should have answered by now."
+  - id: en_rq_c01
+    control: true
+    prompt: "How long is the wait for the number 12 bus?"
+    literal_reading: "An information-seeking question about the waiting time."
+    intended_reading: "An information-seeking question about the waiting time."
+    literal_continuation: null
+    intended_continuation: null
+  - id: en_rq_c02
+    control: true
+    prompt: "Who decides whether a snowstorm counts as a blizzard?"
+    literal_reading: "An information-seeking question about who classifies blizzards."
+    intended_reading: "An information-seeking question about who classifies blizzards."
+    literal_continuation: null
+    intended_continuation: null

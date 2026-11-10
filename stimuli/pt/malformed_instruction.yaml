@@ -1,0 +1,32 @@
+# Quota: 2 dissociation + 1 control. Ids: pt_mi_01..02, controls pt_mi_c01..c01.
+# Dissociation: a damaged instruction ("tel me hw many days febuary has").
+# Vary the damage: typos, dropped words, no spaces, wrong word order, mixed case. Terminal punctuation optional.
+# literal_continuation: more garbled text or a comment on the typos ("i dont no wat u mean").
+# intended_continuation: the repaired answer ("February has 28 days, or 29 in a leap year.").
+# Controls: the same instruction, well-formed. Not ablated.
+# Written natively in Brazilian Portuguese; same contrast, not translations of the English items.
+# Politeness markers available for stripping: por favor, obrigado, obrigada (edit ablation.yaml BEFORE the final freeze if more are needed).
+category: malformed_instruction
+language: pt
+items:
+  - id: pt_mi_01
+    control: false
+    prompt: "qual e a capitla do parana"
+    literal_reading: "Texto truncado, continuado com mais texto truncado ou um comentário sobre os erros."
+    intended_reading: "Um pedido para dizer qual é a capital do Paraná."
+    literal_continuation: "nao entendi oq vc escreveu"
+    intended_continuation: "A capital do Paraná é Curitiba."
+  - id: pt_mi_02
+    control: false
+    prompt: "queria sabe se agente pode vim direto de carro do mato grosso pro parana em 1 dia"
+    literal_reading: "Texto truncado, continuado com mais texto truncado ou um comentário sobre os erros."
+    intended_reading: "Um pedido para dizer se é possível ir diretamente de carro do Mato Grosso para o Paraná em um dia."
+    literal_continuation: "não entendi o que você quer dizer"
+    intended_continuation: "É possível, dependendo das cidades de partida e de chegada."
+  - id: pt_mi_c01
+    control: true
+    prompt: "Qual é a capital do Paraná?"
+    literal_reading: "Um pedido para dizer qual é a capital do Paraná."
+    intended_reading: "Um pedido para dizer qual é a capital do Paraná."
+    literal_continuation: null
+    intended_continuation: null

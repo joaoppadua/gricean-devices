@@ -1,0 +1,33 @@
+# Quota: 2 dissociation + 1 control. Ids: pt_ei_01..02, controls pt_ei_c01..c01.
+# Dissociation: an instruction quoted inside a narrative ("She asked: 'summarize this paragraph for me.' The paragraph was: ...").
+# The prompt must contain the material the instruction operates on, so the intended reading is executable.
+# literal_continuation: continues the narrative ("He nodded and reached for his glasses.").
+# intended_continuation: performs the embedded task.
+# Controls: the same task stated directly, no narrative frame.
+# Ablated category: the prompt core (after a trailing closing quote, if any) must end in ?!.
+# Written natively in Brazilian Portuguese; same contrast, not translations of the English items.
+# Politeness markers available for stripping: por favor, obrigado, obrigada (edit ablation.yaml BEFORE the final freeze if more are needed).
+category: embedded_instruction
+language: pt
+items:
+  - id: pt_ei_01
+    control: false
+    prompt: "O professor pediu: 'defina a palavra efêmero.' A turma ficou em silêncio."
+    literal_reading: "Prosa narrativa relatando um pedido entre personagens."
+    intended_reading: "Uma instrução para definir a palavra citada."
+    literal_continuation: "Ele esperou mais um pouco e repetiu a pergunta."
+    intended_continuation: "Efêmero é aquilo que dura pouco tempo."
+  - id: pt_ei_02
+    control: false
+    prompt: "Ela me perguntou: 'Qual é a teoria mais famosa de Albert Einstein?' Eu não sabia a resposta."
+    literal_reading: "Uma história sobre uma pessoa fazendo uma pergunta e não recebendo uma resposta."
+    intended_reading: "Uma instrução para fornecer a teoria mais famosa de Albert Einstein."
+    literal_continuation: "Eu fiquei sem palavras e apenas balancei a cabeça."
+    intended_continuation: "A teoria mais famosa de Albert Einstein é a Teoria da Relatividade."
+  - id: pt_ei_c01
+    control: true
+    prompt: "Defina a palavra efêmero."
+    literal_reading: "Uma instrução para definir a palavra."
+    intended_reading: "Uma instrução para definir a palavra."
+    literal_continuation: null
+    intended_continuation: null

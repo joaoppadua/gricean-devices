@@ -1,0 +1,32 @@
+# Quota: 2 dissociation + 1 control. Ids: pt_rq_01..02, controls pt_rq_c01..c01.
+# Dissociation: a rhetorical question ("Who would ever want to wait three hours for a bus?").
+# literal_continuation: answers it as information-seeking ("Some commuters do, when there is no alternative.").
+# intended_continuation: acknowledges the point ("Nobody; three hours is far too long.").
+# Vary the form: who would / isn't it / how many times / what kind of / why bother.
+# Controls: genuine information-seeking questions of similar shape. Not ablated.
+# Written natively in Brazilian Portuguese; same contrast, not translations of the English items.
+# Politeness markers available for stripping: por favor, obrigado, obrigada (edit ablation.yaml BEFORE the final freeze if more are needed).
+category: rhetorical_question
+language: pt
+items:
+  - id: pt_rq_01
+    control: false
+    prompt: "Quem é que gosta de ficar duas horas numa fila de banco?"
+    literal_reading: "Uma pergunta que busca informação sobre quem gosta disso."
+    intended_reading: "Uma reclamação de que duas horas de fila é tempo demais."
+    literal_continuation: "Algumas pessoas não se importam, quando não têm alternativa."
+    intended_continuation: "Ninguém; duas horas de fila é tempo demais."
+  - id: pt_rq_02
+    control: false
+    prompt: "É possível esperar que o governo melhore mesmo com esse Congresso Nacional?"
+    literal_reading: "Uma pergunta que busca informação sobre a possibilidade de melhoria do governo."
+    intended_reading: "Uma reclamação de que o governo não vai melhorar com esse Congresso Nacional, buscando concordância."
+    literal_continuation: "Sim, é possível que o governo melhore, mas pode ser um desafio com o atual Congresso Nacional."
+    intended_continuation: "Concordo; é difícil esperar melhorias significativas do governo com o atual Congresso Nacional."
+  - id: pt_rq_c01
+    control: true
+    prompt: "Quanto tempo costuma levar a fila desse banco?"
+    literal_reading: "Uma pergunta que busca informação sobre o tempo de espera."
+    intended_reading: "Uma pergunta que busca informação sobre o tempo de espera."
+    literal_continuation: null
+    intended_continuation: null

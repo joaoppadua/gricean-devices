@@ -49,8 +49,16 @@ def cmd_freeze(args, loader) -> int:
     return 0
 
 
+def _items() -> list:
+    """Stimuli for a model stage: a partial freeze lets the set be written, but no model runs on a TODO item."""
+    items = stimuli.load_all()
+    if left := stimuli.check_placeholders(items):
+        raise ValueError("unfilled placeholder items (fill them, then `make freeze`):\n  " + "\n  ".join(left))
+    return items
+
+
 def cmd_neither(args, loader) -> int:
-    reg, items, cfg = load_registry(), stimuli.load_all(), _gen_cfg()["neither"]
+    reg, items, cfg = load_registry(), _items(), _gen_cfg()["neither"]
     chk = stimuli.current_checksum()
     for family in args.family:
         src = reg[neither_source()[family]]
@@ -62,7 +70,7 @@ def cmd_neither(args, loader) -> int:
 
 
 def cmd_generate(args, loader) -> int:
-    reg, items, cfg = load_registry(), stimuli.load_all(), _gen_cfg()
+    reg, items, cfg = load_registry(), _items(), _gen_cfg()
     chk = stimuli.current_checksum()
     for name, template in _models_for(args, reg):
         lm = loader(reg[name])
@@ -73,7 +81,7 @@ def cmd_generate(args, loader) -> int:
 
 
 def cmd_logprobs(args, loader) -> int:
-    reg, items, cfg = load_registry(), stimuli.load_all(), _gen_cfg()
+    reg, items, cfg = load_registry(), _items(), _gen_cfg()
     chk = stimuli.current_checksum()
     for name, template in _models_for(args, reg):
         nei = neither.load_neither(reg[name].family)

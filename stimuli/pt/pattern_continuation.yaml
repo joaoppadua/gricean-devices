@@ -1,0 +1,33 @@
+# Quota: 2 dissociation + 1 control. Ids: pt_pc_01..02, controls pt_pc_c01..c01.
+# Dissociation: a bare imperative task (Ouyang et al. 2022, Fig. 1: "Explain the moon landing to a 6-year-old.").
+# literal_continuation: another task in the same imperative form ("Explain the theory of gravity to a 6-year-old.").
+# intended_continuation: the first sentence of an actual answer.
+# Vary the task type: explain, list, summarize, write, describe.
+# Controls: the same imperative under an explicit frame ("Answer the following. Explain ...").
+# Ablated category: every dissociation prompt must end in ?!. (the stripped version removes it).
+# Written natively in Brazilian Portuguese; same contrast, not translations of the English items.
+# Politeness markers available for stripping: por favor, obrigado, obrigada (edit ablation.yaml BEFORE the final freeze if more are needed).
+category: pattern_continuation
+language: pt
+items:
+  - id: pt_pc_01
+    control: false
+    prompt: "Explique o que é a fotossíntese para uma criança de seis anos."
+    literal_reading: "Uma linha de uma lista de tarefas, a ser continuada com outra tarefa da mesma forma."
+    intended_reading: "Uma instrução para produzir a explicação."
+    literal_continuation: "Descreva o ciclo da água para uma criança de seis anos."
+    intended_continuation: "A fotossíntese é o jeito que as plantas usam a luz do sol para fazer a própria comida."
+  - id: pt_pc_02
+    control: false
+    prompt: "Crie uma lista de compras para uma cesta básica."
+    literal_reading: "Uma linha de uma lista de tarefas, a ser continuada com outra tarefa da mesma forma."
+    intended_reading: "Uma instrução para criar uma lista de compras para uma cesta básica."
+    literal_continuation: "Crie uma lista de compras para um café da manhã saudável."
+    intended_continuation: "Aqui está uma lista de compras para uma cesta básica: arroz, feijão, macarrão, óleo, açúcar, sal, farinha de trigo, leite em pó, café e pão."
+  - id: pt_pc_c01
+    control: true
+    prompt: "Responda ao que se pede. Explique o que é a fotossíntese para uma criança de seis anos."
+    literal_reading: "Uma instrução para produzir a explicação."
+    intended_reading: "Uma instrução para produzir a explicação."
+    literal_continuation: null
+    intended_continuation: null

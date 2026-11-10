@@ -4,6 +4,11 @@
 
 > **Superseded in part by spec rev. 2 (2026-11-08):** Task 2 steps 5–6 are decided (Pythia-1.4b, by the documentary criterion in spec §5.3); Task 12 step 2 runs `make neither` for the `olmo` family only; Task 13 runs the `olmo` and `selfrun` ladders. See `2026-11-08-olmo-lineage-rev2.md`.
 
+> **Status (2026-11-08, evening):** Tasks 1–4 and 12's code are merged (PR #2). Tasks 5–11 are in progress on
+> branch `stimuli`: every category file is pre-filled with id-numbered skeletons whose fields read `TODO`
+> (`stimuli.PLACEHOLDER`), and item `_01` + `_c01` of each file are written as the pattern. Placeholder items
+> do not count toward quotas and block the full freeze and every model stage.
+
 **Goal:** Take the pipeline from "seed dry run on 2 items" to "frozen 78-item stimulus set, pinned models, chosen `neither` source, ready for `make neither`".
 
 **Architecture:** Three small code changes gate the authorial work: a quota check inside `freeze` so the stimulus set cannot be frozen incomplete, a revision pinner so `configs/models.yaml` stops saying `main`, and an explicit marker for empty greedy responses in printed examples. The rest is content: six English category files, six Portuguese mirrors, a `neither`-source pilot and the author's approval pass over flagged rows. Tasks 1 to 4 are code and can run in any order; Tasks 5 to 11 are the author's writing; Tasks 12 to 13 freeze and hand off to the run sequence.

@@ -7,6 +7,10 @@ from gricean.lm import FakeLM
 
 def project(tmp_path: Path) -> Path:
     shutil.copytree("stimuli", tmp_path / "stimuli", ignore=shutil.ignore_patterns("neither", "CHECKSUMS"))
+    for f in (tmp_path / "stimuli").glob("*/*.yaml"):          # drop scaffolded TODO items
+        doc = yaml.safe_load(f.read_text())
+        doc["items"] = [it for it in doc["items"] if not any("TODO" in str(v) for v in it.values())]
+        yaml.safe_dump(doc, f.open("w"), allow_unicode=True, sort_keys=False)
     (tmp_path / "configs").mkdir()
     shutil.copy("configs/generation.yaml", tmp_path / "configs/generation.yaml")
     yaml.safe_dump({
@@ -67,9 +71,14 @@ def test_unknown_stage_returns_2(tmp_path: Path, monkeypatch):
     assert cli.main(["nope"]) == 2
 
 
-def test_freeze_without_partial_fails_on_seed_set(tmp_path: Path, monkeypatch):
+def test_freeze_without_partial_fails_on_incomplete_set(tmp_path: Path, monkeypatch):
     import pytest
-    monkeypatch.chdir(project(tmp_path))
+    root = project(tmp_path)
+    f = root / "stimuli/en/indirect_request.yaml"
+    doc = yaml.safe_load(f.read_text())
+    doc["items"] = doc["items"][:1]            # below quota, whatever the real set holds
+    yaml.safe_dump(doc, f.open("w"), allow_unicode=True, sort_keys=False)
+    monkeypatch.chdir(root)
     with pytest.raises(ValueError, match="dissociation"):
         cli.main(["freeze"])
 
@@ -137,3 +146,17 @@ def test_explicit_raw_refused_for_raw_control_false(tmp_path: Path, monkeypatch)
     cli.main(["freeze", "--partial"])
     with pytest.raises(ValueError, match="raw_control"):
         cli.main(["generate", "--model", "a", "--raw"], loader=fake_loader)
+
+
+def test_stages_refuse_placeholder_items_even_after_partial_freeze(tmp_path: Path, monkeypatch):
+    import pytest
+    root = project(tmp_path); monkeypatch.chdir(root)
+    f = root / "stimuli/en/rhetorical_question.yaml"
+    doc = yaml.safe_load(f.read_text())
+    doc["items"].append({"id": "en_rq_99", "control": False, "prompt": "TODO", "literal_reading": "TODO",
+                         "intended_reading": "TODO", "literal_continuation": "TODO", "intended_continuation": "TODO"})
+    yaml.safe_dump(doc, f.open("w"), allow_unicode=True, sort_keys=False)
+    assert cli.main(["freeze", "--partial"]) == 0
+    for stage in (["neither", "--family", "t"], ["generate", "--model", "b"], ["logprobs", "--model", "b"]):
+        with pytest.raises(ValueError, match="en_rq_99"):
+            cli.main(stage, loader=fake_loader)

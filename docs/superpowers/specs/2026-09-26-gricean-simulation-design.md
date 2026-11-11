@@ -1,10 +1,22 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-11 (amendments to rev. 2, made before any scored run).** These
+record what was done; none changes the design.
+
+- §4 states how the stimulus set was actually written. It was not
+  hand-written by the author alone: 24 pattern items and 23 further English
+  items were drafted with Claude Code, and the continuations were
+  length-matched.
+- §4.5 records the rev. 1 dry run on two seed items and the deletion of its
+  rows before the freeze.
+- §5.3 corrects the truncation rule for `neither` samples (leading line
+  breaks are skipped).
 
 **2026-11-08 (rev. 2): one documented lineage.** Checking the training-data
 documentation of the models in rev. 1 showed that every 2024-era "base"
@@ -181,10 +193,44 @@ half precision. Every checkpoint pinned to a revision hash in
 
 ## 4. Stimuli
 
-Hand-written by the author, English first, one YAML file per category under
-`stimuli/`. Each item records: `id`, `category`, `prompt`, `literal_reading`,
+One YAML file per category and language under `stimuli/`. Each item records: `id`, `category`, `prompt`, `literal_reading`,
 `intended_reading`, `literal_continuation`, `intended_continuation`,
 `language`, `version` (see cue ablation).
+
+**How the set was written.** The 78 items (60 English, 18 Portuguese) were
+written by the author together with Claude Code (Anthropic's coding
+assistant), in four parts:
+
+- *Pattern items (24).* The first dissociation item and the first control of
+  every category file, in both languages, were written with Claude Code
+  during the design phase, as the pattern for the rest. The English ones are
+  this spec's canonical examples (§4.1; the pattern-continuation one is from
+  Ouyang et al. 2022, Fig. 1). The Portuguese ones are native drafts, which
+  the author kept unchanged.
+- *Author's items (31).* The author wrote 25 English items and the second
+  dissociation item of every Portuguese file (6).
+- *Drafted items (23).* The remaining English items were drafted by Claude
+  Code, with the author's items as templates, and reviewed by the author:
+  `en_mi_03`–`08`, `en_pc_05`–`08`, `en_ur_04`–`08`, `en_rq_05`–`08`, and the
+  second control of those four categories.
+- *Editing pass.* Claude Code corrected typos and YAML errors in the author's
+  items; the deliberate damage in malformed-instruction prompts was left
+  alone. With the author's approval it also replaced `en_ir_05`, rewrote
+  `en_ei_07` so that the prompt quotes its article, and reworded `en_ei_02`,
+  `en_ei_c02`, `en_rq_04`, `pt_ur_02` and the intended continuations of
+  `pt_mi_02` and `pt_ir_02`.
+
+The author reviewed every item before the freeze (§4.5).
+
+**Length of the continuations.** Line 2 normalizes log-probabilities per
+token (§5.2), so a long `intended` continuation scored against a short
+`literal` one would shift the log-odds at every rung for a reason unrelated
+to the hypothesis. Each continuation is therefore one short sentence; 20
+intended continuations were cut to their first sentence or clause. Lengths
+were counted with the OLMo tokenizer alone, with no model loaded. After the
+cut, 3 of the 60 dissociation items have an `intended` continuation at least
+three times as long as the `literal` one (maximum 3.4×), down from 19
+(maximum 18.5×).
 
 ### 4.1 Dissociation categories (8 items each, 48 total)
 
@@ -223,7 +269,13 @@ English.
 ### 4.5 Freezing
 
 `gricean.stimuli.freeze` validates the YAML and writes `stimuli/CHECKSUMS`.
-Stimuli are frozen and committed before any model is run.
+Stimuli are frozen and committed before any model is run. The set was frozen
+on 2026-11-10 (combined checksum `157edf6d…`).
+
+One qualification: the rev. 1 pipeline dry run generated responses for two
+seed items, `en_ir_01` and `en_ir_c01`, before the rest of the set existed.
+Their prompts are unchanged since. The dry-run rows were deleted before the
+freeze, so every committed row was generated under the frozen set.
 
 ## 5. Measures
 
@@ -255,8 +307,8 @@ by `gricean.coding.export` and read back by `gricean.coding.load`.
 For each dissociation item (controls are excluded, since their readings
 coincide), three continuations:
 
-- `literal`: hand-written ("Yes, I can.");
-- `intended`: hand-written ("Brazil became independent in 1822.");
+- `literal`: written with the item, §4 ("Yes, I can.");
+- `intended`: written with the item, §4 ("Brazil became independent in 1822.");
 - `neither`: **sampled, cross-sourced** (see 5.3).
 
 Each model scores each continuation given the prompt: sum of token
@@ -270,7 +322,7 @@ log-probabilities, length-normalized (per token). Reported:
 
 ### 5.3 The `neither` continuation
 
-Not hand-written. Sampled from a model that is (a) outside every ladder being
+Not written with the items. Sampled from a model that is (a) outside every ladder being
 scored, to avoid the circularity of scoring a model against its own output,
 and (b) **documented** to have no instruction data in its training, so the
 distractor represents what a phase-1 model says rather than a second answer.
@@ -302,7 +354,7 @@ script keeps the non-empty sample with lowest token overlap with the
 `literal` and `intended` continuations. The author does a quick pass over
 `stimuli/neither/*.jsonl` to reject any that accidentally answer the
 question. Seeds, revision hashes and settings are stored with the file; the
-set is frozen alongside the hand-written stimuli.
+set is frozen alongside the stimuli.
 
 ### 5.4 Predictions stated in advance
 
@@ -377,7 +429,7 @@ Training runs as a CLI (`gricean finetune`) so it can go in the background.
 
 ```
 gricean-devices/
-  stimuli/              hand-written YAML per category; pt/ mirror; neither/ samples; CHECKSUMS
+  stimuli/              stimulus YAML per category; pt/ mirror; neither/ samples; CHECKSUMS
   configs/              models.yaml (repo, revision hash), generation.yaml, finetune.yaml
   src/gricean/
     stimuli.py          load, validate, freeze

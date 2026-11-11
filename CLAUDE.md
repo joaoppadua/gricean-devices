@@ -36,8 +36,9 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   `neither` from Pythia-1.4b, five samples, documentary criterion. Qwen pair retired to an optional
   contrast; SmolLM2 removed. GPT-3 → InstructGPT is quoted, not run.
 - **Stimuli are frozen** (2026-11-10, combined checksum `157edf6d…`): 78 items, intended and literal
-  continuations one short sentence each. The author wrote every Portuguese item and most English
-  ones; 23 English items were drafted with Claude Code and reviewed by the author. Models have run on
+  continuations one short sentence each. Authorship (spec §4): 24 pattern items (`_01` and `_c01` of
+  every file) written with Claude Code in the design phase; 31 written by the author (25 en, 6 pt);
+  23 English items drafted by Claude Code and reviewed by the author. Models have run on
   this set (`make neither`), so do not edit `stimuli/**/*.yaml` or `stimuli/ablation.yaml`.
 - **Models are pinned**: `configs/models.yaml` holds commit hashes (stage-1 branch = `9d3e4365…`).
 - **`neither` is done**: `stimuli/neither/olmo.jsonl`, 60 rows, rule `containment-v3` (leading line

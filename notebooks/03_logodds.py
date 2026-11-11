@@ -7,6 +7,8 @@ app = marimo.App(width="full")
 @app.cell
 def _():
     import marimo as mo
+    from gricean.paths import enter_repo_root
+    enter_repo_root(mo.notebook_dir())   # package paths are relative to the repo root
     from pathlib import Path
     from gricean.lm import ladders, expected_templates
     from gricean.report import logodds_table, ladder_figure, intent_table

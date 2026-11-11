@@ -14,7 +14,9 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 ## Working rules
 - Open-source only; no paid APIs; everything must run on a 16 GB Apple M3.
 - Notebooks display, the package computes: no helper `def`s in `notebooks/*.py` (a test enforces it);
-  run `uv run marimo check notebooks/` after editing them.
+  run `uv run marimo check notebooks/` after editing them. Every notebook's first cell calls
+  `enter_repo_root(mo.notebook_dir())` (also enforced): package paths are relative to the repo root,
+  and the VS Code marimo extension starts the kernel inside `notebooks/`.
 - TDD: write the failing test first. `uv run pytest` (fast suite); `uv run pytest -m slow` downloads a tiny model.
 - Stimuli are frozen before any model run (`make freeze`); every stage refuses drifted stimuli and
   any item still carrying the `TODO` placeholder (`stimuli.PLACEHOLDER`).

@@ -7,6 +7,8 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
+    from gricean.paths import enter_repo_root
+    enter_repo_root(mo.notebook_dir())   # package paths are relative to the repo root
     import pandas as pd
     from pathlib import Path
     from gricean.stimuli import load_all, current_checksum, CATEGORIES

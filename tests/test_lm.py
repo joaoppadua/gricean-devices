@@ -31,7 +31,11 @@ def test_registry_rev2_ladders_and_neither_source():
     assert set(lad) == {"olmo", "selfrun"}
     assert L.neither_source(CFG) == {"olmo": "pythia_base"}
     s1, s1a = reg["olmo_stage1"], reg["olmo_stage1_alpaca"]
-    assert (s1.repo, s1.revision) == (s1a.repo, s1a.revision) == ("allenai/OLMo-2-0425-1B", "stage1-step1907359-tokens4001B")
+    import re
+    assert s1.repo == s1a.repo == "allenai/OLMo-2-0425-1B"
+    # `make pin` replaces the stage-1 branch name with its commit sha; either way both rungs share it
+    assert s1.revision == s1a.revision != reg["olmo_base"].revision
+    assert s1.revision == "stage1-step1907359-tokens4001B" or re.fullmatch(r"[0-9a-f]{40}", s1.revision)
     assert s1.template == "none" and s1.raw_control is True
     assert s1a.template == "alpaca" and s1a.raw_control is False
     assert all(reg[n].family == "olmo" and reg[n].raw_control is False and reg[n].adapter == f"adapters/{n}"

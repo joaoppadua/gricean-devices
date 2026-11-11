@@ -26,29 +26,36 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   flagged `neither` rows block scoring until `approved: true`.
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
-## Current status (2026-11-08, evening)
-- PR #1 (pipeline) and PR #2 (pre-run gates + spec revision 2) are merged into `main`.
+## Current status (2026-11-11)
+- PRs #1–#4 are merged into `main`: pipeline; pre-run gates + spec revision 2; the 78-item stimulus
+  set; removal of the seed dry-run data. Branch `pre-run` carries the `neither` set and the fixes below.
 - Spec rev. 2: one documented OLMo 2 1B lineage. Phase 1 = stage-1 checkpoint
   (`stage1-step1907359-tokens4001B`, no instruction data documented); released base is a descriptive
   mid-training rung (≈8B FLAN tokens); SFT → DPO → Instruct as before. Self-run LoRA trains from stage 1
   (`adapters/olmo_*`, `selfrun` ladder, Alpaca template, no raw pass; it simulates SFT only, no DPO).
   `neither` from Pythia-1.4b, five samples, documentary criterion. Qwen pair retired to an optional
   contrast; SmolLM2 removed. GPT-3 → InstructGPT is quoted, not run.
-- **Branch `stimuli`** (3 commits ahead of `main`, pushed) is where the author writes the items.
-  All 12 category files exist with every item pre-numbered (`en_<abbr>_01..08`, `_c01..c02`;
-  `pt_<abbr>_01..02`, `_c01`); unfilled fields read `TODO`. Item `_01` and `_c01` of every file are
-  written as the pattern (English: the spec's canonical examples; Portuguese: native drafts to revise).
-  24 of 78 items written. Placeholder items load, do not count toward quotas, and block the full
-  freeze and every model stage; `uv run gricean freeze --partial` passes meanwhile.
-- Author's loop per file: fill the `TODO`s, `uv run gricean freeze --partial`, check the quota report
-  (`stimuli.check_quotas` message), commit per category (plan Tasks 5–11). Portuguese politeness
-  markers for stripping are only `por favor`/`obrigado`/`obrigada`; extend `stimuli/ablation.yaml`
-  before the final freeze if the pt items need more.
-- Weights cached locally: OLMo stage-1, base, SFT, DPO (ships as `pytorch_model.bin`), Instruct;
-  Pythia-1.4b. Nothing else to download before `make pin`.
-- Then: `make freeze`, `make pin`, `make neither`, approval pass over `stimuli/neither/olmo.jsonl`,
-  `make generate`, `make logprobs`, `make sheet`, code, `make finetune` (overnight, ≈12–15 h), rerun
-  generate/logprobs for `selfrun`, `make report` (`--ladder olmo`, `--ladder selfrun`).
+- **Stimuli are frozen** (2026-11-10, combined checksum `157edf6d…`): 78 items, intended and literal
+  continuations one short sentence each. Authorship (spec §4): 24 pattern items (`_01` and `_c01` of
+  every file) written with Claude Code in the design phase; 31 written by the author (25 en, 6 pt);
+  23 English items drafted by Claude Code and reviewed by the author. Models have run on
+  this set (`make neither`), so do not edit `stimuli/**/*.yaml` or `stimuli/ablation.yaml`.
+- **Models are pinned**: `configs/models.yaml` holds commit hashes (stage-1 branch = `9d3e4365…`).
+- **`neither` is done**: `stimuli/neither/olmo.jsonl`, 60 rows, rule `containment-v3` (leading line
+  breaks are skipped before truncation; the first run lost 143 of 300 samples to them, spec §5.3).
+  No row is flagged. Author's pass replaced `chosen` in `en_pc_02`, `en_rq_03` and `en_ir_07` with
+  another sample of the same row; `en_ir_02` ("Wellington, I think you said.") is kept on purpose.
+- `data/` is empty by design until `make generate`: the seed rows would have survived the real run
+  with a pre-freeze checksum, because response stamps cover prompt, mode, seed, model and decoding but
+  not the stimuli checksum (a provenance label that nothing reads).
+- Weights cached locally at the pinned revisions: OLMo stage-1, base, SFT, DPO (ships as
+  `pytorch_model.bin`), Instruct; Pythia-1.4b. No download needed for the `olmo` ladder.
+- Next: `make generate` (4,608 rows over nine passes: five `olmo` rungs, raw controls for the three
+  tuned ones, and `olmo_stage1_alpaca`), `make logprobs` (990 rows), together ≈2–3 h; `make sheet`,
+  code; `make finetune` (overnight, ≈12–15 h); rerun generate/logprobs for `selfrun`; `make report`
+  (`--ladder olmo`, `--ladder selfrun`).
+- Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
+  broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.
 - Deferred minors from review: row ids render seeds as `1.0`/`nan`; Line 1 pools greedy with
   samples; rows of deleted stimuli persist until another row recomputes; responses notebook run
   button only does `--raw`; ladder figure omits CIs; `_strip` removes every period; `pin_registry`

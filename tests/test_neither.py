@@ -20,6 +20,23 @@ def test_truncate_cuts_at_newline_then_words():
     assert N.truncate(" ".join(str(i) for i in range(30)), 5) == "0 1 2 3 4"
 
 
+def test_truncate_skips_leading_line_breaks():
+    # a Pile-trained model opens most continuations with a line break; the text after it is the sample
+    assert N.truncate("\nPoderia explicar para mim\nsegunda linha", 20) == "Poderia explicar para mim"
+    assert N.truncate("\n\n  \tMySQL Translate TLLEN\n0:length", 20) == "MySQL Translate TLLEN"
+    assert N.truncate("\n \n", 20) == ""
+
+
+def test_sample_after_leading_line_break_is_usable(tmp_path: Path):
+    class Src(FakeLM):
+        def generate(self, prompt, *, max_new_tokens, temperature, seed):
+            return {11: "", 12: "\nSome other continuation text here\nmore", 13: "x"}[seed]
+    spec = ModelSpec(name="pythia_base", repo="p", revision="r1", family="pythia", template="none")
+    N.sample_neither(Src("pythia_base"), spec, "olmo", [item()], cfg=CFG, stimuli_checksum="abc", root=tmp_path)
+    r = read_jsonl(N.neither_path("olmo", tmp_path))[0]
+    assert r["chosen"] == "Some other continuation text here" and r["flag"] is False
+
+
 def test_overlap_is_containment_of_reference_words():
     assert N.token_overlap("Yes, I can.", "yes i can") == 1.0
     assert N.token_overlap("apple", "pear") == 0.0
@@ -74,11 +91,11 @@ def test_controls_are_skipped_and_rerun_is_noop(tmp_path: Path):
 def test_short_or_empty_samples_are_never_chosen(tmp_path: Path):
     class Src(FakeLM):
         def generate(self, prompt, *, max_new_tokens, temperature, seed):
-            return {11: "", 12: "\nSome other continuation text here", 13: "x"}[seed]
+            return {11: "", 12: "\n\n", 13: "x"}[seed]
     spec = ModelSpec(name="qwen_base", repo="q", revision="r1", family="qwen", template="none")
     N.sample_neither(Src("qwen_base"), spec, "olmo", [item()], cfg=CFG, stimuli_checksum="abc", root=tmp_path)
     r = read_jsonl(N.neither_path("olmo", tmp_path))[0]
-    # sample 12 truncates to "" at the newline, so no sample has 2+ words: flagged, and chosen is never empty
+    # sample 12 is only line breaks, so no sample has 2+ words: flagged, and chosen is never empty
     assert r["flag"] is True and r["chosen"] != ""
 
 

@@ -2,6 +2,7 @@
 models:
   # --- Official OLMo 2 1B ladder (spec §3.1). Same repo, tokenizer and pretraining at every rung.
   # Stage 1: phase-1 stand-in. 4.0T tokens, no mid-training, no instruction data documented. fp32 on the Hub.
+  # 9d3e4365... is the head of branch `stage1-step1907359-tokens4001B` as pinned on 2026-11-10 (all six stage-1 entries).
   olmo_stage1:
     repo: allenai/OLMo-2-0425-1B
     revision: 9d3e43659f00c17e6da23cf32333afd1fc39fa1a

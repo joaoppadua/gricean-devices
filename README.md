@@ -37,3 +37,7 @@ overlap filter block scoring until you set `approved: true` on them (or edit `ch
 ## Notebooks
 
 `uv run marimo edit notebooks/01_stimuli.py` (and 02–05). Notebooks only display; all logic lives in `src/gricean/`.
+
+A notebook runs all its cells when it opens, so there is nothing to start by hand: change a dropdown and the cells below it update. Notebooks read the files on disk when their cells run; after a `make` stage, reopen the notebook to see the new data.
+
+The notebooks work from the terminal command above and from the VS Code marimo extension. Each one moves to the repo root in its first cell (`gricean.paths.enter_repo_root`), because every path in the package is relative to it and the extension starts notebooks inside `notebooks/`.

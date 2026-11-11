@@ -7,13 +7,16 @@ app = marimo.App(width="full")
 @app.cell
 def _():
     import marimo as mo
+    from gricean.paths import enter_repo_root
+    enter_repo_root(mo.notebook_dir())   # package paths are relative to the repo root
     import pandas as pd
     from pathlib import Path
     from gricean.io import read_jsonl
     from gricean.lm import ladders, load_registry
     from gricean.generate import response_path
     from gricean import cli
-    return Path, cli, ladders, load_registry, mo, pd, read_jsonl, response_path
+
+    return cli, ladders, mo, pd, read_jsonl, response_path
 
 
 @app.cell
@@ -38,7 +41,8 @@ def _(ladder, ladders, mo, pd, read_jsonl, response_path):
 
 @app.cell
 def _(mo, resp):
-    item = mo.ui.dropdown(sorted(resp["item_id"].unique()) if len(resp) else [], label="item")
+    _ids = sorted(resp["item_id"].unique()) if len(resp) else []
+    item = mo.ui.dropdown(_ids, value=_ids[0] if _ids else None, label="item")   # open on the first item
     version = mo.ui.dropdown(["full", "stripped", "embedded"], value="full", label="version")
     mo.hstack([item, version])
     return item, version

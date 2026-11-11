@@ -5,3 +5,4 @@ __pycache__/
 .marimo/
 hf_cache/
 .superpowers/
+__marimo__/

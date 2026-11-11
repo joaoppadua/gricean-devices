@@ -6,6 +6,9 @@ from gricean import coding as C
 from gricean.io import write_jsonl
 
 
+EXP = {"m_base": True, "m_sft": True, "zz": False}   # model -> is its main condition the templated one
+
+
 def make_responses(root: Path):
     rows = []
     for model in ("m_base", "m_sft"):
@@ -20,7 +23,7 @@ def make_responses(root: Path):
 
 def test_export_full_sheet_has_all_rows_and_blank_rubric(tmp_path: Path):
     make_responses(tmp_path / "resp")
-    n = C.export_sheet(tmp_path / "resp", tmp_path / "coder1.csv", coder="coder1", sample_frac=None, seed=0)
+    n = C.export_sheet(tmp_path / "resp", tmp_path / "coder1.csv", coder="coder1", sample_frac=None, seed=0, expected=EXP)
     df = pd.read_csv(tmp_path / "coder1.csv")
     assert n == 8 and len(df) == 8
     assert df["intent"].isna().all() and "model" in df.columns
@@ -28,7 +31,7 @@ def test_export_full_sheet_has_all_rows_and_blank_rubric(tmp_path: Path):
 
 def test_export_blind_sample_hides_model(tmp_path: Path):
     make_responses(tmp_path / "resp")
-    n = C.export_sheet(tmp_path / "resp", tmp_path / "coder2.csv", coder="coder2", sample_frac=0.5, seed=0)
+    n = C.export_sheet(tmp_path / "resp", tmp_path / "coder2.csv", coder="coder2", sample_frac=0.5, seed=0, expected=EXP)
     df = pd.read_csv(tmp_path / "coder2.csv")
     key = pd.read_csv(tmp_path / "coder2.key.csv")
     assert n == 4 and "model" not in df.columns and set(key.columns) >= {"row_id", "model", "template", "prompt_text"}
@@ -37,7 +40,7 @@ def test_export_blind_sample_hides_model(tmp_path: Path):
 
 def test_load_rejects_blank_or_invalid(tmp_path: Path):
     make_responses(tmp_path / "resp")
-    C.export_sheet(tmp_path / "resp", tmp_path / "c.csv", coder="c", sample_frac=None, seed=0)
+    C.export_sheet(tmp_path / "resp", tmp_path / "c.csv", coder="c", sample_frac=None, seed=0, expected=EXP)
     df = pd.read_csv(tmp_path / "c.csv")
     df["intent"] = "intended"; df["correctness"] = "correct"
     df.loc[0, "intent"] = "intendd"
@@ -52,7 +55,7 @@ def test_load_rejects_blank_or_invalid(tmp_path: Path):
 
 def test_load_merges_key_back(tmp_path: Path):
     make_responses(tmp_path / "resp")
-    C.export_sheet(tmp_path / "resp", tmp_path / "c2.csv", coder="c2", sample_frac=0.5, seed=0)
+    C.export_sheet(tmp_path / "resp", tmp_path / "c2.csv", coder="c2", sample_frac=0.5, seed=0, expected=EXP)
     df = pd.read_csv(tmp_path / "c2.csv")
     df["intent"] = "neither"; df["correctness"] = "na"
     df.to_csv(tmp_path / "c2.csv", index=False)
@@ -71,7 +74,7 @@ def test_cohen_kappa_known_value():
 def test_export_preserves_existing_codes_and_appends_new_rows(tmp_path: Path):
     make_responses(tmp_path / "resp")
     out = tmp_path / "coder1.csv"
-    C.export_sheet(tmp_path / "resp", out, coder="coder1", sample_frac=None, seed=0)
+    C.export_sheet(tmp_path / "resp", out, coder="coder1", sample_frac=None, seed=0, expected=EXP)
     sheet = pd.read_csv(out, dtype=str, keep_default_na=False)
     first = sheet.loc[0, "row_id"]
     sheet.loc[0, ["intent", "correctness"]] = ["intended", "correct"]
@@ -80,9 +83,69 @@ def test_export_preserves_existing_codes_and_appends_new_rows(tmp_path: Path):
         "language": "en", "control": False, "version": "full", "model": "zz", "template": False,
         "mode": "greedy", "seed": None, "stimulus_text": "p", "prompt_text": "p", "response": "r",
         "stamp": "s", "stimuli_checksum": "c"}])
-    n = C.export_sheet(tmp_path / "resp", out, coder="coder1", sample_frac=None, seed=0)
+    n = C.export_sheet(tmp_path / "resp", out, coder="coder1", sample_frac=None, seed=0, expected=EXP)
     again = pd.read_csv(out, dtype=str, keep_default_na=False).set_index("row_id")
     assert n == len(again) == len(sheet) + 1
     assert again.loc[first, "intent"] == "intended" and again.loc[first, "correctness"] == "correct"
     new_id = next(i for i in again.index if i.startswith("zz|0|new1|"))
     assert again.loc[new_id, "intent"] == "" and again.loc[new_id, "coder"] == "coder1"
+
+
+def _resp(model, template, item, *, version="full", mode="greedy", seed=None, response="r"):
+    return {"item_id": item, "category": "indirect_request", "language": "en", "control": False,
+            "version": version, "model": model, "template": template, "mode": mode, "seed": seed,
+            "stimulus_text": "p", "prompt_text": "p", "response": response, "stamp": "s", "stimuli_checksum": "c"}
+
+
+DESIGN = {"b": False, "t": True}
+
+
+def make_design(root: Path):
+    """A base model and a tuned model with every kind of row a real run writes: greedy and sampled,
+    the tuned model's raw template control, its untemplated `embedded` rows, and empty responses."""
+    write_jsonl(root / "b__raw.jsonl", [
+        _resp("b", False, "a0"), _resp("b", False, "a0", mode="sample", seed=1),
+        _resp("b", False, "a1", response=""), _resp("b", False, "a2", response=" \n\n")])
+    write_jsonl(root / "t__tmpl.jsonl", [
+        _resp("t", True, "a0"), _resp("t", True, "a0", mode="sample", seed=1),
+        _resp("t", False, "a0", version="embedded"), _resp("t", False, "a0", version="embedded", mode="sample", seed=1)])
+    write_jsonl(root / "t__raw.jsonl", [
+        _resp("t", False, "a0"), _resp("t", False, "a0", mode="sample", seed=1)])
+
+
+def _cells(df):
+    return {(r.model, str(r.template).lower() == "true", r.item_id, r.version, r.mode) for r in df.itertuples()}
+
+
+def test_sheet_holds_the_greedy_response_of_each_models_main_condition(tmp_path: Path):
+    make_design(tmp_path / "resp")
+    n = C.export_sheet(tmp_path / "resp", tmp_path / "coder1.csv", coder="coder1", sample_frac=None, seed=0,
+                       expected=DESIGN)
+    df = pd.read_csv(tmp_path / "coder1.csv", dtype=str, keep_default_na=False)
+    assert n == 5
+    assert _cells(df) == {("b", False, "a0", "full", "greedy"), ("b", False, "a1", "full", "greedy"),
+                          ("b", False, "a2", "full", "greedy"), ("t", True, "a0", "full", "greedy"),
+                          ("t", False, "a0", "embedded", "greedy")}     # no samples, no raw control of `t`
+
+
+def test_empty_responses_are_coded_by_rule_and_the_rest_left_blank(tmp_path: Path):
+    make_design(tmp_path / "resp")
+    C.export_sheet(tmp_path / "resp", tmp_path / "coder1.csv", coder="coder1", sample_frac=None, seed=0,
+                   expected=DESIGN)
+    df = pd.read_csv(tmp_path / "coder1.csv", dtype=str, keep_default_na=False).set_index("item_id")
+    for item in ("a1", "a2"):                       # empty, and whitespace only
+        assert df.loc[item, "intent"] == "neither" and df.loc[item, "correctness"] == "na"
+    assert (df.loc["a0", "intent"] == "").all() and (df.loc["a0", "correctness"] == "").all()
+
+
+def test_blind_sample_is_drawn_from_the_hand_coded_rows(tmp_path: Path):
+    make_design(tmp_path / "resp")
+    n = C.export_sheet(tmp_path / "resp", tmp_path / "coder2.csv", coder="coder2", sample_frac=1.0, seed=0,
+                       expected=DESIGN)
+    df = pd.read_csv(tmp_path / "coder2.csv", dtype=str, keep_default_na=False)
+    key = pd.read_csv(tmp_path / "coder2.key.csv", dtype=str, keep_default_na=False)
+    assert n == 3 and set(df["item_id"]) == {"a0"}          # rule-coded empties are not sent to coder 2
+    assert (df["response"].str.strip() != "").all() and (df["intent"] == "").all()
+    assert _cells(df.merge(key, on="row_id")) == {("b", False, "a0", "full", "greedy"),
+                                                  ("t", True, "a0", "full", "greedy"),
+                                                  ("t", False, "a0", "embedded", "greedy")}

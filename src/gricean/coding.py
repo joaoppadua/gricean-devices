@@ -12,6 +12,24 @@ CORRECT = ("correct", "incorrect", "na")
 PUBLIC = ["row_id", "item_id", "category", "language", "control", "version", "mode", "seed",
           "stimulus_text", "response"]
 HIDDEN = ["model", "template", "prompt_text"]   # prompt_text reveals the chat template, hence the stage
+EMPTY_CODES = {"intent": "neither", "correctness": "na"}   # an empty response is coded by rule, not by hand
+
+
+def select_main(df: pd.DataFrame, expected: dict[str, bool]) -> pd.DataFrame:
+    """Rows of each model's main condition: templated for tuned models, raw for base models.
+
+    The embedded version is raw for every model (spec 4.3) and therefore always belongs here."""
+    exp = df["model"].map(expected)
+    keep = ((df["version"] == "embedded") & ~df["template"]) | (df["template"] == exp)
+    return df[keep & exp.notna()]
+
+
+def select_coded(df: pd.DataFrame, expected: dict[str, bool]) -> pd.DataFrame:
+    """Rows Line 1 codes (spec 5.1): the greedy response of each model's main condition.
+
+    Sampled responses and the raw template control of tuned models stay in `data/responses`
+    uncoded; the template control is reported from Line 2."""
+    return select_main(df[df["mode"] == "greedy"], expected)
 
 
 def _all_responses(response_root: Path) -> pd.DataFrame:
@@ -25,18 +43,24 @@ def _all_responses(response_root: Path) -> pd.DataFrame:
 
 
 def export_sheet(response_root: Path, out: Path, *, coder: str, sample_frac: float | None,
-                 seed: int) -> int:
-    df = _all_responses(response_root)
+                 seed: int, expected: dict[str, bool]) -> int:
+    """Write the coding sheet for `select_coded` rows; `expected` maps model -> templated main condition.
+
+    Empty responses arrive coded (`EMPTY_CODES`). The blind sample (`sample_frac`) is drawn from the
+    rows that are coded by hand, so agreement is not inflated by rows no one judged."""
+    df = select_coded(_all_responses(response_root), expected)
+    empty = df["response"].str.strip() == ""
     if sample_frac is not None:
-        df = df.sample(frac=sample_frac, random_state=seed).sort_values("row_id")
+        df = df[~empty].sample(frac=sample_frac, random_state=seed).sort_values("row_id")
         df[["row_id", *HIDDEN]].to_csv(Path(out).with_suffix(".key.csv"), index=False)
         cols = PUBLIC
     else:
         cols = PUBLIC + HIDDEN
     sheet = df[cols].copy()
     sheet["coder"] = coder
-    sheet["intent"] = pd.NA
-    sheet["correctness"] = pd.NA
+    by_rule = sheet["response"].str.strip() == ""
+    for col, code in EMPTY_CODES.items():
+        sheet[col] = pd.Series(pd.NA, index=sheet.index, dtype=object).mask(by_rule, code)
     out = Path(out)
     if out.exists():                     # re-export keeps codes already entered; new rows arrive blank
         old = pd.read_csv(out, dtype=str, keep_default_na=False).set_index("row_id")

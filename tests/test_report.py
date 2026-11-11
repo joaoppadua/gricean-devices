@@ -91,7 +91,8 @@ def test_build_writes_all_outputs(tmp_path: Path):
     lp_rows(tmp_path / "lp"); resp_rows(tmp_path / "resp")
     summary = R.build(tmp_path / "coded.csv", None, None, tmp_path / "resp", tmp_path / "lp", MODELS,
                       tmp_path / "paper", EXPECTED)
-    for name in ("intent.csv", "intent.tex", "template_control.csv", "logodds.csv", "logodds.tex", "ladder.png", "examples.md"):
+    for name in ("intent.csv", "intent.tex", "template_control.csv", "logodds.csv", "logodds.tex",
+                 "logodds_template_control.csv", "ladder.png", "examples.md"):
         assert (tmp_path / "paper" / name).exists()
     assert summary["n_coded"] == len(coded()) and summary["kappa"] is None
 
@@ -114,3 +115,33 @@ def test_examples_marks_empty_greedy_response(tmp_path: Path):
         "stimulus_text": "Can you?", "prompt_text": "Can you?", "response": "", "stamp": "s", "stimuli_checksum": "c"}])
     md = R.examples(resp, ["m_base"], ["a0"], {"m_base": False})
     assert f"**m_base:** {R.EMPTY_RESPONSE}" in md
+
+
+def test_logodds_template_control_table_holds_only_raw_rows_of_tuned_models(tmp_path: Path):
+    lp_rows(tmp_path)
+    t = R.logodds_template_control_table(tmp_path, MODELS, EXPECTED)
+    assert t.loc[("indirect_request", "full"), ("m_sft", "mean")] == -100.0
+    assert list(t.columns.get_level_values(0).unique()) == ["m_sft"]     # a base model has no raw control
+    assert ("indirect_request", "embedded") not in t.index                # embedded belongs to the main table
+
+
+def test_build_skips_line1_template_control_when_no_control_row_is_coded(tmp_path: Path):
+    """Line 1 codes the main conditions only; the template control is then reported from Line 2."""
+    df = coded(); df = df[(df["model"] == "m_base") | df["template"] | (df["version"] == "embedded")]
+    df.to_csv(tmp_path / "coded.csv", index=False)
+    lp_rows(tmp_path / "lp"); resp_rows(tmp_path / "resp")
+    summary = R.build(tmp_path / "coded.csv", None, None, tmp_path / "resp", tmp_path / "lp", MODELS,
+                      tmp_path / "paper", EXPECTED)
+    assert (tmp_path / "paper" / "intent.csv").exists()
+    assert not (tmp_path / "paper" / "template_control.csv").exists()
+    assert (tmp_path / "paper" / "logodds_template_control.csv").exists()
+    assert not summary["warnings"]
+
+
+def test_build_writes_no_template_control_for_a_ladder_without_raw_passes(tmp_path: Path):
+    lp_rows(tmp_path / "lp"); resp_rows(tmp_path / "resp")
+    summary = R.build(tmp_path / "missing.csv", None, None, tmp_path / "resp", tmp_path / "lp", ["m_base"],
+                      tmp_path / "paper", EXPECTED)
+    assert (tmp_path / "paper" / "logodds.csv").exists()
+    assert not (tmp_path / "paper" / "logodds_template_control.csv").exists()
+    assert not any("template control" in w for w in summary["warnings"])

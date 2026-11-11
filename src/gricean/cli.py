@@ -96,7 +96,8 @@ def cmd_logprobs(args, loader) -> int:
 def cmd_sheet(args, loader) -> int:
     out = Path("data/coding") / ("coder2.csv" if args.coder2 else "coder1.csv")
     n = coding.export_sheet(Path("data/responses"), out, coder="coder2" if args.coder2 else "coder1",
-                            sample_frac=args.frac if args.coder2 else None, seed=0)
+                            sample_frac=args.frac if args.coder2 else None, seed=0,
+                            expected=expected_templates())
     print(f"sheet {out}: {n} rows")
     return 0
 

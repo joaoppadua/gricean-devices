@@ -49,10 +49,16 @@ def test_full_pipeline_with_fakes(tmp_path: Path, monkeypatch):
     assert (root / "data/coding/coder2.key.csv").exists()
     import pandas as pd
     sheet = pd.read_csv(root / "data/coding/coder1.csv")
+    assert (sheet["mode"] == "greedy").all()                    # Line 1 codes greedy responses only
+    tuned_raw = sheet[(sheet["model"] == "s") & ~sheet["template"] & (sheet["version"] != "embedded")]
+    assert tuned_raw.empty                                      # and each model's main condition only
+    assert set(sheet["model"]) == {"b", "s", "a", "q"}
     sheet["intent"] = "intended"; sheet["correctness"] = "na"
     sheet.to_csv(root / "data/coding/coder1.csv", index=False)
     assert cli.main(["report", "--ladder", "t"]) == 0
     assert (root / "paper/t/intent.csv").exists() and (root / "paper/t/examples.md").exists()
+    assert (root / "paper/t/logodds_template_control.csv").exists()   # the raw control is reported from Line 2
+    assert not (root / "paper/t/template_control.csv").exists()
 
 
 def test_generate_refuses_stale_stimuli(tmp_path: Path, monkeypatch):

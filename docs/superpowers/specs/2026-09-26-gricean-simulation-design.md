@@ -293,7 +293,11 @@ check, which is reported as a share, never used to exclude items.
 
 Sampling: temperature 1.0, **five** samples per item (raised from three in
 rev. 2 because Pythia returns empty completions on some prompts; the scorer
-rejects an empty `neither`), truncated at 20 tokens or first line break. The
+rejects an empty `neither`), truncated at 20 tokens or the first line break
+after the text starts. Leading line breaks are skipped: Pythia opens most
+continuations with one, and cutting there discarded 143 of 300 samples in the
+first run (2026-11-11, before any scoring), so the rule was corrected and the
+set re-sampled with the same seeds. The
 script keeps the non-empty sample with lowest token overlap with the
 `literal` and `intended` continuations. The author does a quick pass over
 `stimuli/neither/*.jsonl` to reject any that accidentally answer the

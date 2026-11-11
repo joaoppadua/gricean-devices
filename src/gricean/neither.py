@@ -9,8 +9,8 @@ from .stimuli import Item
 
 KEY = ("item_id", "version", "mode", "seed")   # version/mode/seed are constant here
 FLAG_THRESHOLD = 0.5
-RULE = "containment-v2"
-MIN_WORDS = 2             # samples shorter than this (e.g. an immediate newline) are never chosen   # bump when the selection rule changes so stale rows recompute
+RULE = "containment-v3"   # bump when the selection or truncation rule changes so stale rows recompute
+MIN_WORDS = 2             # samples shorter than this (e.g. only line breaks, or one token) are never chosen
 
 
 def neither_path(family: str, root: Path = Path("stimuli/neither")) -> Path:
@@ -33,7 +33,11 @@ def token_overlap(sample: str, reference: str) -> float:
 
 
 def truncate(text: str, max_tokens: int = 20) -> str:
-    first = text.split("\n", 1)[0].strip()
+    """First line of the sample's text, at most `max_tokens` words.
+
+    Leading whitespace is skipped first: a Pile-trained model opens most continuations with a
+    line break, and cutting there would discard the whole sample."""
+    first = text.lstrip().split("\n", 1)[0].strip()
     return " ".join(first.split()[:max_tokens])
 
 

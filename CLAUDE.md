@@ -27,8 +27,9 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
 ## Current status (2026-11-11)
-- PRs #1–#4 are merged into `main`: pipeline; pre-run gates + spec revision 2; the 78-item stimulus
-  set; removal of the seed dry-run data. Branch `pre-run` carries the `neither` set and the fixes below.
+- PRs #1–#5 are merged into `main`: pipeline; pre-run gates + spec revision 2; the 78-item stimulus
+  set; removal of the seed dry-run data; the `neither` set and the pre-run fixes below. Branch
+  `olmo-run` carries the first real run (`data/responses`, `data/logprobs`).
 - Spec rev. 2: one documented OLMo 2 1B lineage. Phase 1 = stage-1 checkpoint
   (`stage1-step1907359-tokens4001B`, no instruction data documented); released base is a descriptive
   mid-training rung (≈8B FLAN tokens); SFT → DPO → Instruct as before. Self-run LoRA trains from stage 1
@@ -45,14 +46,22 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   breaks are skipped before truncation; the first run lost 143 of 300 samples to them, spec §5.3).
   No row is flagged. Author's pass replaced `chosen` in `en_pc_02`, `en_rq_03` and `en_ir_07` with
   another sample of the same row; `en_ir_02` ("Wellington, I think you said.") is kept on purpose.
-- `data/` is empty by design until `make generate`: the seed rows would have survived the real run
-  with a pre-freeze checksum, because response stamps cover prompt, mode, seed, model and decoding but
-  not the stimuli checksum (a provenance label that nothing reads).
+- **The `olmo` run is done** (2026-11-11): `data/responses` holds 4,608 rows over nine passes (five
+  `olmo` rungs, raw controls for the three tuned ones, and `olmo_stage1_alpaca`); `data/logprobs`
+  holds 990 rows. Generation took ≈4.5–5 h, scoring under 10 min. Audit after the run: every stamp
+  recomputes from the frozen stimuli and pinned config; no non-finite score; stage-1 raw and stage-1
+  Alpaca agree exactly on the untemplated `embedded` version (120 responses, 90 scores).
+- Features of that data, not defects: 385 empty and 11 whitespace-only responses (raw passes on
+  `full`; SFT templated on `embedded`, 58 of 120; `olmo_base`, 55 of 552), which spec §5.1 treats as
+  a finding; `olmo_stage1_alpaca` answers and then invents further `### Instruction:` pairs up to
+  the 150-token cap, so coding needs a rule for run-on text.
+- Response stamps cover prompt, mode, seed, model and decoding but not the stimuli checksum (a
+  provenance label that nothing reads). That is why the seed dry-run rows were deleted before the
+  run: they would have survived it with a pre-freeze checksum.
 - Weights cached locally at the pinned revisions: OLMo stage-1, base, SFT, DPO (ships as
   `pytorch_model.bin`), Instruct; Pythia-1.4b. No download needed for the `olmo` ladder.
-- Next: `make generate` (4,608 rows over nine passes: five `olmo` rungs, raw controls for the three
-  tuned ones, and `olmo_stage1_alpaca`), `make logprobs` (990 rows), together ≈2–3 h; `make sheet`,
-  code; `make finetune` (overnight, ≈12–15 h); rerun generate/logprobs for `selfrun`; `make report`
+- Next: `make sheet`, then code `data/coding/coder1.csv` (4,608 rows); `make finetune` (overnight,
+  ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes; `make report`
   (`--ladder olmo`, `--ladder selfrun`).
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
   broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.

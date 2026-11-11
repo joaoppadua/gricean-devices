@@ -4,62 +4,62 @@ models:
   # Stage 1: phase-1 stand-in. 4.0T tokens, no mid-training, no instruction data documented. fp32 on the Hub.
   olmo_stage1:
     repo: allenai/OLMo-2-0425-1B
-    revision: stage1-step1907359-tokens4001B
+    revision: 9d3e43659f00c17e6da23cf32333afd1fc39fa1a
     family: olmo
     template: none
   # Released base: adds 50B-token mid-training incl. ~8B FLAN tokens. Descriptive rung, not a dose test.
   olmo_base:
     repo: allenai/OLMo-2-0425-1B
-    revision: main
+    revision: a1847dff35000b4271fa70afc5db10fd29fedbdf
     family: olmo
     template: none
   olmo_sft:
     repo: allenai/OLMo-2-0425-1B-SFT
-    revision: main
+    revision: 0d85a3d037876ce6ac7d4311d994400fc66ac27f
     family: olmo
     template: chat
   olmo_dpo:
     repo: allenai/OLMo-2-0425-1B-DPO
-    revision: main
+    revision: c4b0485961ab24c2433b090f3b922f0913a9290f
     family: olmo
     template: chat
   olmo_instruct:
     repo: allenai/OLMo-2-0425-1B-Instruct
-    revision: main
+    revision: 48d788eca847d4d7548f375ad03d3c9312f6139e
     family: olmo
     template: chat
   # --- Self-run ladder (spec §7): LoRA adapters trained by `make finetune` from olmo_stage1 on Dolly.
   # Alpaca template throughout, baseline included, so format is held constant; no raw pass (spec §3.4).
   olmo_stage1_alpaca:
     repo: allenai/OLMo-2-0425-1B
-    revision: stage1-step1907359-tokens4001B
+    revision: 9d3e43659f00c17e6da23cf32333afd1fc39fa1a
     family: olmo
     template: alpaca
     raw_control: false
   olmo_n500:
     repo: allenai/OLMo-2-0425-1B
-    revision: stage1-step1907359-tokens4001B
+    revision: 9d3e43659f00c17e6da23cf32333afd1fc39fa1a
     family: olmo
     template: alpaca
     raw_control: false
     adapter: adapters/olmo_n500
   olmo_n2000:
     repo: allenai/OLMo-2-0425-1B
-    revision: stage1-step1907359-tokens4001B
+    revision: 9d3e43659f00c17e6da23cf32333afd1fc39fa1a
     family: olmo
     template: alpaca
     raw_control: false
     adapter: adapters/olmo_n2000
   olmo_full:
     repo: allenai/OLMo-2-0425-1B
-    revision: stage1-step1907359-tokens4001B
+    revision: 9d3e43659f00c17e6da23cf32333afd1fc39fa1a
     family: olmo
     template: alpaca
     raw_control: false
     adapter: adapters/olmo_full
   olmo_format_only:
     repo: allenai/OLMo-2-0425-1B
-    revision: stage1-step1907359-tokens4001B
+    revision: 9d3e43659f00c17e6da23cf32333afd1fc39fa1a
     family: olmo
     template: alpaca
     raw_control: false
@@ -67,19 +67,19 @@ models:
   # --- `neither` source (spec §5.3): GPT-3-era base trained on the Pile only. In no ladder; never scored.
   pythia_base:
     repo: EleutherAI/pythia-1.4b
-    revision: main
+    revision: fedc38a16eea3bd36a96b906d78d11d2ce18ed79
     family: pythia
     template: none
   # --- Optional contrast run, not in any ladder and not reported (spec §3.2): a "base" whose own
   # technical reports document instruction data in pretraining. `gricean generate --model qwen_base`.
   qwen_base:
     repo: Qwen/Qwen2.5-1.5B
-    revision: main
+    revision: 8faed761d45a263340a0528343f099c05c9a4323
     family: qwen
     template: none
   qwen_instruct:
     repo: Qwen/Qwen2.5-1.5B-Instruct
-    revision: main
+    revision: 989aa7980e4cf806f80c7fef2b1adb7bc71aa306
     family: qwen
     template: chat
 ladders:

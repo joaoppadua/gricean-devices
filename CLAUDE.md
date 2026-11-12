@@ -29,9 +29,10 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
 ## Current status (2026-11-11)
-- PRs #1–#5 are merged into `main`: pipeline; pre-run gates + spec revision 2; the 78-item stimulus
-  set; removal of the seed dry-run data; the `neither` set and the pre-run fixes below. Branch
-  `olmo-run` carries the first real run (`data/responses`, `data/logprobs`).
+- PRs #1–#8 are merged into `main`: pipeline; pre-run gates + spec revision 2; the 78-item stimulus
+  set; removal of the seed dry-run data; the `neither` set and the pre-run fixes below; the first
+  real run (`data/responses`, `data/logprobs`); notebooks that run from any folder; the Line 1
+  subset.
 - Spec rev. 2: one documented OLMo 2 1B lineage. Phase 1 = stage-1 checkpoint
   (`stage1-step1907359-tokens4001B`, no instruction data documented); released base is a descriptive
   mid-training rung (≈8B FLAN tokens); SFT → DPO → Instruct as before. Self-run LoRA trains from stage 1
@@ -69,7 +70,11 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   responses and the raw template control are not coded; the template control is reported from
   Line 2 (`logodds_template_control.csv`). Do not change the `row_id` format once coding starts:
   it is the key that carries codes across re-exports.
-- Next: `make sheet`, then code `data/coding/coder1.csv` (787 rows by hand); `make finetune`
+- **The sheet is written** (2026-11-11): `data/coding/coder1.csv`, 828 rows, committed before any
+  code was entered by hand (787 blank, 41 empty responses coded by rule). `git diff` on that file
+  shows what coding changed; only `intent` and `correctness` should differ.
+- Next: code `data/coding/coder1.csv` (787 rows by hand; decide the rule for run-on text first);
+  `uv run gricean sheet --coder2 --frac 0.25` for the second coder; `make finetune`
   (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,
   then `make sheet` again (adds 552 rows, keeps entered codes); `make report` (`--ladder olmo`,
   `--ladder selfrun`).

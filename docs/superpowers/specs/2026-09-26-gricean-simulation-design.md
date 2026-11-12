@@ -6,6 +6,26 @@ Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
 
+**2026-11-11 (amendment to rev. 2, made after generation and scoring and
+before any response was coded): Line 1 codes a subset.** Unlike the
+amendments below, this one changes the design.
+
+- Line 1 hand-codes the greedy response of each model's main condition
+  instead of every generated response (§5.1): 828 of the 4,608 responses of
+  the first run, and 1,380 of 6,816 once the self-run adapters are added.
+  Reason: one coder cannot code several thousand rows.
+- The subset is fixed by design variables only (decoding mode and pass). No
+  row is chosen at random or by its content, and every item is still coded
+  at every rung.
+- What was known when the rule was fixed: the author had seen descriptive
+  means of Line 2 and had read greedy responses for some items in the
+  notebook. No response had been coded.
+- The three sampled responses per cell stay in `data/responses`, uncoded.
+- The raw template control of the tuned models (§3.4) is reported from
+  Line 2 only (§6).
+- Empty responses are coded `neither` by rule, and the second coder's sample
+  is drawn from the hand-coded rows (§5.1).
+
 **2026-11-11 (amendments to rev. 2, made before any scored run).** These
 record what was done; none changes the design.
 
@@ -176,7 +196,8 @@ See §7.
 Base models receive raw text. Tuned models receive their chat template. This
 is part of the mechanism, not a confound, but tuned models are *also* run on
 raw text (no template) so the paper can show the template alone does not
-explain the effect.
+explain the effect. The raw passes are generated and scored; the paper
+reports them from Line 2 (§5.2), and they are not hand-coded (§5.1).
 
 The raw-text control applies to the official ladder (§3.1) only. The self-run
 ladder (§7) is exempt (author's decision, rev. 2): it already holds format
@@ -284,10 +305,23 @@ Two independent lines, both from the frozen stimuli.
 ### 5.1 Line 1: generated responses, human-coded
 
 For every model stage × stimulus version: one greedy response (printed in the
-paper) and three sampled responses (temperature 0.7, fixed seeds; feed the
-counts). Max 150 new tokens. An empty greedy response is printed as such
+paper) and three sampled responses (temperature 0.7, fixed seeds). Max 150
+new tokens. An empty greedy response is printed as such
 (`⟨empty: model emitted end-of-sequence⟩`); it is a finding (the base model
 treats the prompt as complete), not a gap.
+
+**What is coded** (amended 2026-11-11, before any coding): the greedy
+response of each model's main condition, which is the templated pass for a
+tuned model, the raw pass for a base model, and the untemplated `embedded`
+version for both. That is one response per item × version × model, so the
+item is the unit of every rate. Not coded: the sampled responses, which
+repeat the same item at temperature 0.7 and were meant to feed the counts,
+and the raw template control of the tuned models, which Line 2 reports
+(§5.2, §6). Both stay in `data/responses` and can be coded later.
+
+An empty or whitespace-only response is coded `neither` / `na` by rule when
+the sheet is written; the response text stays in the sheet, so these rows
+can be counted apart.
 
 Rubric, per response:
 
@@ -298,8 +332,9 @@ Rubric, per response:
   `incorrect`. Kept separate so the paper can distinguish intent-tracking from
   knowledge.
 
-Coder 1: the author. Coder 2: an independent coder on a 25% random sample,
-blind to model stage. Report Cohen's kappa. The coding sheet is a CSV emitted
+Coder 1: the author. Coder 2: an independent coder on a 25% random sample
+of the rows coder 1 codes by hand (rule-coded empty responses are left out,
+since no one judges them), blind to model stage. Report Cohen's kappa. The coding sheet is a CSV emitted
 by `gricean.coding.export` and read back by `gricean.coding.load`.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
@@ -371,6 +406,8 @@ set is frozen alongside the stimuli.
 
 - Table: intended / literal / neither rates by category × stage (Line 1).
 - Table: mean log-odds and three-way shares by category × stage (Line 2).
+- Table: template control, the same Line 2 measures for SFT, DPO and
+  Instruct on raw text (`logodds_template_control`).
 - Figure: both measures across the five OLMo rungs (Stage 1 → Instruct).
 - Table: cue-ablation results (intended rate by version × stage).
 - Table: self-run fine-tune on Stage 1 with controls.

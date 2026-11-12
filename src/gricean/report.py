@@ -6,19 +6,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .coding import INTENT, cohen_kappa, load_sheet
+from .coding import INTENT, cohen_kappa, load_sheet, select_main
 from .io import read_jsonl
 
 INDEX = ["category", "condition"]
-
-
-def select_main(df: pd.DataFrame, expected: dict[str, bool]) -> pd.DataFrame:
-    """Rows of each model's main condition: templated for tuned models, raw for base models.
-
-    The embedded version is raw for every model (spec 4.3) and therefore always belongs here."""
-    exp = df["model"].map(expected)
-    keep = ((df["version"] == "embedded") & ~df["template"]) | (df["template"] == exp)
-    return df[keep & exp.notna()]
 
 
 def select_template_control(df: pd.DataFrame, expected: dict[str, bool]) -> pd.DataFrame:
@@ -75,7 +66,22 @@ def logodds_table(lp_root: Path, models: list[str], expected: dict[str, bool]) -
     df = _load_logprobs(lp_root)
     if df.empty:
         raise ValueError(f"no log-prob rows under {lp_root}")
-    df = select_main(df[df["model"].isin(models)], expected).assign(condition=lambda d: d["version"])
+    return _logodds(select_main(df[df["model"].isin(models)], expected), models)
+
+
+def logodds_template_control_table(lp_root: Path, models: list[str], expected: dict[str, bool]) -> pd.DataFrame:
+    """Line 2 on the raw passes of tuned models: the template control, scored without a judge.
+
+    Columns are the models that have a raw control, in ladder order."""
+    df = _load_logprobs(lp_root)
+    df = select_template_control(df[df["model"].isin(models)], expected) if not df.empty else df
+    if df.empty:
+        raise ValueError(f"no template-control log-prob rows under {lp_root}")
+    return _logodds(df, [m for m in models if m in set(df["model"])])
+
+
+def _logodds(df: pd.DataFrame, models: list[str]) -> pd.DataFrame:
+    df = df.assign(condition=lambda d: d["version"])
     out = {}
     for (cat, cond, model), g in df.groupby(INDEX + ["model"]):
         x = g["log_odds"].to_numpy(dtype=float)
@@ -154,7 +160,8 @@ def build(coded_path: Path, key_path: Path | None, coder2_path: Path | None, res
         coded = load_sheet(coded_path)
         intent = intent_table(coded, models, expected)
         intent.to_csv(out_dir / "intent.csv"); (out_dir / "intent.tex").write_text(intent.to_latex(float_format="%.2f"))
-        template_control_table(coded, models, expected).to_csv(out_dir / "template_control.csv")
+        if len(select_template_control(coded[coded["model"].isin(models)], expected)):   # coded only if asked for
+            template_control_table(coded, models, expected).to_csv(out_dir / "template_control.csv")
     except (FileNotFoundError, ValueError) as e:
         warns.append(f"Line 1 skipped (coding sheet not usable): {e}")
     lo = None
@@ -163,6 +170,12 @@ def build(coded_path: Path, key_path: Path | None, coder2_path: Path | None, res
         lo.to_csv(out_dir / "logodds.csv"); (out_dir / "logodds.tex").write_text(lo.to_latex(float_format="%.2f"))
     except (FileNotFoundError, ValueError, KeyError) as e:
         warns.append(f"Line 2 skipped (no log-prob rows): {e}")
+    try:
+        lo_control = logodds_template_control_table(lp_root, models, expected)
+        lo_control.to_csv(out_dir / "logodds_template_control.csv")
+        (out_dir / "logodds_template_control.tex").write_text(lo_control.to_latex(float_format="%.2f"))
+    except ValueError:
+        pass                                # a ladder without raw passes (self-run) has no template control
     if intent is not None or lo is not None:
         ladder_figure(intent, lo, models, out_dir / "ladder.png")
     if example_ids is None:

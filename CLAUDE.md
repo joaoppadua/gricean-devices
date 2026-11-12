@@ -62,15 +62,22 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   run: they would have survived it with a pre-freeze checksum.
 - Weights cached locally at the pinned revisions: OLMo stage-1, base, SFT, DPO (ships as
   `pytorch_model.bin`), Instruct; Pythia-1.4b. No download needed for the `olmo` ladder.
-- Next: `make sheet`, then code `data/coding/coder1.csv` (4,608 rows); `make finetune` (overnight,
-  ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes; `make report`
-  (`--ladder olmo`, `--ladder selfrun`).
+- **Line 1 codes a subset** (spec §5.1, amended 2026-11-11 before any coding): the greedy response
+  of each model's main condition, 828 of 4,608 rows now and 1,380 of 6,816 after `make finetune`.
+  `coding.select_coded` is the rule. Empty responses are written to the sheet already coded
+  `neither` / `na` (41 rows); coder 2's 25% is drawn from the hand-coded rows (197). Sampled
+  responses and the raw template control are not coded; the template control is reported from
+  Line 2 (`logodds_template_control.csv`). Do not change the `row_id` format once coding starts:
+  it is the key that carries codes across re-exports.
+- Next: `make sheet`, then code `data/coding/coder1.csv` (787 rows by hand); `make finetune`
+  (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,
+  then `make sheet` again (adds 552 rows, keeps entered codes); `make report` (`--ladder olmo`,
+  `--ladder selfrun`).
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
   broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.
-- Deferred minors from review: row ids render seeds as `1.0`/`nan`; Line 1 pools greedy with
-  samples; rows of deleted stimuli persist until another row recomputes; responses notebook run
-  button only does `--raw`; ladder figure omits CIs; `_strip` removes every period; `pin_registry`
-  rejects quoted `revision: "main"`; no `--hub` flag to bypass a stale local cache; the
-  stripped-equals-full ablation check cannot fire alone while `strip_punctuation` covers `?!.`;
-  `selfrun` report writes an empty `template_control.csv` without warning; spec §5.3 says
-  "non-empty" where the code requires two words; the Qwen contrast can generate but not score.
+- Deferred minors from review: row ids render seeds as `1.0`/`nan`; rows of deleted stimuli persist
+  until another row recomputes; responses notebook run button only does `--raw`; ladder figure omits
+  CIs; `_strip` removes every period; `pin_registry` rejects quoted `revision: "main"`; no `--hub`
+  flag to bypass a stale local cache; the stripped-equals-full ablation check cannot fire alone
+  while `strip_punctuation` covers `?!.`; spec §5.3 says "non-empty" where the code requires two
+  words; the Qwen contrast can generate but not score.

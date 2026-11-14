@@ -73,7 +73,12 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - **The sheet is written** (2026-11-11): `data/coding/coder1.csv`, 828 rows, committed before any
   code was entered by hand (787 blank, 41 empty responses coded by rule). `git diff` on that file
   shows what coding changed; only `intent` and `correctness` should differ.
-- Next: code `data/coding/coder1.csv` (787 rows by hand; decide the rule for run-on text first);
+- **First pass coded and frozen** (2026-11-14): commit `5d265c0` holds the 787 hand codes as
+  entered (through a temporary coding page that is not in the repo, spec §5.1). A consistency check
+  flagged 71 rows in 17 groups (`data/coding/coder1_check.csv`); the author decides them in the
+  page. `na` was never used by hand; the 41 rule-coded rows carry it.
+- Next: after the author's decisions, copy the revised codes into `coder1.csv` and fill the
+  decision columns of `coder1_check.csv` in one commit (the diff against `5d265c0` is the record);
   `uv run gricean sheet --coder2 --frac 0.25` for the second coder; `make finetune`
   (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,
   then `make sheet` again (adds 552 rows, keeps entered codes); `make report` (`--ladder olmo`,

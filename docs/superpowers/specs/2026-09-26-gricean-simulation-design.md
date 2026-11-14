@@ -1,10 +1,25 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12 and 2026-11-14
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-14 (note, made after the first pass of coding and before any
+revision): consistency check.** Coder 1 finished the first pass on
+2026-11-14. It is committed as entered (`5d265c0`). A check for internal
+consistency then flagged 71 rows in which the same or nearly the same
+response carries different codes. Coder 1 decides each flagged row; every
+revision is a diff against the first pass and carries a reason. The procedure
+is at the end of §5.1. The rubric is unchanged.
+
+**2026-11-12 (note, made before any response was coded): coding
+interface.** Coder 1 enters the codes through a temporary web page, described
+at the end of §5.1. The page is a convenience for reading the rows and for
+avoiding typing errors. It is not part of the experiment: it is not in this
+repository, the rubric is unchanged, and the record remains
+`data/coding/coder1.csv`.
 
 **2026-11-11 (amendment to rev. 2, made after generation and scoring and
 before any response was coded): Line 1 codes a subset.** Unlike the
@@ -336,6 +351,74 @@ Coder 1: the author. Coder 2: an independent coder on a 25% random sample
 of the rows coder 1 codes by hand (rule-coded empty responses are left out,
 since no one judges them), blind to model stage. Report Cohen's kappa. The coding sheet is a CSV emitted
 by `gricean.coding.export` and read back by `gricean.coding.load`.
+
+**Coding interface (a convenience, not part of the experiment; note of
+2026-11-12).** Coder 1 enters the codes through a temporary web page instead
+of a spreadsheet. The page is not in this repository and nothing in the
+replication depends on it: the record is `data/coding/coder1.csv`, and the
+page can be deleted once the codes are in the sheet. The rubric above is the
+only coding rule. What the page does:
+
+- It shows one row at a time: `stimulus_text`, the response in full, and the
+  item's two readings with their example continuations, as written in the
+  frozen stimulus file. In a response it highlights the template markers
+  (`### Instruction:` and the like); it hides no text.
+- It takes `intent` and `correctness` from buttons that carry the values
+  `gricean.coding.load_sheet` accepts, so a code cannot be mistyped.
+- It orders rows by stimulus and version and, within those, by a hash of
+  `row_id`, so a row's position does not give its model away. `model`,
+  `template` and `prompt_text` are hidden unless the coder turns them on, and
+  a code entered while they are visible is marked, so that the number of such
+  codes can be reported. This does not make coder 1 blind: the author knows
+  the design, and some responses show their stage by themselves (the Alpaca
+  run-on text, for one). Blindness is claimed for coder 2 only.
+- It shows how many rows are coded and no running tally of the codes.
+- It shows the rule-coded empty responses locked.
+- One shortcut, off by default, fills `na` when the coder chooses `neither`
+  and correctness is still blank. The coder can change it.
+- Flags and notes stay in the page. Only `intent` and `correctness` are copied
+  into the sheet, keyed by `row_id`. The transfer is checked with `git diff`
+  on the sheet, which must show changes in those two columns only. The
+  reasons for revisions are the one exception: they go into the repository
+  (next paragraph).
+
+**First pass, consistency check and revision (note of 2026-11-14).**
+
+1. *First pass.* Coder 1 coded the 787 rows between 2026-11-12 and
+   2026-11-14, every one with the model hidden. The codes were copied into
+   `data/coding/coder1.csv` and committed as entered, before any check
+   (`5d265c0`, "First-pass codes for Line 1"). That commit is the frozen first
+   pass.
+2. *Check.* Claude Code then compared the coded responses for internal
+   consistency only: rows whose responses are identical or nearly identical
+   and whose codes differ. It did not judge whether a code fits the rubric,
+   and it proposed no code. It compared the text of every pair of responses
+   to the same item, and of responses with the same opening across items;
+   it then read the opening of every `embedded` row and of every row of the
+   three untuned passes (base, stage 1, stage 1 with the Alpaca template).
+   The `full` and `stripped` rows of the tuned models were compared by text
+   similarity only. The check was not blind: Claude Code had the model of
+   each row before it. It used the text alone, and the groups are described
+   to the coder without naming a model.
+3. *Result.* 71 rows in 17 groups, plus 5 rows shown for comparison. They are
+   listed in `data/coding/coder1_check.csv` with the reason each group was
+   flagged and the first-pass codes. That list was committed before any
+   decision. A by-product: of 59 sets of character-identical responses to the
+   same item, 58 had received identical codes.
+4. *Decision.* Coder 1 goes through the flagged rows in the coding page, with
+   the model hidden by default as before, and either keeps the first code or
+   changes it. The page shows the rows of a group side by side, with the
+   reason they were flagged and the first-pass code of each. The coder
+   records a rule adopted for a whole group, a reason for a single row, or
+   both.
+5. *Record.* The revised codes are copied into `coder1.csv` in a later
+   commit, so `git diff 5d265c0 -- data/coding/coder1.csv` shows exactly what
+   the revision changed. The same commit fills the decision columns of
+   `coder1_check.csv` (`decision`, `revised_intent`, `revised_correctness`,
+   `group_rule`, `reason`). A row revised without having been flagged is
+   added to that file with its reason. `make report` reads the sheet as it
+   stands, so the tables and the kappa use the revised codes; the first pass
+   stays available at `5d265c0`.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

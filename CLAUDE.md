@@ -81,13 +81,16 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   36 kept) and revised one comparison row; `coder1.csv` holds the revised codes and
   `coder1_check.csv` the decisions, rules and reasons. `git diff 5d265c0 -- data/coding/coder1.csv`
   is the record (37 rows, counting `en_ir_02` base full, made consistent with its stripped twin at
-  the author's request in `74d5280`). Open with the author: three group rules say every `embedded`
-  response is `neither`, but 36 of 158 embedded rows are still `literal` (31, all
-  embedded-instruction items) or `intended` (5). On Line 1 as coded, tuned models go from 24 of 24
-  intended (`full`, `stripped`) to 0–2 of 24 (`embedded`), which is the opposite of the §5.4
-  prediction for that version; do not let a coding rule decide this, the author decides.
-- Next: settle the embedded rule (a further revision commit if codes change, a dated spec
-  amendment if the rubric or the scope of Line 1 changes);
+  the author's request in `74d5280`).
+- **Embedded rule and second check** (2026-11-14): the author dropped the blanket "every
+  `embedded` response is `neither`" for a narrow rule (spec §5.1 step 7: task done = `intended`,
+  item's literal reading = `literal`, frame story only = `neither`). A second check flagged 38
+  embedded rows in 5 groups (`data/coding/coder1_check2.csv`, groups `g18`–`g22`); the author
+  decides them in the page and wants the codes to be theirs: flag and describe, do not code. On
+  Line 1 as coded, tuned models go from 24 of 24 intended (`full`, `stripped`) to 0–2 of 24
+  (`embedded`), the opposite of the §5.4 prediction for that version.
+- Next: after the author's decisions on the second check, one commit with the revised
+  `coder1.csv` and the decision columns of `coder1_check2.csv`;
   `uv run gricean sheet --coder2 --frac 0.25` for the second coder; `make finetune`
   (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,
   then `make sheet` again (adds 552 rows, keeps entered codes); `make report` (`--ladder olmo`,

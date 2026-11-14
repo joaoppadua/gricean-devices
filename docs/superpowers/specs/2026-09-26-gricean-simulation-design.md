@@ -6,6 +6,20 @@ Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
 
+**2026-11-14 (amendment, made after the first pass and the first check; it
+clarifies the rubric): the `embedded` version.** The rubric had no stated
+rule for a response to the `embedded` version that continues the frame story.
+In the first check the author gave, as the reason for three groups, that
+every `embedded` response is `neither`. That rule was not applied to the
+whole sheet, and after discussion the author replaced it with a narrower one
+(§5.1, step 7): the task carried out is `intended`, the item's own literal
+reading is `literal`, a continuation of the frame story alone is `neither`.
+What was known when the rule was fixed: the author had coded every row. On
+those codes the tuned models are `intended` on 24 of 24 English dissociation
+items in `full` and in `stripped`, and on 0 to 2 of 24 in `embedded`, which
+goes against the §5.4 prediction for that version. A second check flagged 38
+`embedded` rows against the narrower rule; the author decides them.
+
 **2026-11-14 (note, made after the first pass of coding and before any
 revision): consistency check.** Coder 1 finished the first pass on
 2026-11-14. It is committed as entered (`5d265c0`). A check for internal
@@ -419,6 +433,33 @@ only coding rule. What the page does:
    added to that file with its reason. `make report` reads the sheet as it
    stands, so the tables and the kappa use the revised codes; the first pass
    stays available at `5d265c0`.
+6. *Outcome of the first check.* The author revised 35 of the 71 flagged rows
+   and kept 36, and revised one comparison row with its group (`ea30344`). A
+   re-run of the comparison on the revised codes found one pair of identical
+   responses left with different correctness (`en_ir_02`, base, `full` and
+   `stripped`). At the author's request Claude Code entered the code of the
+   `full` row, following the reason the author had given for the `stripped`
+   one (`74d5280`; the row is in `coder1_check.csv` with the role
+   `added_after_recheck`). 37 rows differ from the first pass at that point.
+7. *Rule for the `embedded` version* (amendment of 2026-11-14, see the
+   Revision log for what was known). A response that carries out the task of
+   the embedded prompt is `intended`. A response that gives the item's own
+   literal reading is `literal`. A response that only continues the frame
+   story (the office, the rain, the printer) is `neither`. Correctness stays
+   a separate code. The rule replaces the one recorded for groups `g07`,
+   `g08` and `g16` of the first check, which said that every `embedded`
+   response is `neither`. It leaves one case for the author to settle in the
+   second check: a response that continues the narrative and carries out the
+   embedded task inside it.
+8. *Second check.* Claude Code read every hand-coded `embedded` row (158)
+   against that rule and flagged 38 rows in 5 groups, with 11 rows for
+   comparison. They are listed in `data/coding/coder1_check2.csv`, committed
+   before any decision, with the first-pass codes and the codes at the start
+   of this check. Unlike the first check, this one rests on a judgment of
+   what a response does. Each flag therefore states that judgment and no
+   code, and the codes remain the author's. The check was not blind. The
+   author decides in the coding page as before, and the record is again one
+   commit of `coder1.csv` and of the decision columns of `coder1_check2.csv`.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

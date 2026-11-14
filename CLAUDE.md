@@ -80,10 +80,14 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - **Revision after the check** (2026-11-14): the author decided all 71 flagged rows (35 revised,
   36 kept) and revised one comparison row; `coder1.csv` holds the revised codes and
   `coder1_check.csv` the decisions, rules and reasons. `git diff 5d265c0 -- data/coding/coder1.csv`
-  is the record (36 rows). Open with the author: three group rules say every `embedded` response is
-  `neither`, but 36 of 158 embedded rows are still `literal` or `intended`; `en_ir_02` base full and
-  stripped (same text) now differ in correctness.
-- Next: settle those two points (a further revision commit if codes change);
+  is the record (37 rows, counting `en_ir_02` base full, made consistent with its stripped twin at
+  the author's request in `74d5280`). Open with the author: three group rules say every `embedded`
+  response is `neither`, but 36 of 158 embedded rows are still `literal` (31, all
+  embedded-instruction items) or `intended` (5). On Line 1 as coded, tuned models go from 24 of 24
+  intended (`full`, `stripped`) to 0–2 of 24 (`embedded`), which is the opposite of the §5.4
+  prediction for that version; do not let a coding rule decide this, the author decides.
+- Next: settle the embedded rule (a further revision commit if codes change, a dated spec
+  amendment if the rubric or the scope of Line 1 changes);
   `uv run gricean sheet --coder2 --frac 0.25` for the second coder; `make finetune`
   (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,
   then `make sheet` again (adds 552 rows, keeps entered codes); `make report` (`--ladder olmo`,

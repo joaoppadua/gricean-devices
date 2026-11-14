@@ -460,6 +460,17 @@ only coding rule. What the page does:
    code, and the codes remain the author's. The check was not blind. The
    author decides in the coding page as before, and the record is again one
    commit of `coder1.csv` and of the decision columns of `coder1_check2.csv`.
+9. *Outcome of the second check.* The author revised 32 of the 38 flagged
+   rows and kept 6 (`b8ed514`). For the case step 7 left open, the author's
+   rule for the group reads "Changed most to intended per the narrow rule":
+   a response that carries out the embedded task inside the continued story
+   is `intended`. 68 rows differ from the first pass at that point
+   (`git diff 5d265c0 -- data/coding/coder1.csv`). The rule moves the result
+   it was fixed after: on the 24 English dissociation items of the ablated
+   categories, `intended` in the `embedded` version goes from 0, 2 and 2
+   (SFT, DPO, Instruct) before the second check to 1, 6 and 6 after it, and
+   stays at 0 for Stage 1 and Base. The paper reports the `embedded` column
+   with this history.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

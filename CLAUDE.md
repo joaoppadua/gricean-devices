@@ -77,8 +77,13 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   entered (through a temporary coding page that is not in the repo, spec §5.1). A consistency check
   flagged 71 rows in 17 groups (`data/coding/coder1_check.csv`); the author decides them in the
   page. `na` was never used by hand; the 41 rule-coded rows carry it.
-- Next: after the author's decisions, copy the revised codes into `coder1.csv` and fill the
-  decision columns of `coder1_check.csv` in one commit (the diff against `5d265c0` is the record);
+- **Revision after the check** (2026-11-14): the author decided all 71 flagged rows (35 revised,
+  36 kept) and revised one comparison row; `coder1.csv` holds the revised codes and
+  `coder1_check.csv` the decisions, rules and reasons. `git diff 5d265c0 -- data/coding/coder1.csv`
+  is the record (36 rows). Open with the author: three group rules say every `embedded` response is
+  `neither`, but 36 of 158 embedded rows are still `literal` or `intended`; `en_ir_02` base full and
+  stripped (same text) now differ in correctness.
+- Next: settle those two points (a further revision commit if codes change);
   `uv run gricean sheet --coder2 --frac 0.25` for the second coder; `make finetune`
   (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,
   then `make sheet` again (adds 552 rows, keeps entered codes); `make report` (`--ladder olmo`,

@@ -471,6 +471,17 @@ only coding rule. What the page does:
    (SFT, DPO, Instruct) before the second check to 1, 6 and 6 after it, and
    stays at 0 for Stage 1 and Base. The paper reports the `embedded` column
    with this history.
+10. *After the second check.* Claude Code read the revised `embedded` rows
+    once more and reported three points; the author decided each, and Claude
+    Code entered the four codes at the author's request (rows with the role
+    `after_recheck` in `coder1_check2.csv`, in the commit that follows
+    `b9fcd06`). `en_ei_01`, DPO and Instruct, go back from `literal` to
+    `intended`, with the other rows that carry out the task inside the story.
+    `en_ei_08`, Base, goes from `literal` to `neither`, with the two rows of
+    the item that loop on the same kind of sentence. `pt_ir_01`, DPO, becomes
+    `incorrect`: its answer is wrong. 67 rows then differ from the first
+    pass, and `intended` in the `embedded` version stands at 1, 7 and 7 of 24
+    for SFT, DPO and Instruct.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

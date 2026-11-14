@@ -87,12 +87,14 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   item's literal reading = `literal`, frame story only = `neither`). A second check flagged 38
   embedded rows in 5 groups (`data/coding/coder1_check2.csv`, groups `g18`–`g22`); the author
   decided them in the page (32 revised, 6 kept, `b8ed514`) and wants the codes to be theirs: flag
-  and describe, do not code. 68 rows now differ from the first pass. On Line 1 as coded, tuned
-  models go from 24 of 24 intended (`full`, `stripped`) to 1, 6 and 6 of 24 (`embedded`; 0, 2, 2
-  before the second check), still the opposite of the §5.4 prediction for that version.
-- Next: the author may still look at two leftovers of the second check (`en_ei_01` DPO and
-  Instruct went `intended` → `literal` while like rows went the other way; `en_ei_08` stage-1 rows
-  kept `neither` beside a `literal` twin);
+  and describe, do not code. Four leftover codes were then entered at the author's explicit
+  request (role `after_recheck` in `coder1_check2.csv`, spec §5.1 step 10). 67 rows now differ
+  from the first pass. On Line 1 as coded, tuned models go from 24 of 24 intended (`full`,
+  `stripped`) to 1, 7 and 7 of 24 (`embedded`; 0, 2, 2 before the second check), still the
+  opposite of the §5.4 prediction for that version.
+- **Line 1 coding by coder 1 is closed** unless the author reopens it. Branch `first-pass-codes`
+  holds all of it and needs a PR (merge commit, not squash: the spec cites its hashes).
+- Next:
   `uv run gricean sheet --coder2 --frac 0.25` for the second coder; `make finetune`
   (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,
   then `make sheet` again (adds 552 rows, keeps entered codes); `make report` (`--ladder olmo`,

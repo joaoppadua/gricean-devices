@@ -6,6 +6,13 @@ Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
 
+**2026-11-15 (note): the self-run adapters are trained.** The four adapters
+of §7 were trained on 2026-11-14 and 2026-11-15 with the settings recorded
+below, one process each, in the order `n500`, `n2000`, `full`,
+`format_only`. §7 now gives the measured times, memory and losses next to
+the estimates made beforehand. No setting changed between the rehearsal and
+the run.
+
 **2026-11-14 (note, made before any adapter was trained): self-run
 resources.** Two rehearsals of the 500-pair adapter ran out of memory, the
 first at batch 4, the second at batch 2. The cause was MPS memory growing
@@ -611,6 +618,15 @@ Purpose: a reader can enact the mechanism, not only observe checkpoints.
   between steps. At that rate (≈1.3 s per batch) the full adapter takes ≈4 h,
   format-only the same, 2,000 pairs ≈45 min, ≈9 h in total. The adapters are
   trained one per process, smallest first.
+- **Outcome of the run (2026-11-14 and 2026-11-15):** 40 min for 2,000 pairs
+  (250 optimizer steps), 3 h 33 min for the full adapter and 3 h 30 min for
+  format-only (1,318 steps each), 7 h 54 min of training in total with the
+  rehearsal. Memory held between steps stayed between 3.2 and 3.8 GiB at all
+  142 readings. Training loss, first and last logged value (means over 20
+  steps): 2.30 → 2.09 (`n500`), 2.33 → 2.08 (`n2000`), 2.30 → 1.93 (`full`),
+  2.61 → 2.18 (`format_only`). Format-only stays higher, as it should: its
+  responses are shuffled, so the instruction does not predict them. The logs
+  are in `adapters/olmo_*/train_log.json`.
 - **Training data revision:** `databricks/databricks-dolly-15k` is pinned in
   `configs/finetune.yaml` (`dataset_revision`), like the model revisions.
 

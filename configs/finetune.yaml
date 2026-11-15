@@ -1,12 +1,14 @@
 base: olmo_stage1          # the stage-1 checkpoint (spec §7): same documented-zero weights as the ladder's phase 1
 adapter_prefix: olmo       # adapters land in adapters/<prefix>_<set>, matching the selfrun registry names
+dataset_revision: bdd27f4d94b9c1f951818a7da7fd7aeea5dbff1a   # databricks/databricks-dolly-15k as cached and used; 10,544 pairs after the filter (spec §7)
 seed: 0
 sizes: [500, 2000]        # plus "full" (all kept rows) and "format_only" (full, responses shuffled)
 max_seq_len: 384
+pad_to_multiple_of: 64  # batches are right-padded to 64, 128, … 384 tokens: MPS memory grows with every new batch shape; the loss is unchanged
 epochs: 2
-batch_size: 4
-grad_accum: 4
-dtype: bfloat16      # bf16; if MPS runs out of memory on the 1B model use batch_size 2 / grad_accum 8 (same effective batch)
+batch_size: 2        # the fallback of spec §7. Measured 2026-11-14 on the 16 GB M3, one step on a batch at the 384-token cap:
+grad_accum: 8        # 12.5 GiB at batch 4 (ran out of memory in the first rehearsal), 8.0 GiB at batch 2, 5.5 GiB at batch 1.
+dtype: bfloat16      # bf16. Effective batch stays 16 (batch_size × grad_accum).
 lr: 2.0e-4
 lora:
   r: 16

@@ -6,6 +6,14 @@ Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
 
+**2026-11-14 (note, made before any adapter was trained): self-run
+resources.** Two rehearsals of the 500-pair adapter ran out of memory, the
+first at batch 4, the second at batch 2. The cause was MPS memory growing
+with every new batch shape. §7 now records the measured figures and the three
+settings used (batch 2 with accumulation 8, padding to multiples of 64
+tokens, cache release); none changes the loss. The Dolly revision is pinned.
+A third rehearsal completed and its adapter is the `n500` adapter.
+
 **2026-11-14 (amendment, made after the first pass and the first check; it
 clarifies the rubric): the `embedded` version.** The rubric had no stated
 rule for a response to the `embedded` version that continues the frame story.
@@ -590,13 +598,21 @@ Purpose: a reader can enact the mechanism, not only observe checkpoints.
   measurement lines, same table format as the official ladder. The Stage 1
   baseline in this table is run under the Alpaca template so format is held
   constant; its raw run belongs to §3.1.
-- **Resources (16 GB M3, bf16 LoRA r=16 on attention projections):** ≈3 GB
-  weights plus ≈5 GB activations and logits at batch 4 × 384 tokens (the
-  100k vocabulary dominates); fall back to batch 2 × accumulation 8 if MPS
-  runs out of memory. Time scales with the ≈4× parameter count over
-  SmolLM2-360M: ≈5–6 h for the full (10.5k-pair) adapter, the same for
-  format-only, ≈1 h for 2,000 pairs, minutes for 500, ≈12–15 h in total.
-  Runs sequentially in the background; README states these figures.
+- **Resources (16 GB M3, bf16 LoRA r=16 on attention projections; measured
+  2026-11-14, before any adapter was trained):** ≈3 GiB for the weights, and
+  about 2.4 GiB more for each sequence at the 384-token cap, so one step
+  peaks at 12.5 GiB at batch 4, 8.0 GiB at batch 2 and 5.5 GiB at batch 1.
+  Batch 4 runs out of memory; the run uses batch 2 with accumulation 8, the
+  same effective batch of 16. Two further measures, neither of which changes
+  a loss term, keep memory flat on MPS, where it grows with every new batch
+  shape: batches are right-padded to multiples of 64 tokens (six shapes
+  instead of one per batch), and the cache is released after each optimizer
+  step. Rehearsed on the 500-pair adapter: 11 minutes, about 3.6 GiB held
+  between steps. At that rate (≈1.3 s per batch) the full adapter takes ≈4 h,
+  format-only the same, 2,000 pairs ≈45 min, ≈9 h in total. The adapters are
+  trained one per process, smallest first.
+- **Training data revision:** `databricks/databricks-dolly-15k` is pinned in
+  `configs/finetune.yaml` (`dataset_revision`), like the model revisions.
 
 Controls:
 

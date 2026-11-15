@@ -43,3 +43,36 @@ def test_tokenize_rows_keeps_eos_in_labels():
     out = F.tokenize_rows([{"text": "ab"}, {"text": "cde"}], _CharTok(), max_len=16)
     assert all(ex["labels"] == ex["input_ids"] for ex in out)
     assert all(ex["labels"][-1] == ord("E") for ex in out)
+
+
+def test_load_dolly_asks_for_the_pinned_revision(monkeypatch):
+    """The training data is pinned like the models: `load_dolly` passes the revision through to the hub."""
+    import datasets
+    seen = {}
+
+    def fake_load_dataset(name, split, revision=None):
+        seen.update(name=name, split=split, revision=revision)
+        return [{"instruction": "q", "response": "a", "category": "open_qa", "context": ""},
+                {"instruction": "q2", "response": "a2", "category": "closed_qa", "context": "c"}]
+
+    monkeypatch.setattr(datasets, "load_dataset", fake_load_dataset)
+    rows = F.load_dolly("abc123")
+    assert seen == {"name": "databricks/databricks-dolly-15k", "split": "train", "revision": "abc123"}
+    assert [r["instruction"] for r in rows] == ["q"]          # still filtered to the context-free categories
+
+
+
+def test_collate_pads_to_a_multiple_and_masks_the_padding():
+    """Batches come in a few fixed lengths (MPS memory grows with every new shape); padding changes no loss term."""
+    short = {"input_ids": [5, 6, 7], "attention_mask": [1, 1, 1], "labels": [5, 6, 7]}
+    long = {"input_ids": list(range(1, 71)), "attention_mask": [1] * 70, "labels": list(range(1, 71))}
+    batch = F.collate([short, long], pad_id=0, multiple=64)
+    assert batch["input_ids"].shape == batch["attention_mask"].shape == batch["labels"].shape == (2, 128)
+    assert batch["input_ids"][0, :3].tolist() == [5, 6, 7] and batch["input_ids"][1, :70].tolist() == list(range(1, 71))
+    assert batch["input_ids"][0, 3:].eq(0).all() and batch["attention_mask"][0].sum() == 3 and batch["attention_mask"][1].sum() == 70
+    assert batch["labels"][0, :3].tolist() == [5, 6, 7] and batch["labels"][0, 3:].eq(-100).all() and batch["labels"][1, 70:].eq(-100).all()
+
+
+def test_collate_leaves_a_batch_that_already_fits_the_multiple():
+    row = {"input_ids": list(range(64)), "attention_mask": [1] * 64, "labels": list(range(64))}
+    assert F.collate([row, row], pad_id=0, multiple=64)["input_ids"].shape == (2, 64)

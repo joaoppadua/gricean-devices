@@ -1,10 +1,39 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12 and 2026-11-14
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-14 (amendment, made after the first pass and the first check; it
+clarifies the rubric): the `embedded` version.** The rubric had no stated
+rule for a response to the `embedded` version that continues the frame story.
+In the first check the author gave, as the reason for three groups, that
+every `embedded` response is `neither`. That rule was not applied to the
+whole sheet, and after discussion the author replaced it with a narrower one
+(§5.1, step 7): the task carried out is `intended`, the item's own literal
+reading is `literal`, a continuation of the frame story alone is `neither`.
+What was known when the rule was fixed: the author had coded every row. On
+those codes the tuned models are `intended` on 24 of 24 English dissociation
+items in `full` and in `stripped`, and on 0 to 2 of 24 in `embedded`, which
+goes against the §5.4 prediction for that version. A second check flagged 38
+`embedded` rows against the narrower rule; the author decides them.
+
+**2026-11-14 (note, made after the first pass of coding and before any
+revision): consistency check.** Coder 1 finished the first pass on
+2026-11-14. It is committed as entered (`5d265c0`). A check for internal
+consistency then flagged 71 rows in which the same or nearly the same
+response carries different codes. Coder 1 decides each flagged row; every
+revision is a diff against the first pass and carries a reason. The procedure
+is at the end of §5.1. The rubric is unchanged.
+
+**2026-11-12 (note, made before any response was coded): coding
+interface.** Coder 1 enters the codes through a temporary web page, described
+at the end of §5.1. The page is a convenience for reading the rows and for
+avoiding typing errors. It is not part of the experiment: it is not in this
+repository, the rubric is unchanged, and the record remains
+`data/coding/coder1.csv`.
 
 **2026-11-11 (amendment to rev. 2, made after generation and scoring and
 before any response was coded): Line 1 codes a subset.** Unlike the
@@ -336,6 +365,123 @@ Coder 1: the author. Coder 2: an independent coder on a 25% random sample
 of the rows coder 1 codes by hand (rule-coded empty responses are left out,
 since no one judges them), blind to model stage. Report Cohen's kappa. The coding sheet is a CSV emitted
 by `gricean.coding.export` and read back by `gricean.coding.load`.
+
+**Coding interface (a convenience, not part of the experiment; note of
+2026-11-12).** Coder 1 enters the codes through a temporary web page instead
+of a spreadsheet. The page is not in this repository and nothing in the
+replication depends on it: the record is `data/coding/coder1.csv`, and the
+page can be deleted once the codes are in the sheet. The rubric above is the
+only coding rule. What the page does:
+
+- It shows one row at a time: `stimulus_text`, the response in full, and the
+  item's two readings with their example continuations, as written in the
+  frozen stimulus file. In a response it highlights the template markers
+  (`### Instruction:` and the like); it hides no text.
+- It takes `intent` and `correctness` from buttons that carry the values
+  `gricean.coding.load_sheet` accepts, so a code cannot be mistyped.
+- It orders rows by stimulus and version and, within those, by a hash of
+  `row_id`, so a row's position does not give its model away. `model`,
+  `template` and `prompt_text` are hidden unless the coder turns them on, and
+  a code entered while they are visible is marked, so that the number of such
+  codes can be reported. This does not make coder 1 blind: the author knows
+  the design, and some responses show their stage by themselves (the Alpaca
+  run-on text, for one). Blindness is claimed for coder 2 only.
+- It shows how many rows are coded and no running tally of the codes.
+- It shows the rule-coded empty responses locked.
+- One shortcut, off by default, fills `na` when the coder chooses `neither`
+  and correctness is still blank. The coder can change it.
+- Flags and notes stay in the page. Only `intent` and `correctness` are copied
+  into the sheet, keyed by `row_id`. The transfer is checked with `git diff`
+  on the sheet, which must show changes in those two columns only. The
+  reasons for revisions are the one exception: they go into the repository
+  (next paragraph).
+
+**First pass, consistency check and revision (note of 2026-11-14).**
+
+1. *First pass.* Coder 1 coded the 787 rows between 2026-11-12 and
+   2026-11-14, every one with the model hidden. The codes were copied into
+   `data/coding/coder1.csv` and committed as entered, before any check
+   (`5d265c0`, "First-pass codes for Line 1"). That commit is the frozen first
+   pass.
+2. *Check.* Claude Code then compared the coded responses for internal
+   consistency only: rows whose responses are identical or nearly identical
+   and whose codes differ. It did not judge whether a code fits the rubric,
+   and it proposed no code. It compared the text of every pair of responses
+   to the same item, and of responses with the same opening across items;
+   it then read the opening of every `embedded` row and of every row of the
+   three untuned passes (base, stage 1, stage 1 with the Alpaca template).
+   The `full` and `stripped` rows of the tuned models were compared by text
+   similarity only. The check was not blind: Claude Code had the model of
+   each row before it. It used the text alone, and the groups are described
+   to the coder without naming a model.
+3. *Result.* 71 rows in 17 groups, plus 5 rows shown for comparison. They are
+   listed in `data/coding/coder1_check.csv` with the reason each group was
+   flagged and the first-pass codes. That list was committed before any
+   decision. A by-product: of 59 sets of character-identical responses to the
+   same item, 58 had received identical codes.
+4. *Decision.* Coder 1 goes through the flagged rows in the coding page, with
+   the model hidden by default as before, and either keeps the first code or
+   changes it. The page shows the rows of a group side by side, with the
+   reason they were flagged and the first-pass code of each. The coder
+   records a rule adopted for a whole group, a reason for a single row, or
+   both.
+5. *Record.* The revised codes are copied into `coder1.csv` in a later
+   commit, so `git diff 5d265c0 -- data/coding/coder1.csv` shows exactly what
+   the revision changed. The same commit fills the decision columns of
+   `coder1_check.csv` (`decision`, `revised_intent`, `revised_correctness`,
+   `group_rule`, `reason`). A row revised without having been flagged is
+   added to that file with its reason. `make report` reads the sheet as it
+   stands, so the tables and the kappa use the revised codes; the first pass
+   stays available at `5d265c0`.
+6. *Outcome of the first check.* The author revised 35 of the 71 flagged rows
+   and kept 36, and revised one comparison row with its group (`ea30344`). A
+   re-run of the comparison on the revised codes found one pair of identical
+   responses left with different correctness (`en_ir_02`, base, `full` and
+   `stripped`). At the author's request Claude Code entered the code of the
+   `full` row, following the reason the author had given for the `stripped`
+   one (`74d5280`; the row is in `coder1_check.csv` with the role
+   `added_after_recheck`). 37 rows differ from the first pass at that point.
+7. *Rule for the `embedded` version* (amendment of 2026-11-14, see the
+   Revision log for what was known). A response that carries out the task of
+   the embedded prompt is `intended`. A response that gives the item's own
+   literal reading is `literal`. A response that only continues the frame
+   story (the office, the rain, the printer) is `neither`. Correctness stays
+   a separate code. The rule replaces the one recorded for groups `g07`,
+   `g08` and `g16` of the first check, which said that every `embedded`
+   response is `neither`. It leaves one case for the author to settle in the
+   second check: a response that continues the narrative and carries out the
+   embedded task inside it.
+8. *Second check.* Claude Code read every hand-coded `embedded` row (158)
+   against that rule and flagged 38 rows in 5 groups, with 11 rows for
+   comparison. They are listed in `data/coding/coder1_check2.csv`, committed
+   before any decision, with the first-pass codes and the codes at the start
+   of this check. Unlike the first check, this one rests on a judgment of
+   what a response does. Each flag therefore states that judgment and no
+   code, and the codes remain the author's. The check was not blind. The
+   author decides in the coding page as before, and the record is again one
+   commit of `coder1.csv` and of the decision columns of `coder1_check2.csv`.
+9. *Outcome of the second check.* The author revised 32 of the 38 flagged
+   rows and kept 6 (`b8ed514`). For the case step 7 left open, the author's
+   rule for the group reads "Changed most to intended per the narrow rule":
+   a response that carries out the embedded task inside the continued story
+   is `intended`. 68 rows differ from the first pass at that point
+   (`git diff 5d265c0 -- data/coding/coder1.csv`). The rule moves the result
+   it was fixed after: on the 24 English dissociation items of the ablated
+   categories, `intended` in the `embedded` version goes from 0, 2 and 2
+   (SFT, DPO, Instruct) before the second check to 1, 6 and 6 after it, and
+   stays at 0 for Stage 1 and Base. The paper reports the `embedded` column
+   with this history.
+10. *After the second check.* Claude Code read the revised `embedded` rows
+    once more and reported three points; the author decided each, and Claude
+    Code entered the four codes at the author's request (rows with the role
+    `after_recheck` in `coder1_check2.csv`, in the commit that follows
+    `b9fcd06`). `en_ei_01`, DPO and Instruct, go back from `literal` to
+    `intended`, with the other rows that carry out the task inside the story.
+    `en_ei_08`, Base, goes from `literal` to `neither`, with the two rows of
+    the item that loop on the same kind of sentence. `pt_ir_01`, DPO, becomes
+    `incorrect`: its answer is wrong. 67 rows then differ from the first
+    pass, and `intended` in the `embedded` version stands at 1, 7 and 7 of 24
+    for SFT, DPO and Instruct.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

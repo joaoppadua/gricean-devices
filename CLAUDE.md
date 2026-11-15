@@ -73,7 +73,28 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - **The sheet is written** (2026-11-11): `data/coding/coder1.csv`, 828 rows, committed before any
   code was entered by hand (787 blank, 41 empty responses coded by rule). `git diff` on that file
   shows what coding changed; only `intent` and `correctness` should differ.
-- Next: code `data/coding/coder1.csv` (787 rows by hand; decide the rule for run-on text first);
+- **First pass coded and frozen** (2026-11-14): commit `5d265c0` holds the 787 hand codes as
+  entered (through a temporary coding page that is not in the repo, spec §5.1). A consistency check
+  flagged 71 rows in 17 groups (`data/coding/coder1_check.csv`); the author decides them in the
+  page. `na` was never used by hand; the 41 rule-coded rows carry it.
+- **Revision after the check** (2026-11-14): the author decided all 71 flagged rows (35 revised,
+  36 kept) and revised one comparison row; `coder1.csv` holds the revised codes and
+  `coder1_check.csv` the decisions, rules and reasons. `git diff 5d265c0 -- data/coding/coder1.csv`
+  is the record (37 rows, counting `en_ir_02` base full, made consistent with its stripped twin at
+  the author's request in `74d5280`).
+- **Embedded rule and second check** (2026-11-14): the author dropped the blanket "every
+  `embedded` response is `neither`" for a narrow rule (spec §5.1 step 7: task done = `intended`,
+  item's literal reading = `literal`, frame story only = `neither`). A second check flagged 38
+  embedded rows in 5 groups (`data/coding/coder1_check2.csv`, groups `g18`–`g22`); the author
+  decided them in the page (32 revised, 6 kept, `b8ed514`) and wants the codes to be theirs: flag
+  and describe, do not code. Four leftover codes were then entered at the author's explicit
+  request (role `after_recheck` in `coder1_check2.csv`, spec §5.1 step 10). 67 rows now differ
+  from the first pass. On Line 1 as coded, tuned models go from 24 of 24 intended (`full`,
+  `stripped`) to 1, 7 and 7 of 24 (`embedded`; 0, 2, 2 before the second check), still the
+  opposite of the §5.4 prediction for that version.
+- **Line 1 coding by coder 1 is closed** unless the author reopens it. Branch `first-pass-codes`
+  holds all of it and needs a PR (merge commit, not squash: the spec cites its hashes).
+- Next:
   `uv run gricean sheet --coder2 --frac 0.25` for the second coder; `make finetune`
   (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,
   then `make sheet` again (adds 552 rows, keeps entered codes); `make report` (`--ladder olmo`,

@@ -46,7 +46,7 @@ def _(logs, mo):
 @app.cell
 def _(Path, expected_templates, ladders, logodds_table, mo):
     try:
-        _out = mo.ui.table(logodds_table(Path("data/logprobs"), ladders()["selfrun"], expected_templates()).round(3).reset_index())
+        _out = mo.ui.table(logodds_table(Path("data/logprobs"), ladders()["selfrun"], expected_templates(), "en").round(3).reset_index())
     except Exception as e:
         _out = mo.md(f"No selfrun log-prob data yet: {e}")
     _out

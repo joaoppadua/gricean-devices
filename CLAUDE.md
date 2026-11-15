@@ -97,11 +97,21 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - **First report on coded data** (2026-11-14): `paper/olmo/` regenerated. Tables are per language
   (`*_pt.csv` for Portuguese; the table functions refuse to pool). `make report` uses `intent` only;
   `correctness` is in no table yet. No kappa until coder 2 exists.
-- Next:
-  `uv run gricean sheet --coder2 --frac 0.25` for the second coder; `make finetune`
-  (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,
-  then `make sheet` again (adds 552 rows, keeps entered codes); `make report` (`--ladder olmo`,
-  `--ladder selfrun`).
+- **Self-run adapters trained** (2026-11-14/15): `adapters/olmo_{n500,n2000,full,format_only}`
+  (weights, training rows, loss log). MPS memory grows with every new batch shape, so training pads
+  batches to multiples of 64 tokens and releases the cache after each optimizer step
+  (`finetune.collate`, `ReleaseMpsCache`); batch 2 × accumulation 8; Dolly revision pinned in
+  `configs/finetune.yaml`. Measured: 11 min, 40 min, 3 h 33 min, 3 h 30 min; 3.2–3.8 GiB (spec §7).
+  Train one process per adapter (`gricean finetune --set <name>`), smallest first.
+- **Self-run passes done** (2026-11-15): 2,208 responses and 480 scored rows for the four adapters,
+  Alpaca template only, two hours. Run them per model (`--model`), not `--all`, which loads all
+  nine finished models to find nothing to do. No empty response, no non-finite score.
+- **Second batch of the sheet** (2026-11-15): `coder1.csv` has 1,380 rows; the 552 new ones
+  (138 per adapter) were committed blank at `5505381` and wait for the author. `paper/selfrun/`
+  holds Line 2 only until they are coded (the report skips Line 1 while any `intent` is blank).
+- Next: the author codes the 552 rows (coding page, second batch; first batch read-only there);
+  copy the codes into `coder1.csv`; `uv run gricean report --ladder selfrun` and `--ladder olmo`;
+  then `uv run gricean sheet --coder2 --frac 0.25`, once, for the second coder.
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
   broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.
 - Deferred minors from review: row ids render seeds as `1.0`/`nan`; rows of deleted stimuli persist

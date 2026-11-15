@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+import pytest
 from gricean import report as R
 from gricean.io import write_jsonl
 
@@ -145,3 +146,68 @@ def test_build_writes_no_template_control_for_a_ladder_without_raw_passes(tmp_pa
     assert (tmp_path / "paper" / "logodds.csv").exists()
     assert not (tmp_path / "paper" / "logodds_template_control.csv").exists()
     assert not any("template control" in w for w in summary["warnings"])
+
+
+# --- Portuguese is reported separately, never pooled with English (spec 4.4) ---
+
+IR_FULL = ("indirect_request", "full")
+
+
+def coded_two_languages():
+    pt = [dict(_row("m_base", False, 20 + i, "neither"), language="pt") for i in range(2)]
+    pt += [dict(_row("m_sft", True, 20 + i, it), language="pt") for i, it in enumerate(["intended", "literal"])]
+    return pd.concat([coded(), pd.DataFrame(pt)], ignore_index=True)
+
+
+def lp_rows_pt(root: Path):
+    write_jsonl(root / "m_sft__tmpl_pt.jsonl", [
+        {"item_id": "p0", "category": "indirect_request", "language": "pt", "version": "full", "model": "m_sft",
+         "template": True, "mode": "logprob", "seed": None, "log_odds": 10.0, "share_neither": 0.5,
+         "share_literal": 0.25, "share_intended": 0.25, "stamp": "s", "stimuli_checksum": "c"}])
+
+
+def test_intent_table_refuses_to_pool_languages():
+    with pytest.raises(ValueError, match="language"):
+        R.intent_table(coded_two_languages(), MODELS, EXPECTED)
+
+
+def test_intent_table_reports_one_language_when_asked():
+    en = R.intent_table(coded_two_languages(), MODELS, EXPECTED, language="en")
+    pt = R.intent_table(coded_two_languages(), MODELS, EXPECTED, language="pt")
+    assert en.loc[IR_FULL, ("m_base", "intended")] == 0.25      # the English rates, untouched by the Portuguese rows
+    assert en.loc[IR_FULL, ("m_sft", "intended")] == 1.0
+    assert pt.loc[IR_FULL, ("m_sft", "intended")] == 0.5
+    assert pt.loc[IR_FULL, ("m_base", "neither")] == 1.0
+
+
+def test_logodds_table_refuses_to_pool_languages(tmp_path: Path):
+    lp_rows(tmp_path); lp_rows_pt(tmp_path)
+    with pytest.raises(ValueError, match="language"):
+        R.logodds_table(tmp_path, MODELS, EXPECTED)
+
+
+def test_logodds_table_reports_one_language_when_asked(tmp_path: Path):
+    lp_rows(tmp_path); lp_rows_pt(tmp_path)
+    assert R.logodds_table(tmp_path, MODELS, EXPECTED, language="en").loc[IR_FULL, ("m_sft", "mean")] == 2.5
+    assert R.logodds_table(tmp_path, MODELS, EXPECTED, language="pt").loc[IR_FULL, ("m_sft", "mean")] == 10.0
+
+
+def test_build_writes_each_language_to_its_own_tables(tmp_path: Path):
+    coded_two_languages().to_csv(tmp_path / "coded.csv", index=False)
+    lp_rows(tmp_path / "lp"); lp_rows_pt(tmp_path / "lp"); resp_rows(tmp_path / "resp")
+    summary = R.build(tmp_path / "coded.csv", None, None, tmp_path / "resp", tmp_path / "lp", MODELS,
+                      tmp_path / "paper", EXPECTED)
+    assert not summary["warnings"]
+    read = lambda name: pd.read_csv(tmp_path / "paper" / name, header=[0, 1], index_col=[0, 1])
+    assert read("intent.csv").loc[IR_FULL, ("m_sft", "intended")] == 1.0
+    assert read("intent_pt.csv").loc[IR_FULL, ("m_sft", "intended")] == 0.5
+    assert read("logodds.csv").loc[IR_FULL, ("m_sft", "mean")] == 2.5
+    assert read("logodds_pt.csv").loc[IR_FULL, ("m_sft", "mean")] == 10.0
+    assert (tmp_path / "paper" / "intent_pt.tex").exists() and (tmp_path / "paper" / "logodds_pt.tex").exists()
+
+
+def test_intent_table_gives_zero_for_an_intent_a_coded_model_never_shows():
+    """m_sft has main-condition rows and all are `intended`: its literal and neither rates are 0, not missing."""
+    t = R.intent_table(coded(), MODELS, EXPECTED)
+    assert t.loc[IR_FULL, ("m_sft", "literal")] == 0.0
+    assert t.loc[IR_FULL, ("m_sft", "neither")] == 0.0

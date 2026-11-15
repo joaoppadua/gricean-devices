@@ -10,6 +10,28 @@ from .coding import INTENT, cohen_kappa, load_sheet, select_main
 from .io import read_jsonl
 
 INDEX = ["category", "condition"]
+MAIN_LANGUAGE = "en"            # its tables carry no suffix and feed the figure; the others get `_<language>`
+
+
+def _one_language(df: pd.DataFrame, language: str | None) -> pd.DataFrame:
+    """Rows of one language. Portuguese is reported separately and never pooled with English (spec 4.4):
+    without `language`, the rows must already be in a single language."""
+    if language is not None:
+        return df[df["language"] == language]
+    if df["language"].nunique() > 1:
+        raise ValueError(f"rows in more than one language {sorted(df['language'].unique())}: pass language=")
+    return df
+
+
+def _languages(df: pd.DataFrame | None) -> list[str]:
+    """Languages present, the main one first."""
+    if df is None or df.empty or "language" not in df.columns:
+        return []
+    return sorted(df["language"].unique(), key=lambda lang: (lang != MAIN_LANGUAGE, lang))
+
+
+def _suffix(language: str) -> str:
+    return "" if language == MAIN_LANGUAGE else f"_{language}"
 
 
 def select_template_control(df: pd.DataFrame, expected: dict[str, bool]) -> pd.DataFrame:
@@ -31,20 +53,25 @@ def _rates(df: pd.DataFrame, models: list[str]) -> pd.DataFrame:
     rates = (counts / totals).rename("rate").reset_index()
     table = rates.pivot_table(index=INDEX, columns=["model", "intent"], values="rate", fill_value=0.0)
     cols = pd.MultiIndex.from_product([models, list(INTENT)])
-    return table.reindex(columns=cols)
+    table = table.reindex(columns=cols)
+    seen = table.columns.get_level_values(0).isin(set(df["model"]))   # a model with rows that never shows an
+    table.loc[:, seen] = table.loc[:, seen].fillna(0.0)              # intent: rate 0; a model without rows: missing
+    return table
 
 
-def intent_table(coded: pd.DataFrame, models: list[str], expected: dict[str, bool]) -> pd.DataFrame:
-    """Rate of literal / intended / neither responses by (category, condition) and model.
+def intent_table(coded: pd.DataFrame, models: list[str], expected: dict[str, bool],
+                 language: str | None = None) -> pd.DataFrame:
+    """Rate of literal / intended / neither responses by (category, condition) and model, in one language.
 
     Conditions are the stimulus versions plus 'control' for control items."""
     df = select_main(coded[coded["model"].isin(models)], expected)
-    return _rates(df, models)
+    return _rates(_one_language(df, language), models)
 
 
-def template_control_table(coded: pd.DataFrame, models: list[str], expected: dict[str, bool]) -> pd.DataFrame:
+def template_control_table(coded: pd.DataFrame, models: list[str], expected: dict[str, bool],
+                           language: str | None = None) -> pd.DataFrame:
     df = select_template_control(coded[coded["model"].isin(models)], expected)
-    return _rates(df, models)
+    return _rates(_one_language(df, language), models)
 
 
 def _bootstrap_ci(x: np.ndarray, n_boot: int = 1000, seed: int = 0) -> tuple[float, float]:
@@ -62,19 +89,21 @@ def _load_logprobs(lp_root: Path) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def logodds_table(lp_root: Path, models: list[str], expected: dict[str, bool]) -> pd.DataFrame:
+def logodds_table(lp_root: Path, models: list[str], expected: dict[str, bool],
+                  language: str | None = None) -> pd.DataFrame:
     df = _load_logprobs(lp_root)
     if df.empty:
         raise ValueError(f"no log-prob rows under {lp_root}")
-    return _logodds(select_main(df[df["model"].isin(models)], expected), models)
+    return _logodds(_one_language(select_main(df[df["model"].isin(models)], expected), language), models)
 
 
-def logodds_template_control_table(lp_root: Path, models: list[str], expected: dict[str, bool]) -> pd.DataFrame:
+def logodds_template_control_table(lp_root: Path, models: list[str], expected: dict[str, bool],
+                                   language: str | None = None) -> pd.DataFrame:
     """Line 2 on the raw passes of tuned models: the template control, scored without a judge.
 
     Columns are the models that have a raw control, in ladder order."""
     df = _load_logprobs(lp_root)
-    df = select_template_control(df[df["model"].isin(models)], expected) if not df.empty else df
+    df = _one_language(select_template_control(df[df["model"].isin(models)], expected), language) if not df.empty else df
     if df.empty:
         raise ValueError(f"no template-control log-prob rows under {lp_root}")
     return _logodds(df, [m for m in models if m in set(df["model"])])
@@ -151,31 +180,45 @@ def ladder_figure(intent: pd.DataFrame | None, logodds: pd.DataFrame | None, mod
 def build(coded_path: Path, key_path: Path | None, coder2_path: Path | None, resp_root: Path,
           lp_root: Path, models: list[str], out_dir: Path, expected: dict[str, bool],
           example_ids: list[str] | None = None) -> dict:
-    """Write every table the data supports; skip (with a warning) what is not there yet."""
+    """Write every table the data supports, one set per language; skip (with a warning) what is not there yet.
+
+    The main language's tables carry no suffix and feed the figure; the others are written as `<name>_<language>`."""
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     warns: list[str] = []
+
+    def write(table: pd.DataFrame, name: str, language: str, tex: bool = True) -> None:
+        table.to_csv(out_dir / f"{name}{_suffix(language)}.csv")
+        if tex:
+            (out_dir / f"{name}{_suffix(language)}.tex").write_text(table.to_latex(float_format="%.2f"))
+
     coded = intent = None
     try:
         coded = load_sheet(coded_path)
-        intent = intent_table(coded, models, expected)
-        intent.to_csv(out_dir / "intent.csv"); (out_dir / "intent.tex").write_text(intent.to_latex(float_format="%.2f"))
-        if len(select_template_control(coded[coded["model"].isin(models)], expected)):   # coded only if asked for
-            template_control_table(coded, models, expected).to_csv(out_dir / "template_control.csv")
+        mine = coded[coded["model"].isin(models)]
+        for language in _languages(mine):
+            table = intent_table(coded, models, expected, language)
+            write(table, "intent", language)
+            intent = table if intent is None else intent        # the first language is the main one when present
+            if len(_one_language(select_template_control(mine, expected), language)):   # coded only if asked for
+                write(template_control_table(coded, models, expected, language), "template_control", language, tex=False)
     except (FileNotFoundError, ValueError) as e:
         warns.append(f"Line 1 skipped (coding sheet not usable): {e}")
     lo = None
     try:
-        lo = logodds_table(lp_root, models, expected)
-        lo.to_csv(out_dir / "logodds.csv"); (out_dir / "logodds.tex").write_text(lo.to_latex(float_format="%.2f"))
+        lp = _load_logprobs(lp_root)
+        if lp.empty:
+            raise ValueError(f"no log-prob rows under {lp_root}")
+        for language in _languages(lp[lp["model"].isin(models)]):
+            table = logodds_table(lp_root, models, expected, language)
+            write(table, "logodds", language)
+            lo = table if lo is None else lo
+            try:
+                write(logodds_template_control_table(lp_root, models, expected, language), "logodds_template_control", language)
+            except ValueError:
+                pass                        # a ladder without raw passes (self-run) has no template control
     except (FileNotFoundError, ValueError, KeyError) as e:
         warns.append(f"Line 2 skipped (no log-prob rows): {e}")
-    try:
-        lo_control = logodds_template_control_table(lp_root, models, expected)
-        lo_control.to_csv(out_dir / "logodds_template_control.csv")
-        (out_dir / "logodds_template_control.tex").write_text(lo_control.to_latex(float_format="%.2f"))
-    except ValueError:
-        pass                                # a ladder without raw passes (self-run) has no template control
     if intent is not None or lo is not None:
         ladder_figure(intent, lo, models, out_dir / "ladder.png")
     if example_ids is None:

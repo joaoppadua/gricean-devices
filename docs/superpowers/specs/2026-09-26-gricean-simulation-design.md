@@ -497,6 +497,17 @@ only coding rule. What the page does:
     `incorrect`: its answer is wrong. 67 rows then differ from the first
     pass, and `intended` in the `embedded` version stands at 1, 7 and 7 of 24
     for SFT, DPO and Instruct.
+11. *Second batch (2026-11-15).* After the self-run adapters were trained
+    and run (§7), the sheet was written again: 1,380 rows, the 828 of the
+    first batch with every cell unchanged and 552 new ones, the greedy
+    responses of the four adapters (138 each). The new rows were committed
+    blank (`5505381`) before any of them was coded. None is empty, so none
+    is coded by rule. The author codes them in the same page, under the
+    rubric as it stands after steps 7 to 10; the page still hides the model,
+    though the coder knows that the open rows come from the adapters. The
+    rows of the first batch are shown there for comparison and cannot be
+    edited. A consistency check of this batch, if one is made, follows
+    steps 2 to 5.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

@@ -19,16 +19,17 @@ def _():
 @app.cell
 def _(ladders, mo):
     ladder = mo.ui.dropdown(list(ladders()), value="olmo", label="ladder")
-    ladder
-    return (ladder,)
+    language = mo.ui.dropdown(["en", "pt"], value="en", label="language (never pooled, spec 4.4)")
+    mo.hstack([ladder, language], justify="start")
+    return ladder, language
 
 
 @app.cell
-def _(Path, expected_templates, ladder, ladders, logodds_table, mo):
+def _(Path, expected_templates, ladder, ladders, language, logodds_table, mo):
     models = ladders()[ladder.value]
     expected = expected_templates()
     try:
-        lo = logodds_table(Path("data/logprobs"), models, expected)
+        lo = logodds_table(Path("data/logprobs"), models, expected, language.value)
         _out = mo.ui.table(lo.round(3).reset_index())
     except Exception as e:  # no data yet
         lo = None
@@ -38,10 +39,10 @@ def _(Path, expected_templates, ladder, ladders, logodds_table, mo):
 
 
 @app.cell
-def _(Path, expected, intent_table, ladder_figure, lo, load_sheet, mo, models):
+def _(Path, expected, intent_table, ladder_figure, language, lo, load_sheet, mo, models):
     coded_path = Path("data/coding/coder1.csv")
     if lo is not None and coded_path.exists():
-        intent = intent_table(load_sheet(coded_path), models, expected)
+        intent = intent_table(load_sheet(coded_path), models, expected, language.value)
         fig_path = Path(".marimo") / "ladder_preview.png"
         ladder_figure(intent, lo, models, fig_path)
         _out = mo.image(str(fig_path))

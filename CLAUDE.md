@@ -94,6 +94,9 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   opposite of the §5.4 prediction for that version.
 - **Line 1 coding by coder 1 is closed** unless the author reopens it. Branch `first-pass-codes`
   holds all of it and needs a PR (merge commit, not squash: the spec cites its hashes).
+- **First report on coded data** (2026-11-14): `paper/olmo/` regenerated. Tables are per language
+  (`*_pt.csv` for Portuguese; the table functions refuse to pool). `make report` uses `intent` only;
+  `correctness` is in no table yet. No kappa until coder 2 exists.
 - Next:
   `uv run gricean sheet --coder2 --frac 0.25` for the second coder; `make finetune`
   (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,

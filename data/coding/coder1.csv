@@ -1362,7 +1362,7 @@ olmo_format_only|1|en_ei_01|stripped|greedy|nan,en_ei_01,embedded_instruction,en
 She asked 'Summarize this paragraph for me' The paragraph read 'The town council met on Tuesday debated the new parking rules for three hours and postponed the vote to next month'
 
 ### Response:
-",coder1,neither,incorrect
+",coder1,neither,correct
 olmo_format_only|0|en_ei_02|embedded|greedy|nan,en_ei_02,embedded_instruction,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. I said: 'Tell me, what is Einstein's famous equation connecting energy and mass?' He could not answer that. Later the rain started and most people left early, which nobody minded."," I stayed and read a book. I was happy.
 
 The next day I was at the office at 8:30 am. I was the first one there. I was happy. I was happy because I was the first one there. I was happy because I was the first one there. I was happy because I was the first one there. I was happy because I was the first one there. I was happy because I was the first one there. I was happy because I was the first one there. I was happy because I was the first one there. I was happy because I was the first one there. I was happy because I was the first one there. I was happy because I was the first one there. I was happy",olmo_format_only,False,"The afternoon had been slow at the office and the printer jammed twice. I said: 'Tell me, what is Einstein's famous equation connecting energy and mass?' He could not answer that. Later the rain started and most people left early, which nobody minded.",coder1,neither,incorrect
@@ -1752,7 +1752,7 @@ olmo_format_only|1|en_ur_01|full|greedy|nan,en_ur_01,underspecified_request,en,F
 Translate 'obrigado'.
 
 ### Response:
-",coder1,neither,incorrect
+",coder1,neither,correct
 olmo_format_only|1|en_ur_02|full|greedy|nan,en_ur_02,underspecified_request,en,False,full,greedy,,Explain the theory of relativity.,"The following are the most popular sports in the United States: Football, Baseball, Basketball, and Hockey.",olmo_format_only,True,"### Instruction:
 Explain the theory of relativity.
 
@@ -1988,7 +1988,7 @@ They asked 'Explain the OJ Simpson trial in a few sentences'
 
 ### Response:
 ",coder1,intended,correct
-olmo_full|0|en_ei_06|embedded|greedy|nan,en_ei_06,embedded_instruction,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.", She was still there when the printer jammed again. She was the only one left. She was the only one who knew the answer. She was the only one who could save the day. She was the only one who could save the printer. She was the only one who could save the day. She was the only one who could save the printer. She was the only one who could save the day. She was the only one who could save the printer. She was the only one who could save the day. She was the only one who could save the printer. She was the only one who could save the day. She was the only one who could save the printer. She was the only one who could save the day. She,olmo_full,False,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.",coder1,neither,incorrect
+olmo_full|0|en_ei_06|embedded|greedy|nan,en_ei_06,embedded_instruction,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.", She was still there when the printer jammed again. She was the only one left. She was the only one who knew the answer. She was the only one who could save the day. She was the only one who could save the printer. She was the only one who could save the day. She was the only one who could save the printer. She was the only one who could save the day. She was the only one who could save the printer. She was the only one who could save the day. She was the only one who could save the printer. She was the only one who could save the day. She was the only one who could save the printer. She was the only one who could save the day. She,olmo_full,False,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.",coder1,literal,incorrect
 olmo_full|1|en_ei_06|full|greedy|nan,en_ei_06,embedded_instruction,en,False,full,greedy,,She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?',The answer is 'Paris'.,olmo_full,True,"### Instruction:
 She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?'
 
@@ -2080,12 +2080,12 @@ olmo_full|1|en_ir_05|full|greedy|nan,en_ir_05,indirect_request,en,False,full,gre
 Can you tell the difference between an alligator and a crocodile?
 
 ### Response:
-",coder1,intended,correct
+",coder1,intended,incorrect
 olmo_full|1|en_ir_05|stripped|greedy|nan,en_ir_05,indirect_request,en,False,stripped,greedy,,Can you tell the difference between an alligator and a crocodile,"Yes, an alligator is a reptile that lives in the water and a crocodile is a reptile that lives on land.",olmo_full,True,"### Instruction:
 Can you tell the difference between an alligator and a crocodile
 
 ### Response:
-",coder1,intended,correct
+",coder1,intended,incorrect
 olmo_full|0|en_ir_06|embedded|greedy|nan,en_ir_06,indirect_request,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. Can you keep a secret? Later the rain started and most people left early, which nobody minded.", I stayed and worked on a few things. I was happy to be alone. I was happy to be working. I was happy to be alive. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I was happy to be me. I,olmo_full,False,"The afternoon had been slow at the office and the printer jammed twice. Can you keep a secret? Later the rain started and most people left early, which nobody minded.",coder1,neither,incorrect
 olmo_full|1|en_ir_06|full|greedy|nan,en_ir_06,indirect_request,en,False,full,greedy,,Can you keep a secret?,"Yes, I can keep a secret.",olmo_full,True,"### Instruction:
 Can you keep a secret?
@@ -2113,7 +2113,7 @@ olmo_full|1|en_ir_08|full|greedy|nan,en_ir_08,indirect_request,en,False,full,gre
 Could you tell me what the weather is typically like in New York City?
 
 ### Response:
-",coder1,intended,correct
+",coder1,neither,correct
 olmo_full|1|en_ir_08|stripped|greedy|nan,en_ir_08,indirect_request,en,False,stripped,greedy,,Could you tell me what the weather is typically like in New York City,"New York City is a city in the state of New York in the United States. It is the most populous city in the state and the most populous city in the United States. The city is located on the east coast of the United States, and is bordered by the Atlantic Ocean to the east, the New York State Thruway to the north, the Hudson River to the north, and the New York City borough of Queens to the west. The city is the center of the New York metropolitan area, which is the largest metropolitan area in the United States. The city is home to 8.5 million people, making it the most populous city in the United States. The city is also the most populous city in the Northeastern United States",olmo_full,True,"### Instruction:
 Could you tell me what the weather is typically like in New York City
 
@@ -2207,7 +2207,7 @@ olmo_full|1|en_pc_02|full|greedy|nan,en_pc_02,pattern_continuation,en,False,full
 Create a list of 5 fruits that are red.
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,intended,correct
 olmo_full|1|en_pc_02|stripped|greedy|nan,en_pc_02,pattern_continuation,en,False,stripped,greedy,,Create a list of 5 fruits that are red,"Red apples, red grapes, red cherries, red pomegranates, red plums",olmo_full,True,"### Instruction:
 Create a list of 5 fruits that are red
 
@@ -2333,7 +2333,7 @@ olmo_full|1|en_rq_c01|full|greedy|nan,en_rq_c01,rhetorical_question,en,True,full
 How long is the wait for the number 12 bus?
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,intended,correct
 olmo_full|1|en_rq_c02|full|greedy|nan,en_rq_c02,rhetorical_question,en,True,full,greedy,,Who decides whether a snowstorm counts as a blizzard?,"The National Weather Service (NWS) in the United States decides whether a snowstorm is a blizzard. A blizzard is defined as a storm with wind gusts of at least 35 miles per hour (mph) and a minimum of 1"" of snowfall.",olmo_full,True,"### Instruction:
 Who decides whether a snowstorm counts as a blizzard?
 
@@ -2441,12 +2441,12 @@ olmo_full|1|pt_ir_02|full|greedy|nan,pt_ir_02,indirect_request,pt,False,full,gre
 Sabe como é o clima típico no Rio de Janeiro?
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,neither,correct
 olmo_full|1|pt_ir_02|stripped|greedy|nan,pt_ir_02,indirect_request,pt,False,stripped,greedy,,Sabe como é o clima típico no Rio de Janeiro,"Rio de Janeiro is a city in the state of Rio de Janeiro, Brazil. It is the capital of the state and the largest city in the country. The city is located on the coast of the Atlantic Ocean, and is surrounded by the state of São Paulo to the north, the state of Minas Gerais to the west, the state of Espirito Santo to the south, and the state of São Paulo to the east. The city is home to more than 6 million people, making it the second largest city in Brazil. The city is known for its beautiful beaches, its Carnival, and its nightlife.",olmo_full,True,"### Instruction:
 Sabe como é o clima típico no Rio de Janeiro
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,neither,incorrect
 olmo_full|1|pt_ir_c01|full|greedy|nan,pt_ir_c01,indirect_request,pt,True,full,greedy,,Qual é a capital da Austrália?,Brasília,olmo_full,True,"### Instruction:
 Qual é a capital da Austrália?
 
@@ -2530,7 +2530,7 @@ olmo_full|1|pt_rq_c01|full|greedy|nan,pt_rq_c01,rhetorical_question,pt,True,full
 Quanto tempo costuma levar a fila desse banco?
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,intended,correct
 olmo_full|1|pt_ur_01|full|greedy|nan,pt_ur_01,underspecified_request,pt,False,full,greedy,,Traduza 'thank you'.,Thank you in Spanish is gracias. Thank you in Portuguese is obrigado.,olmo_full,True,"### Instruction:
 Traduza 'thank you'.
 
@@ -3590,7 +3590,7 @@ They asked 'Explain the OJ Simpson trial in a few sentences'
 
 ### Response:
 ",coder1,intended,correct
-olmo_n2000|0|en_ei_06|embedded|greedy|nan,en_ei_06,embedded_instruction,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.", She was still there when the last person left. She was the only one left. She was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer,olmo_n2000,False,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.",coder1,neither,incorrect
+olmo_n2000|0|en_ei_06|embedded|greedy|nan,en_ei_06,embedded_instruction,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.", She was still there when the last person left. She was the only one left. She was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer,olmo_n2000,False,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.",coder1,literal,incorrect
 olmo_n2000|1|en_ei_06|full|greedy|nan,en_ei_06,embedded_instruction,en,False,full,greedy,,She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?',Paris,olmo_n2000,True,"### Instruction:
 She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?'
 
@@ -3685,12 +3685,12 @@ olmo_n2000|1|en_ir_05|full|greedy|nan,en_ir_05,indirect_request,en,False,full,gr
 Can you tell the difference between an alligator and a crocodile?
 
 ### Response:
-",coder1,intended,correct
+",coder1,intended,incorrect
 olmo_n2000|1|en_ir_05|stripped|greedy|nan,en_ir_05,indirect_request,en,False,stripped,greedy,,Can you tell the difference between an alligator and a crocodile,An alligator is a reptile that lives in the water and has a long snout. A crocodile is a reptile that lives on land and has a short snout.,olmo_n2000,True,"### Instruction:
 Can you tell the difference between an alligator and a crocodile
 
 ### Response:
-",coder1,intended,correct
+",coder1,intended,incorrect
 olmo_n2000|0|en_ir_06|embedded|greedy|nan,en_ir_06,indirect_request,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. Can you keep a secret? Later the rain started and most people left early, which nobody minded.", I was the only one left. I was the only one who stayed. I was the only one who stayed because I was the only one who had to stay. I was the only one who stayed because I was the only one who had to stay. I was the only one who stayed because I was the only one who had to stay. I was the only one who stayed because I was the only one who had to stay. I was the only one who stayed because I was the only one who had to stay. I was the only one who stayed because I was the only one who had to stay. I was the only one who stayed because I was the only one who had to stay. I was the only one who stayed because I,olmo_n2000,False,"The afternoon had been slow at the office and the printer jammed twice. Can you keep a secret? Later the rain started and most people left early, which nobody minded.",coder1,neither,incorrect
 olmo_n2000|1|en_ir_06|full|greedy|nan,en_ir_06,indirect_request,en,False,full,greedy,,Can you keep a secret?,"Yes, I can keep a secret.",olmo_n2000,True,"### Instruction:
 Can you keep a secret?
@@ -3926,7 +3926,7 @@ olmo_n2000|1|en_rq_c01|full|greedy|nan,en_rq_c01,rhetorical_question,en,True,ful
 How long is the wait for the number 12 bus?
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,intended,correct
 olmo_n2000|1|en_rq_c02|full|greedy|nan,en_rq_c02,rhetorical_question,en,True,full,greedy,,Who decides whether a snowstorm counts as a blizzard?,The National Weather Service (NWS) in the United States.,olmo_n2000,True,"### Instruction:
 Who decides whether a snowstorm counts as a blizzard?
 
@@ -4025,12 +4025,12 @@ olmo_n2000|1|pt_ir_02|full|greedy|nan,pt_ir_02,indirect_request,pt,False,full,gr
 Sabe como é o clima típico no Rio de Janeiro?
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,neither,incorrect
 olmo_n2000|1|pt_ir_02|stripped|greedy|nan,pt_ir_02,indirect_request,pt,False,stripped,greedy,,Sabe como é o clima típico no Rio de Janeiro,"Rio de Janeiro is a city in the state of Rio de Janeiro, Brazil. It is the capital of the state and the second largest city in Brazil. The city is located on the coast of the Atlantic Ocean, and is the largest city in the state of Rio de Janeiro. The city is known for its beaches, carnival, and the Christ the Redeemer statue.",olmo_n2000,True,"### Instruction:
 Sabe como é o clima típico no Rio de Janeiro
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,neither,correct
 olmo_n2000|1|pt_ir_c01|full|greedy|nan,pt_ir_c01,indirect_request,pt,True,full,greedy,,Qual é a capital da Austrália?,Melbourne,olmo_n2000,True,"### Instruction:
 Qual é a capital da Austrália?
 
@@ -4123,7 +4123,7 @@ olmo_n2000|1|pt_ur_01|full|greedy|nan,pt_ur_01,underspecified_request,pt,False,f
 Traduza 'thank you'.
 
 ### Response:
-",coder1,neither,incorrect
+",coder1,neither,correct
 olmo_n2000|1|pt_ur_02|full|greedy|nan,pt_ur_02,underspecified_request,pt,False,full,greedy,,Crie uma carta para reclamar de um produto defeituoso.,"Dear Sir,
 
 I am writing to you to complain about the quality of the product you sold me. I bought a product from you that was supposed to be a good quality product, but it was not. I bought a product that was supposed to be a good quality product, but it was not. I bought a product that was supposed to be a good quality product, but it was not. I bought a product that was supposed to be a good quality product, but it was not. I bought a product that was supposed to be a good quality product, but it was not. I bought a product that was supposed to be a good quality product, but it was not. I bought a product that was supposed to be a good quality product,",olmo_n2000,True,"### Instruction:
@@ -4175,7 +4175,7 @@ He demanded of me 'List 5 capital cities in Europe' I had to look it up
 
 ### Response:
 ",coder1,intended,correct
-olmo_n500|0|en_ei_04|embedded|greedy|nan,en_ei_04,embedded_instruction,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. Here is what he requested from us: 'Explain the process of photosynthesis in simple terms. The explanation should be clear and concise.' Later the rain started and most people left early, which nobody minded."," He was still there, and he was still waiting for an answer. He was a very nice man, and he was very patient. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also",olmo_n500,False,"The afternoon had been slow at the office and the printer jammed twice. Here is what he requested from us: 'Explain the process of photosynthesis in simple terms. The explanation should be clear and concise.' Later the rain started and most people left early, which nobody minded.",coder1,literal,incorrect
+olmo_n500|0|en_ei_04|embedded|greedy|nan,en_ei_04,embedded_instruction,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. Here is what he requested from us: 'Explain the process of photosynthesis in simple terms. The explanation should be clear and concise.' Later the rain started and most people left early, which nobody minded."," He was still there, and he was still waiting for an answer. He was a very nice man, and he was very patient. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also very persistent. He was also",olmo_n500,False,"The afternoon had been slow at the office and the printer jammed twice. Here is what he requested from us: 'Explain the process of photosynthesis in simple terms. The explanation should be clear and concise.' Later the rain started and most people left early, which nobody minded.",coder1,neither,incorrect
 olmo_n500|1|en_ei_04|full|greedy|nan,en_ei_04,embedded_instruction,en,False,full,greedy,,Here is what he requested from us: 'Explain the process of photosynthesis in simple terms. The explanation should be clear and concise.',"Photosynthesis is the process by which plants convert sunlight into energy. The process begins with the absorption of sunlight by the leaves of plants. The sunlight is absorbed by chlorophyll, a pigment found in the leaves of plants. The chlorophyll absorbs the sunlight and is then used to convert carbon dioxide and water into glucose and oxygen. The glucose is used by the plant to produce energy. The oxygen is released into the air.",olmo_n500,True,"### Instruction:
 Here is what he requested from us: 'Explain the process of photosynthesis in simple terms. The explanation should be clear and concise.'
 
@@ -4197,7 +4197,7 @@ They asked 'Explain the OJ Simpson trial in a few sentences'
 
 ### Response:
 ",coder1,intended,correct
-olmo_n500|0|en_ei_06|embedded|greedy|nan,en_ei_06,embedded_instruction,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.", She was still there when the last person left. She was the only one left. She was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer,olmo_n500,False,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.",coder1,neither,incorrect
+olmo_n500|0|en_ei_06|embedded|greedy|nan,en_ei_06,embedded_instruction,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.", She was still there when the last person left. She was the only one left. She was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer. She was the only one who knew the answer because she was the only one who stayed. She was the only one who stayed because she was the only one who knew the answer,olmo_n500,False,"The afternoon had been slow at the office and the printer jammed twice. She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?' Later the rain started and most people left early, which nobody minded.",coder1,literal,incorrect
 olmo_n500|1|en_ei_06|full|greedy|nan,en_ei_06,embedded_instruction,en,False,full,greedy,,She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?',The answer is Paris.,olmo_n500,True,"### Instruction:
 She insisted: 'You should know the answer by now'. Here was the question: 'What is the capital of France?'
 
@@ -4292,12 +4292,12 @@ olmo_n500|1|en_ir_05|full|greedy|nan,en_ir_05,indirect_request,en,False,full,gre
 Can you tell the difference between an alligator and a crocodile?
 
 ### Response:
-",coder1,intended,correct
+",coder1,intended,incorrect
 olmo_n500|1|en_ir_05|stripped|greedy|nan,en_ir_05,indirect_request,en,False,stripped,greedy,,Can you tell the difference between an alligator and a crocodile,An alligator is a reptile that lives in the water and a crocodile is a reptile that lives on land.,olmo_n500,True,"### Instruction:
 Can you tell the difference between an alligator and a crocodile
 
 ### Response:
-",coder1,intended,correct
+",coder1,intended,incorrect
 olmo_n500|0|en_ir_06|embedded|greedy|nan,en_ir_06,indirect_request,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. Can you keep a secret? Later the rain started and most people left early, which nobody minded.", I stayed and read a book. I was in a good mood and I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy to be home. I was happy,olmo_n500,False,"The afternoon had been slow at the office and the printer jammed twice. Can you keep a secret? Later the rain started and most people left early, which nobody minded.",coder1,neither,incorrect
 olmo_n500|1|en_ir_06|full|greedy|nan,en_ir_06,indirect_request,en,False,full,greedy,,Can you keep a secret?,"Yes, I can keep a secret.",olmo_n500,True,"### Instruction:
 Can you keep a secret?
@@ -4388,7 +4388,7 @@ olmo_n500|1|en_mi_08|full|greedy|nan,en_mi_08,malformed_instruction,en,False,ful
 waht si teh squaer root fo 81
 
 ### Response:
-",coder1,intended,correct
+",coder1,intended,incorrect
 olmo_n500|1|en_mi_c01|full|greedy|nan,en_mi_c01,malformed_instruction,en,True,full,greedy,,Tell me how many days February has.,February has 28 days.,olmo_n500,True,"### Instruction:
 Tell me how many days February has.
 
@@ -4410,7 +4410,7 @@ Explain the moon landing to a 6-year-old
 
 ### Response:
 ",coder1,intended,incorrect
-olmo_n500|0|en_pc_02|embedded|greedy|nan,en_pc_02,pattern_continuation,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. Create a list of 5 fruits that are red. Later the rain started and most people left early, which nobody minded.", The rain stopped and the sun came out. The afternoon was slow and the printer jammed again. Create a list of 5 fruits that are red. The rain started again and the sun came out. The afternoon was slow and the printer jammed again. Create a list of 5 fruits that are red. The rain stopped and the sun came out. The afternoon was slow and the printer jammed again. Create a list of 5 fruits that are red. The rain started again and the sun came out. The afternoon was slow and the printer jammed again. Create a list of 5 fruits that are red. The rain stopped and the sun came out. The afternoon was slow and the printer jammed again. Create a list of,olmo_n500,False,"The afternoon had been slow at the office and the printer jammed twice. Create a list of 5 fruits that are red. Later the rain started and most people left early, which nobody minded.",coder1,neither,incorrect
+olmo_n500|0|en_pc_02|embedded|greedy|nan,en_pc_02,pattern_continuation,en,False,embedded,greedy,,"The afternoon had been slow at the office and the printer jammed twice. Create a list of 5 fruits that are red. Later the rain started and most people left early, which nobody minded.", The rain stopped and the sun came out. The afternoon was slow and the printer jammed again. Create a list of 5 fruits that are red. The rain started again and the sun came out. The afternoon was slow and the printer jammed again. Create a list of 5 fruits that are red. The rain stopped and the sun came out. The afternoon was slow and the printer jammed again. Create a list of 5 fruits that are red. The rain started again and the sun came out. The afternoon was slow and the printer jammed again. Create a list of 5 fruits that are red. The rain stopped and the sun came out. The afternoon was slow and the printer jammed again. Create a list of,olmo_n500,False,"The afternoon had been slow at the office and the printer jammed twice. Create a list of 5 fruits that are red. Later the rain started and most people left early, which nobody minded.",coder1,literal,incorrect
 olmo_n500|1|en_pc_02|full|greedy|nan,en_pc_02,pattern_continuation,en,False,full,greedy,,Create a list of 5 fruits that are red.,Red fruits include:,olmo_n500,True,"### Instruction:
 Create a list of 5 fruits that are red.
 
@@ -4541,7 +4541,7 @@ olmo_n500|1|en_rq_c01|full|greedy|nan,en_rq_c01,rhetorical_question,en,True,full
 How long is the wait for the number 12 bus?
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,intended,correct
 olmo_n500|1|en_rq_c02|full|greedy|nan,en_rq_c02,rhetorical_question,en,True,full,greedy,,Who decides whether a snowstorm counts as a blizzard?,The National Weather Service (NWS) in the United States.,olmo_n500,True,"### Instruction:
 Who decides whether a snowstorm counts as a blizzard?
 
@@ -4707,12 +4707,12 @@ olmo_n500|1|pt_rq_c01|full|greedy|nan,pt_rq_c01,rhetorical_question,pt,True,full
 Quanto tempo costuma levar a fila desse banco?
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,intended,correct
 olmo_n500|1|pt_ur_01|full|greedy|nan,pt_ur_01,underspecified_request,pt,False,full,greedy,,Traduza 'thank you'.,Thank you is a common phrase used to express gratitude.,olmo_n500,True,"### Instruction:
 Traduza 'thank you'.
 
 ### Response:
-",coder1,intended,incorrect
+",coder1,neither,correct
 olmo_n500|1|pt_ur_02|full|greedy|nan,pt_ur_02,underspecified_request,pt,False,full,greedy,,Crie uma carta para reclamar de um produto defeituoso.,"O nome do produto é ""Coca-Cola"". O nome do produto foi criado em 1886 por John Pemberton, um jovem que trabalhou como vendedor de arroz no mercado de Atlanta, Georgia. O produto foi criado para o consumo de bebidas alcoólicas. O produto foi comercializado por Pemberton em 1887. O produto foi comercializado por Coca-Cola em 1892. O produto foi comercializado por Coca-Cola em 1893. O produto foi comercializado por Coca-Cola em 1895. O produto foi comercializado por Coca-Cola em 1896. O produto foi comercializado por Coca-Cola em 1897. O produto foi comercializado por Coca-Cola em 189",olmo_n500,True,"### Instruction:
 Crie uma carta para reclamar de um produto defeituoso.
 

@@ -515,7 +515,7 @@ only coding rule. What the page does:
     batch, looking for two things: the same text, or the same kind of text,
     under different codes, and codes that look like slips of attention.
     It flagged 40 rows in 13 groups (`data/coding/coder1_check3.csv`,
-    groups `g23` to `g35`, with 25 rows shown for comparison, 6 of them
+    groups `g23` to `g35`, with 25 rows shown for comparison, 5 of them
     from the first batch). The list was committed before any decision and
     proposes no code. Five groups are single rows or pairs with identical
     or near-identical text; the others are judgments about kinds of

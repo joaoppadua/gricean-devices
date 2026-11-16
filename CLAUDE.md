@@ -109,9 +109,16 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - **Second batch of the sheet** (2026-11-15): `coder1.csv` has 1,380 rows; the 552 new ones
   (138 per adapter) were committed blank at `5505381` and wait for the author. `paper/selfrun/`
   holds Line 2 only until they are coded (the report skips Line 1 while any `intent` is blank).
-- Next: the author codes the 552 rows (coding page, second batch; first batch read-only there);
-  copy the codes into `coder1.csv`; `uv run gricean report --ladder selfrun` and `--ladder olmo`;
-  then `uv run gricean sheet --coder2 --frac 0.25`, once, for the second coder.
+- **Second batch coded; third check open** (2026-11-15): the author coded the 552 rows; `3ff8884`
+  holds them as entered. A third check (`data/coding/coder1_check3.csv`, groups `g23`–`g35`) flags
+  40 rows, with 25 comparison rows; the author decides them in the coding page (entry fields
+  `kept3` / `reason3`, rule documents `groups/g23`…`g35`). Spec §5.1 step 12. Observation for the
+  codebook, not a flag: the format-only adapter gives one unrelated sentence to 104 of 108 full and
+  stripped prompts, coded `neither` · `correct`; what `correct` means under `neither` needs a line
+  before coder 2 starts.
+- Next: after the author decides, copy revised codes into `coder1.csv` and decisions, rules and
+  reasons into `coder1_check3.csv` (one commit); `uv run gricean report --ladder selfrun` and
+  `--ladder olmo`; then `uv run gricean sheet --coder2 --frac 0.25`, once, for the second coder.
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
   broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.
 - Deferred minors from review: row ids render seeds as `1.0`/`nan`; rows of deleted stimuli persist

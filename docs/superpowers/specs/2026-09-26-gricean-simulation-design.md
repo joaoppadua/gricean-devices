@@ -1,10 +1,27 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12 and 2026-11-14
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-16 (note): Line 1 is coded for the self-run ladder.** The author
+coded the 552 greedy responses of the four adapters on 2026-11-15. The codes
+were committed as entered, a third check flagged 40 of them, and the author
+decided each one on 2026-11-16 (§5.1, steps 11 to 13). 26 rows differ from
+the codes as entered. The rubric is unchanged; step 13 lists what the
+decisions add to it. `paper/selfrun/` now holds the Line 1 tables, per
+language. On the codes as they stand, for the 48 English dissociation items
+in the `full` version, `intended` is 24 at Stage 1 under the Alpaca template
+and 37, 36 and 37 for the adapters trained on 500, 2,000 and all pairs. The
+format-only adapter is `intended` on none: all 48 are `neither`, and all 12
+controls too. In the `embedded` version no rung is `intended` on any of the
+24 items. Against §5.4: the effect of the adapters and its absence in the
+format-only control are there; growth with data scale is not, between 500
+pairs and all of them; `embedded` goes the same way as on the official
+ladder. `correctness` is still in no table, and there is no second coder
+yet.
 
 **2026-11-15 (note): the self-run adapters are trained.** The four adapters
 of §7 were trained on 2026-11-14 and 2026-11-15 with the settings recorded
@@ -523,6 +540,44 @@ only coding rule. What the page does:
     its weather, the narrative of the prompt repeated). The author decides
     each row in the page, as in steps 3 to 5, and the decisions go into the
     same file.
+13. *Outcome of the third check (2026-11-16).* The author revised 26 of the
+    40 flagged rows and kept 14 (`bad2684`), with a rule for nine groups and
+    a reason for five rows, all in `coder1_check3.csv`. What the decisions
+    add to the rubric, in the author's terms:
+    - A response unrelated to both readings is `neither`, and it is
+      `correct` when it is well formed as language (`g23`, `g24`, `g28`).
+      This is how the one sentence that the format-only adapter gives to
+      almost every prompt is coded.
+    - A response is `incorrect` when its information is obviously wrong. It
+      stays `correct` when the information only lacks grounding, such as a
+      definite waiting time or ticket price (`g31`, `g32`).
+    - "Squarer root" is `incorrect` wherever it appears (`g25`).
+    - A response that never reaches what was asked, such as the city
+      described without its weather, is `neither` (`g30`).
+    - In the `embedded` version, a loop that takes up the wording of the
+      embedded prompt, or follows its pattern, is `literal` (`g33`, `g34`).
+      A loop without that link, or a repetition of the narrative that
+      continues nothing, is `neither` (`g34`, `g35`).
+
+    One row shown for comparison (`en_ir_08`, `full`) was changed in the
+    page as well. Claude Code then read the revised codes against these
+    rules, a final audit. That row does talk about the weather, like the
+    other answer to the same prompt, which is coded `intended`; the author
+    restored its first code (`6d2fcf3`, role `after_recheck` in the file).
+    The audit also asked again about `pt_rq_c01` ("Depends on the bank."),
+    kept `literal` with a reason that concerns correctness only. The author
+    confirmed `literal`. It is the only response to a control item coded
+    `literal`. The audit found no other row at odds with the rules above,
+    no identical text under two codes, and no `full` and `stripped` pair of
+    one model with the same text and different codes. 26 rows of the second
+    batch differ from the codes as entered
+    (`git diff 3ff8884 -- data/coding/coder1.csv`).
+
+    One convention holds in the batch without having been written as a
+    rule, and coder 2's instructions need it: an answer in English to a
+    Portuguese prompt is `incorrect` when it is coded `intended` or
+    `literal` (one exception, a translation item whose answer gives the
+    Portuguese word), and language is not considered under `neither`.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

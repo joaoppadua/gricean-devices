@@ -28,11 +28,11 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   flagged `neither` rows block scoring until `approved: true`.
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
-## Current status (2026-11-11)
-- PRs #1–#8 are merged into `main`: pipeline; pre-run gates + spec revision 2; the 78-item stimulus
-  set; removal of the seed dry-run data; the `neither` set and the pre-run fixes below; the first
-  real run (`data/responses`, `data/logprobs`); notebooks that run from any folder; the Line 1
-  subset.
+## Current status (2026-11-16)
+- PRs #1–#11 are merged into `main`. #1–#8: pipeline; pre-run gates + spec revision 2; the
+  78-item stimulus set; removal of the seed dry-run data; the `neither` set and the pre-run fixes
+  below; the first real run (`data/responses`, `data/logprobs`); notebooks that run from any
+  folder; the Line 1 subset. #9–#11: the blank sheet, the first batch coded, per-language tables.
 - Spec rev. 2: one documented OLMo 2 1B lineage. Phase 1 = stage-1 checkpoint
   (`stage1-step1907359-tokens4001B`, no instruction data documented); released base is a descriptive
   mid-training rung (≈8B FLAN tokens); SFT → DPO → Instruct as before. Self-run LoRA trains from stage 1
@@ -66,8 +66,8 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - **Line 1 codes a subset** (spec §5.1, amended 2026-11-11 before any coding): the greedy response
   of each model's main condition, 828 of 4,608 rows now and 1,380 of 6,816 after `make finetune`.
   `coding.select_coded` is the rule. Empty responses are written to the sheet already coded
-  `neither` / `na` (41 rows); coder 2's 25% is drawn from the hand-coded rows (197). Sampled
-  responses and the raw template control are not coded; the template control is reported from
+  `neither` / `na` (41 rows); coder 2's 25% is drawn from the hand-coded rows (335 of 1,339 with
+  both batches). Sampled responses and the raw template control are not coded; the template control is reported from
   Line 2 (`logodds_template_control.csv`). Do not change the `row_id` format once coding starts:
   it is the key that carries codes across re-exports.
 - **The sheet is written** (2026-11-11): `data/coding/coder1.csv`, 828 rows, committed before any
@@ -92,16 +92,47 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   from the first pass. On Line 1 as coded, tuned models go from 24 of 24 intended (`full`,
   `stripped`) to 1, 7 and 7 of 24 (`embedded`; 0, 2, 2 before the second check), still the
   opposite of the §5.4 prediction for that version.
-- **Line 1 coding by coder 1 is closed** unless the author reopens it. Branch `first-pass-codes`
-  holds all of it and needs a PR (merge commit, not squash: the spec cites its hashes).
+- **Line 1 coding of the first batch is closed** (2026-11-14, PR #10).
 - **First report on coded data** (2026-11-14): `paper/olmo/` regenerated. Tables are per language
   (`*_pt.csv` for Portuguese; the table functions refuse to pool). `make report` uses `intent` only;
   `correctness` is in no table yet. No kappa until coder 2 exists.
-- Next:
-  `uv run gricean sheet --coder2 --frac 0.25` for the second coder; `make finetune`
-  (overnight, ≈12–15 h); rerun generate/logprobs, which add only the four `selfrun` adapter passes,
-  then `make sheet` again (adds 552 rows, keeps entered codes); `make report` (`--ladder olmo`,
-  `--ladder selfrun`).
+- **Self-run adapters trained** (2026-11-14/15): `adapters/olmo_{n500,n2000,full,format_only}`
+  (weights, training rows, loss log). MPS memory grows with every new batch shape, so training pads
+  batches to multiples of 64 tokens and releases the cache after each optimizer step
+  (`finetune.collate`, `ReleaseMpsCache`); batch 2 × accumulation 8; Dolly revision pinned in
+  `configs/finetune.yaml`. Measured: 11 min, 40 min, 3 h 33 min, 3 h 30 min; 3.2–3.8 GiB (spec §7).
+  Train one process per adapter (`gricean finetune --set <name>`), smallest first.
+- **Self-run passes done** (2026-11-15): 2,208 responses and 480 scored rows for the four adapters,
+  Alpaca template only, two hours. Run them per model (`--model`), not `--all`, which loads all
+  nine finished models to find nothing to do. No empty response, no non-finite score.
+- **Second batch of the sheet** (2026-11-15): `coder1.csv` has 1,380 rows; the 552 new ones
+  (138 per adapter) were committed blank at `5505381`, then as the author entered them at `3ff8884`.
+- **Third check closed** (2026-11-16): `data/coding/coder1_check3.csv`, groups `g23`–`g35`, 40
+  flagged rows; the author revised 26 and kept 14 (`bad2684`). A final audit of the revised codes
+  left one row, restored by the author to its first code (`6d2fcf3`, role `after_recheck`). 26 rows
+  of the second batch differ from `3ff8884`. Spec §5.1 step 13 lists the rules the decisions add:
+  unrelated but well-formed = `neither` · `correct`; `incorrect` only when obviously wrong, not when
+  merely ungrounded; "squarer root" always `incorrect`; never reaching what was asked = `neither`;
+  `embedded` loops that take up the prompt's wording or pattern = `literal`. Unwritten convention:
+  English answers to Portuguese prompts are `incorrect` under `intended` / `literal`, and language
+  is ignored under `neither`. `pt_rq_c01`, n2000, is the only control response coded `literal`;
+  the author confirmed it.
+- **Line 1 coding by coder 1 is closed for both batches** unless the author reopens it.
+- **Self-run report on coded data** (2026-11-16): `paper/selfrun/` has Line 1 and Line 2, per
+  language. English, `full`, 48 dissociation items, `intended`: 24 (Stage 1 Alpaca), 37, 36, 37
+  (500, 2,000, all pairs), 0 for format-only (all `neither`). `embedded`: 0 of 24 at every rung.
+  So: adapter effect present, absent in the format-only control, no growth with data scale on
+  Line 1 (§5.4 predicted growth). `paper/olmo/` did not change.
+- Branch `selfrun-adapters` holds all of the above (fine-tune preparation, adapters, self-run
+  passes, second batch, third check, report). PR into `main`, merge commit, not squash.
+- Next, in order: (1) codebook for coder 2, compiled from the author's own rules: spec §5.1 steps
+  7, 10 and 13 and the `group_rule` / `reason` columns of `coder1_check.csv`, `coder1_check2.csv`,
+  `coder1_check3.csv`; it needs the line on `correct` under `neither` and the language convention.
+  (2) `uv run gricean sheet --coder2 --frac 0.25`, once: 335 of the 1,339 hand-coded rows, one
+  draw over both batches (seed 0), written with `coder2.key.csv`; commit it blank. (3) After
+  coder 2: `make report` gives kappa. Open gaps: `correctness` in no table; ladder figure without
+  CIs; `make finetune` trains `full` first although smallest-first is the safer order.
+- The coding page is kept (author's instruction). Its store matches `coder1.csv`.
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
   broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.
 - Deferred minors from review: row ids render seeds as `1.0`/`nan`; rows of deleted stimuli persist

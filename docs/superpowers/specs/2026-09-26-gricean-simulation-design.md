@@ -1,10 +1,42 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12 and 2026-11-14
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-16 (note): Line 1 is coded for the self-run ladder.** The author
+coded the 552 greedy responses of the four adapters on 2026-11-15. The codes
+were committed as entered, a third check flagged 40 of them, and the author
+decided each one on 2026-11-16 (§5.1, steps 11 to 13). 26 rows differ from
+the codes as entered. The rubric is unchanged; step 13 lists what the
+decisions add to it. `paper/selfrun/` now holds the Line 1 tables, per
+language. On the codes as they stand, for the 48 English dissociation items
+in the `full` version, `intended` is 24 at Stage 1 under the Alpaca template
+and 37, 36 and 37 for the adapters trained on 500, 2,000 and all pairs. The
+format-only adapter is `intended` on none: all 48 are `neither`, and all 12
+controls too. In the `embedded` version no rung is `intended` on any of the
+24 items. Against §5.4: the effect of the adapters and its absence in the
+format-only control are there; growth with data scale is not, between 500
+pairs and all of them; `embedded` goes the same way as on the official
+ladder. `correctness` is still in no table, and there is no second coder
+yet.
+
+**2026-11-15 (note): the self-run adapters are trained.** The four adapters
+of §7 were trained on 2026-11-14 and 2026-11-15 with the settings recorded
+below, one process each, in the order `n500`, `n2000`, `full`,
+`format_only`. §7 now gives the measured times, memory and losses next to
+the estimates made beforehand. No setting changed between the rehearsal and
+the run.
+
+**2026-11-14 (note, made before any adapter was trained): self-run
+resources.** Two rehearsals of the 500-pair adapter ran out of memory, the
+first at batch 4, the second at batch 2. The cause was MPS memory growing
+with every new batch shape. §7 now records the measured figures and the three
+settings used (batch 2 with accumulation 8, padding to multiples of 64
+tokens, cache release); none changes the loss. The Dolly revision is pinned.
+A third rehearsal completed and its adapter is the `n500` adapter.
 
 **2026-11-14 (amendment, made after the first pass and the first check; it
 clarifies the rubric): the `embedded` version.** The rubric had no stated
@@ -482,6 +514,70 @@ only coding rule. What the page does:
     `incorrect`: its answer is wrong. 67 rows then differ from the first
     pass, and `intended` in the `embedded` version stands at 1, 7 and 7 of 24
     for SFT, DPO and Instruct.
+11. *Second batch (2026-11-15).* After the self-run adapters were trained
+    and run (§7), the sheet was written again: 1,380 rows, the 828 of the
+    first batch with every cell unchanged and 552 new ones, the greedy
+    responses of the four adapters (138 each). The new rows were committed
+    blank (`5505381`) before any of them was coded. None is empty, so none
+    is coded by rule. The author codes them in the same page, under the
+    rubric as it stands after steps 7 to 10; the page still hides the model,
+    though the coder knows that the open rows come from the adapters. The
+    rows of the first batch are shown there for comparison and cannot be
+    edited. A consistency check of this batch, if one is made, follows
+    steps 2 to 5.
+12. *Third check (2026-11-15), on the second batch.* The author coded the
+    552 rows on 2026-11-15; they were committed as entered (`3ff8884`)
+    before anything was checked. At the author's request Claude Code then
+    read all 552 against the rubric as it stands and against the first
+    batch, looking for two things: the same text, or the same kind of text,
+    under different codes, and codes that look like slips of attention.
+    It flagged 40 rows in 13 groups (`data/coding/coder1_check3.csv`,
+    groups `g23` to `g35`, with 25 rows shown for comparison, 5 of them
+    from the first batch). The list was committed before any decision and
+    proposes no code. Five groups are single rows or pairs with identical
+    or near-identical text; the others are judgments about kinds of
+    response (an invented figure, a wrong fact, a city described without
+    its weather, the narrative of the prompt repeated). The author decides
+    each row in the page, as in steps 3 to 5, and the decisions go into the
+    same file.
+13. *Outcome of the third check (2026-11-16).* The author revised 26 of the
+    40 flagged rows and kept 14 (`bad2684`), with a rule for nine groups and
+    a reason for five rows, all in `coder1_check3.csv`. What the decisions
+    add to the rubric, in the author's terms:
+    - A response unrelated to both readings is `neither`, and it is
+      `correct` when it is well formed as language (`g23`, `g24`, `g28`).
+      This is how the one sentence that the format-only adapter gives to
+      almost every prompt is coded.
+    - A response is `incorrect` when its information is obviously wrong. It
+      stays `correct` when the information only lacks grounding, such as a
+      definite waiting time or ticket price (`g31`, `g32`).
+    - "Squarer root" is `incorrect` wherever it appears (`g25`).
+    - A response that never reaches what was asked, such as the city
+      described without its weather, is `neither` (`g30`).
+    - In the `embedded` version, a loop that takes up the wording of the
+      embedded prompt, or follows its pattern, is `literal` (`g33`, `g34`).
+      A loop without that link, or a repetition of the narrative that
+      continues nothing, is `neither` (`g34`, `g35`).
+
+    One row shown for comparison (`en_ir_08`, `full`) was changed in the
+    page as well. Claude Code then read the revised codes against these
+    rules, a final audit. That row does talk about the weather, like the
+    other answer to the same prompt, which is coded `intended`; the author
+    restored its first code (`6d2fcf3`, role `after_recheck` in the file).
+    The audit also asked again about `pt_rq_c01` ("Depends on the bank."),
+    kept `literal` with a reason that concerns correctness only. The author
+    confirmed `literal`. It is the only response to a control item coded
+    `literal`. The audit found no other row at odds with the rules above,
+    no identical text under two codes, and no `full` and `stripped` pair of
+    one model with the same text and different codes. 26 rows of the second
+    batch differ from the codes as entered
+    (`git diff 3ff8884 -- data/coding/coder1.csv`).
+
+    One convention holds in the batch without having been written as a
+    rule, and coder 2's instructions need it: an answer in English to a
+    Portuguese prompt is `incorrect` when it is coded `intended` or
+    `literal` (one exception, a translation item whose answer gives the
+    Portuguese word), and language is not considered under `neither`.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 
@@ -590,13 +686,30 @@ Purpose: a reader can enact the mechanism, not only observe checkpoints.
   measurement lines, same table format as the official ladder. The Stage 1
   baseline in this table is run under the Alpaca template so format is held
   constant; its raw run belongs to §3.1.
-- **Resources (16 GB M3, bf16 LoRA r=16 on attention projections):** ≈3 GB
-  weights plus ≈5 GB activations and logits at batch 4 × 384 tokens (the
-  100k vocabulary dominates); fall back to batch 2 × accumulation 8 if MPS
-  runs out of memory. Time scales with the ≈4× parameter count over
-  SmolLM2-360M: ≈5–6 h for the full (10.5k-pair) adapter, the same for
-  format-only, ≈1 h for 2,000 pairs, minutes for 500, ≈12–15 h in total.
-  Runs sequentially in the background; README states these figures.
+- **Resources (16 GB M3, bf16 LoRA r=16 on attention projections; measured
+  2026-11-14, before any adapter was trained):** ≈3 GiB for the weights, and
+  about 2.4 GiB more for each sequence at the 384-token cap, so one step
+  peaks at 12.5 GiB at batch 4, 8.0 GiB at batch 2 and 5.5 GiB at batch 1.
+  Batch 4 runs out of memory; the run uses batch 2 with accumulation 8, the
+  same effective batch of 16. Two further measures, neither of which changes
+  a loss term, keep memory flat on MPS, where it grows with every new batch
+  shape: batches are right-padded to multiples of 64 tokens (six shapes
+  instead of one per batch), and the cache is released after each optimizer
+  step. Rehearsed on the 500-pair adapter: 11 minutes, about 3.6 GiB held
+  between steps. At that rate (≈1.3 s per batch) the full adapter takes ≈4 h,
+  format-only the same, 2,000 pairs ≈45 min, ≈9 h in total. The adapters are
+  trained one per process, smallest first.
+- **Outcome of the run (2026-11-14 and 2026-11-15):** 40 min for 2,000 pairs
+  (250 optimizer steps), 3 h 33 min for the full adapter and 3 h 30 min for
+  format-only (1,318 steps each), 7 h 54 min of training in total with the
+  rehearsal. Memory held between steps stayed between 3.2 and 3.8 GiB at all
+  142 readings. Training loss, first and last logged value (means over 20
+  steps): 2.30 → 2.09 (`n500`), 2.33 → 2.08 (`n2000`), 2.30 → 1.93 (`full`),
+  2.61 → 2.18 (`format_only`). Format-only stays higher, as it should: its
+  responses are shuffled, so the instruction does not predict them. The logs
+  are in `adapters/olmo_*/train_log.json`.
+- **Training data revision:** `databricks/databricks-dolly-15k` is pinned in
+  `configs/finetune.yaml` (`dataset_revision`), like the model revisions.
 
 Controls:
 

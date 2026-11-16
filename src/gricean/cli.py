@@ -117,7 +117,7 @@ def cmd_finetune(args, loader) -> int:
     cfg = yaml.safe_load((CONFIGS / "finetune.yaml").read_text())
     reg = load_registry()
     base = reg[cfg["base"]]
-    records = finetune.load_dolly()
+    records = finetune.load_dolly(cfg["dataset_revision"])
     sets = finetune.prepare(records, sizes=cfg["sizes"], seed=cfg["seed"], shuffle_responses=True)
     names = args.set or list(sets)
     for name in names:

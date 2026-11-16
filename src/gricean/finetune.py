@@ -13,9 +13,10 @@ def filter_dolly(records: list[dict]) -> list[dict]:
     return [r for r in records if r["category"] in DOLLY_KEEP and not r.get("context")]
 
 
-def load_dolly() -> list[dict]:
-    from datasets import load_dataset
-    ds = load_dataset("databricks/databricks-dolly-15k", split="train")
+def load_dolly(revision: str) -> list[dict]:
+    """The context-free Dolly pairs at a pinned dataset revision (`dataset_revision` in configs/finetune.yaml)."""
+    import datasets
+    ds = datasets.load_dataset("databricks/databricks-dolly-15k", split="train", revision=revision)
     return filter_dolly([dict(r) for r in ds])
 
 
@@ -55,13 +56,26 @@ def tokenize_rows(rows: list[dict], tok, max_len: int) -> list[dict]:
             for ids, am in zip(enc["input_ids"], enc["attention_mask"])]
 
 
+def collate(features: list[dict], pad_id: int, multiple: int) -> dict:
+    """Right-pad a batch to the next multiple of `multiple` tokens, so batches come in a few fixed lengths.
+
+    On MPS, memory grows with every new batch shape (measured 2026-11-14: 70 shapes in 80 batches took the run
+    from 14 to 18 GiB and then out of memory; with multiples of 64 there are six shapes). The padding carries
+    attention 0 and label -100 and sits to the right of a causal model, so no loss term changes."""
+    import torch
+    n = max(len(f["input_ids"]) for f in features)
+    n = -(-n // multiple) * multiple
+    pad = lambda key, fill: torch.tensor([f[key] + [fill] * (n - len(f[key])) for f in features])
+    return {"input_ids": pad("input_ids", pad_id), "attention_mask": pad("attention_mask", 0), "labels": pad("labels", -100)}
+
+
 def train_lora(base_spec: ModelSpec, rows: list[dict], out_dir: Path, cfg: dict,
                device: str | None = None) -> Path:
     import torch
     from datasets import Dataset
     from peft import LoraConfig, get_peft_model
-    from transformers import (AutoModelForCausalLM, AutoTokenizer, DataCollatorForSeq2Seq,
-                              Trainer, TrainingArguments, set_seed)
+    from transformers import (AutoModelForCausalLM, AutoTokenizer, Trainer, TrainerCallback,
+                              TrainingArguments, set_seed)
     from .lm import pick_device
     device = device or pick_device()
     set_seed(cfg["seed"])
@@ -80,8 +94,18 @@ def train_lora(base_spec: ModelSpec, rows: list[dict], out_dir: Path, cfg: dict,
         learning_rate=cfg["lr"], logging_steps=20, save_strategy="no", report_to=[],
         seed=cfg["seed"], use_cpu=(device == "cpu"), dataloader_pin_memory=False,
     )
-    trainer = Trainer(model=model, args=args, train_dataset=ds,
-                      data_collator=DataCollatorForSeq2Seq(tok, padding=True, label_pad_token_id=-100))
+    class ReleaseMpsCache(TrainerCallback):
+        """Hand cached GPU blocks back after each optimizer step and print the driver's total now and then.
+        Without it the cache alone climbs past 13 GiB in 200 batches on the 16 GB M3."""
+        def on_step_end(self, args, state, control, **kwargs):
+            if device != "mps":
+                return
+            torch.mps.empty_cache()
+            if state.global_step % 20 == 0:
+                print(f"[mps] step {state.global_step}: {torch.mps.driver_allocated_memory() / 2**30:.2f} GiB", flush=True)
+
+    trainer = Trainer(model=model, args=args, train_dataset=ds, callbacks=[ReleaseMpsCache()],
+                      data_collator=lambda features: collate(features, tok.pad_token_id, cfg["pad_to_multiple_of"]))
     trainer.train()
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     model.save_pretrained(str(out_dir))

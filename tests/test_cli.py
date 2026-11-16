@@ -121,10 +121,12 @@ def test_finetune_writes_adapters_under_prefix(tmp_path: Path, monkeypatch):
     reg = yaml.safe_load((root / "configs/models.yaml").read_text())
     reg["models"][cfg["base"]] = {"repo": "x", "revision": "1", "family": "t", "template": "none"}
     yaml.safe_dump(reg, (root / "configs/models.yaml").open("w"))
-    monkeypatch.setattr(F, "load_dolly", lambda: [
+    asked = []
+    monkeypatch.setattr(F, "load_dolly", lambda revision: asked.append(revision) or [
         {"category": "open_qa", "instruction": f"q{i}", "response": f"a{i}", "context": ""} for i in range(600)])
     monkeypatch.setattr(F, "train_lora", lambda base, rows, out, cfg: Path(out).mkdir(parents=True, exist_ok=True))
     assert cli.main(["finetune", "--set", "n500"]) == 0
+    assert asked == [cfg["dataset_revision"]]                 # the training data is loaded at the pinned revision
     assert (root / "adapters/olmo_n500/train.jsonl").exists()
     assert cfg["base"] == "olmo_stage1"
 

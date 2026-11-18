@@ -48,6 +48,9 @@ def test_full_pipeline_with_fakes(tmp_path: Path, monkeypatch):
     assert cli.main(["sheet", "--coder2", "--frac", "0.5"]) == 0
     assert (root / "data/coding/coder2.key.csv").exists()
     import pandas as pd
+    blind = pd.read_csv(root / "data/coding/coder2.csv", dtype=str, keep_default_na=False)
+    assert (blind["intended_reading"] != "").all()              # coder 2 gets the two readings of each item
+    assert not blind["row_id"].str.contains("|", regex=False).any()   # and an id that does not name the model
     sheet = pd.read_csv(root / "data/coding/coder1.csv")
     assert (sheet["mode"] == "greedy").all()                    # Line 1 codes greedy responses only
     tuned_raw = sheet[(sheet["model"] == "s") & ~sheet["template"] & (sheet["version"] != "embedded")]

@@ -28,8 +28,8 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   flagged `neither` rows block scoring until `approved: true`.
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
-## Current status (2026-11-16)
-- PRs #1–#11 are merged into `main`. #1–#8: pipeline; pre-run gates + spec revision 2; the
+## Current status (2026-11-17)
+- PRs #1–#12 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`). #1–#8: pipeline; pre-run gates + spec revision 2; the
   78-item stimulus set; removal of the seed dry-run data; the `neither` set and the pre-run fixes
   below; the first real run (`data/responses`, `data/logprobs`); notebooks that run from any
   folder; the Line 1 subset. #9–#11: the blank sheet, the first batch coded, per-language tables.
@@ -123,14 +123,29 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   (500, 2,000, all pairs), 0 for format-only (all `neither`). `embedded`: 0 of 24 at every rung.
   So: adapter effect present, absent in the format-only control, no growth with data scale on
   Line 1 (§5.4 predicted growth). `paper/olmo/` did not change.
-- Branch `selfrun-adapters` holds all of the above (fine-tune preparation, adapters, self-run
-  passes, second batch, third check, report). PR into `main`, merge commit, not squash.
-- Next, in order: (1) codebook for coder 2, compiled from the author's own rules: spec §5.1 steps
-  7, 10 and 13 and the `group_rule` / `reason` columns of `coder1_check.csv`, `coder1_check2.csv`,
-  `coder1_check3.csv`; it needs the line on `correct` under `neither` and the language convention.
-  (2) `uv run gricean sheet --coder2 --frac 0.25`, once: 335 of the 1,339 hand-coded rows, one
-  draw over both batches (seed 0), written with `coder2.key.csv`; commit it blank. (3) After
-  coder 2: `make report` gives kappa. Open gaps: `correctness` in no table; ladder figure without
+- **Codebook for coder 2** (2026-11-18, branch `coder2-codebook`): `docs/codebook-coder2.md`,
+  compiled from spec §5.1 steps 7, 9, 10 and 13 and the three check files; spec §5.1 step 14 is
+  the record. The author confirmed four conventions that were practice only: controls coded
+  `intended`; `na` never used by hand; `correct` under `neither` = well formed as language; the
+  language convention. "Obviously wrong" = wrong for an ordinary reader, not only a specialist
+  (`en_mi_04`, `full`, stays `correct`). Author's instruction: no example from the responses, no
+  quoted check rules, no appendix (an example fixes the code of every sampled row with that
+  text; the sports sentence alone is 104 of 1,339 rows). It names no model and no result. Do not
+  add examples back.
+- **The coder-2 sheet is blind in fact** (2026-11-18, before any draw): `export_sheet` gives the
+  blind sample an opaque `row_id` (hash of seed and real id), orders it by item, version and that
+  id, and adds the four reading columns from the frozen stimuli; `coder2.key.csv` holds
+  `source_row_id`, and `load_sheet(key=…)` restores the real ids for kappa. Before this the
+  `row_id` shown to coder 2 began with the model name. `coder1.csv` and its `row_id` format are
+  untouched. A dry run outside the repo gave 335 rows, no cell naming a model, 48 control rows.
+- **The draw for coder 2 is made** (2026-11-18): `data/coding/coder2.csv`, 335 of the 1,339
+  hand-coded rows (206 first batch, 129 second; 270 en, 65 pt; 48 control rows), committed blank
+  with `coder2.key.csv`. Do not run `gricean sheet --coder2` with another fraction or seed: the
+  sample is fixed. A re-run with the same arguments keeps entered codes. Until coder 2 returns
+  the sheet, `make report` warns "kappa skipped" (blank codes) and writes everything else.
+- Next, in order: (1) the author sends coder 2 `coder2.csv` and `docs/codebook-coder2.md`, never
+  the key. (2) The returned sheet replaces `coder2.csv` in one commit, as entered. (3)
+  `make report` gives kappa (`intent` only; nothing compares `correctness` yet). Open gaps: `correctness` in no table; ladder figure without
   CIs; `make finetune` trains `full` first although smallest-first is the safer order.
 - The coding page is kept (author's instruction). Its store matches `coder1.csv`.
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two

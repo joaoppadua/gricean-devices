@@ -6,6 +6,15 @@ Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
 
+**2026-11-18 (note): codebook and sheet for coder 2.** The codebook is
+`docs/codebook-coder2.md`; §5.1, step 14, says how it was compiled, which
+four unwritten conventions the author confirmed, and why it carries no
+example from the responses. Before any draw, the sheet for coder 2 was
+changed so that it is blind in fact: the `row_id` it used to show began with
+the model's name. It now has an opaque key, an order that does not follow
+the model, and the two readings of each item. No sheet had been written for
+coder 2 before this change, and coder 1's sheet is untouched.
+
 **2026-11-16 (note): Line 1 is coded for the self-run ladder.** The author
 coded the 552 greedy responses of the four adapters on 2026-11-15. The codes
 were committed as entered, a third check flagged 40 of them, and the author
@@ -578,6 +587,35 @@ only coding rule. What the page does:
     Portuguese prompt is `incorrect` when it is coded `intended` or
     `literal` (one exception, a translation item whose answer gives the
     Portuguese word), and language is not considered under `neither`.
+14. *Codebook and sheet for coder 2 (2026-11-18).* Coder 2 codes from
+    `docs/codebook-coder2.md`, which Claude Code compiled from the rubric,
+    from steps 7, 9, 10 and 13, and from the rules and reasons of the three
+    check files. The author confirmed four conventions that held in the codes
+    without having been written as rules: a response that does what a control
+    item asks is `intended`; `na` is not used by hand, so every hand-coded
+    row is `correct` or `incorrect`; under `neither`, `correct` means well
+    formed as language and sensible in itself, relevance aside; and the
+    language convention of step 13. The author also fixed the sense of
+    "obviously wrong": wrong for an ordinary reader, not only for a
+    specialist in the subject. The occasion was `en_mi_04`, `full`, whose
+    response goes on to name the wrong mountain as the second tallest; its
+    code, `correct`, stands.
+
+    At the author's instruction the codebook gives no example taken from the
+    responses and does not quote the check files. An example fixes the code
+    of every sampled row with the same text, and one sentence alone accounts
+    for 104 of the 1,339 hand-coded rows; agreement on such rows would not
+    test the rule. The codebook names no model and no result.
+
+    The sheet for coder 2 (`gricean sheet --coder2`) differs from coder 1's
+    in three ways, all settled before the draw. Its `row_id` is an opaque
+    key, a hash, because the `row_id` of the full sheet begins with the name
+    of the model; `coder2.key.csv` leads back to it (`source_row_id`). Its
+    rows are ordered by item and version and then by that key, so that the
+    position of a row does not follow its model. And it carries the two
+    readings and the example continuations of each item, which coder 1 saw
+    in the coding page. The draw is as stated above: 25% of the rows coded
+    by hand, seed 0.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

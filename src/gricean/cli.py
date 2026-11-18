@@ -95,9 +95,11 @@ def cmd_logprobs(args, loader) -> int:
 
 def cmd_sheet(args, loader) -> int:
     out = Path("data/coding") / ("coder2.csv" if args.coder2 else "coder1.csv")
+    readings = ({it.id: {f: getattr(it, f) for f in coding.READINGS} for it in stimuli.load_all()}
+                if args.coder2 else None)       # coder 2 has no coding page: the readings travel with the rows
     n = coding.export_sheet(Path("data/responses"), out, coder="coder2" if args.coder2 else "coder1",
                             sample_frac=args.frac if args.coder2 else None, seed=0,
-                            expected=expected_templates())
+                            expected=expected_templates(), readings=readings)
     print(f"sheet {out}: {n} rows")
     return 0
 

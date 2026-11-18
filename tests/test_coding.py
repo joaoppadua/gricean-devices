@@ -149,3 +149,54 @@ def test_blind_sample_is_drawn_from_the_hand_coded_rows(tmp_path: Path):
     assert _cells(df.merge(key, on="row_id")) == {("b", False, "a0", "full", "greedy"),
                                                   ("t", True, "a0", "full", "greedy"),
                                                   ("t", False, "a0", "embedded", "greedy")}
+
+
+READINGS = {f"a{i}": {"literal_reading": f"lit {i}", "intended_reading": f"int {i}",
+                      "literal_continuation": f"lc {i}", "intended_continuation": None} for i in range(4)}
+
+
+def _blind(tmp_path: Path, frac: float, **kw):
+    """The full sheet and a blind sample of it, as data frames, with the key of the sample."""
+    make_responses(tmp_path / "resp")
+    C.export_sheet(tmp_path / "resp", tmp_path / "coder1.csv", coder="coder1", sample_frac=None, seed=0, expected=EXP)
+    C.export_sheet(tmp_path / "resp", tmp_path / "coder2.csv", coder="coder2", sample_frac=frac, seed=0,
+                   expected=EXP, **kw)
+    return tuple(pd.read_csv(tmp_path / name, dtype=str, keep_default_na=False)
+                 for name in ("coder1.csv", "coder2.csv", "coder2.key.csv"))
+
+
+def test_blind_sample_row_ids_do_not_name_the_model(tmp_path: Path):
+    full, blind, key = _blind(tmp_path, 1.0)
+    assert blind["row_id"].is_unique
+    assert not blind["row_id"].str.contains(r"m_base|m_sft|\|").any()       # the full sheet's ids begin with the model
+    assert set(key["row_id"]) == set(blind["row_id"]) and set(key["source_row_id"]) == set(full["row_id"])
+
+
+def test_blind_sample_order_does_not_follow_the_model(tmp_path: Path):
+    _, blind, key = _blind(tmp_path, 1.0)
+    order = list(zip(blind["item_id"], blind["version"], blind["row_id"]))
+    assert order == sorted(order)                                           # by item and version, then by the opaque id
+    models = blind.merge(key, on="row_id", how="left")["model"].tolist()
+    assert models != sorted(models)                                         # not one block per model
+
+
+def test_load_with_key_restores_the_row_ids_of_the_full_sheet(tmp_path: Path):
+    full, blind, _ = _blind(tmp_path, 0.5)
+    blind["intent"] = "neither"; blind["correctness"] = "incorrect"
+    blind.to_csv(tmp_path / "coder2.csv", index=False)
+    out = C.load_sheet(tmp_path / "coder2.csv", key=tmp_path / "coder2.key.csv")
+    assert len(out) == 4 and set(out["row_id"]) <= set(full["row_id"]) and "model" in out.columns
+
+
+def test_blind_sample_carries_the_readings_of_each_item(tmp_path: Path):
+    _, blind, _ = _blind(tmp_path, 1.0, readings=READINGS)
+    n = blind["item_id"].str[1:]
+    assert (blind["literal_reading"] == "lit " + n).all() and (blind["intended_reading"] == "int " + n).all()
+    assert (blind["literal_continuation"] == "lc " + n).all()
+    assert (blind["intended_continuation"] == "").all()                     # a control has no continuation
+    assert (blind["intent"] == "").all()
+
+
+def test_blind_sample_refuses_an_item_without_readings(tmp_path: Path):
+    with pytest.raises(ValueError, match="a3"):
+        _blind(tmp_path, 1.0, readings={k: v for k, v in READINGS.items() if k != "a3"})

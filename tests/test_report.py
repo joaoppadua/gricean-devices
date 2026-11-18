@@ -211,3 +211,20 @@ def test_intent_table_gives_zero_for_an_intent_a_coded_model_never_shows():
     t = R.intent_table(coded(), MODELS, EXPECTED)
     assert t.loc[IR_FULL, ("m_sft", "literal")] == 0.0
     assert t.loc[IR_FULL, ("m_sft", "neither")] == 0.0
+
+
+def test_build_reports_kappa_from_a_blind_sheet(tmp_path: Path):
+    """Coder 2's sheet carries opaque ids; the key leads back to the rows of coder 1's sheet."""
+    full = coded()
+    full.to_csv(tmp_path / "coded.csv", index=False)
+    sample = full.iloc[:6].copy()
+    blind_ids = [f"x{i}" for i in range(len(sample))]
+    pd.DataFrame({"row_id": blind_ids, "source_row_id": sample["row_id"].tolist(), "model": sample["model"].tolist(),
+                  "template": sample["template"].tolist(), "prompt_text": "p"}).to_csv(tmp_path / "c2.key.csv", index=False)
+    sample = sample.drop(columns=["model", "template", "prompt_text"]).assign(row_id=blind_ids, coder="c2")
+    sample.to_csv(tmp_path / "c2.csv", index=False)
+    lp_rows(tmp_path / "lp"); resp_rows(tmp_path / "resp")
+    summary = R.build(tmp_path / "coded.csv", tmp_path / "c2.key.csv", tmp_path / "c2.csv", tmp_path / "resp",
+                      tmp_path / "lp", MODELS, tmp_path / "paper", EXPECTED)
+    assert summary["kappa"] == 1.0
+    assert (tmp_path / "paper" / "kappa.txt").read_text().strip().endswith("n=6")

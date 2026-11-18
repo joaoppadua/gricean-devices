@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from collections import Counter
 from pathlib import Path
 
@@ -13,6 +14,7 @@ PUBLIC = ["row_id", "item_id", "category", "language", "control", "version", "mo
           "stimulus_text", "response"]
 HIDDEN = ["model", "template", "prompt_text"]   # prompt_text reveals the chat template, hence the stage
 EMPTY_CODES = {"intent": "neither", "correctness": "na"}   # an empty response is coded by rule, not by hand
+READINGS = ["literal_reading", "intended_reading", "literal_continuation", "intended_continuation"]
 
 
 def select_main(df: pd.DataFrame, expected: dict[str, bool]) -> pd.DataFrame:
@@ -42,18 +44,38 @@ def _all_responses(response_root: Path) -> pd.DataFrame:
     return df
 
 
+def _blind_id(row_id: str, seed: int) -> str:
+    """An id that says nothing about the row: the full sheet's `row_id` begins with the model."""
+    return hashlib.sha256(f"{seed}|{row_id}".encode()).hexdigest()[:12]
+
+
 def export_sheet(response_root: Path, out: Path, *, coder: str, sample_frac: float | None,
-                 seed: int, expected: dict[str, bool]) -> int:
+                 seed: int, expected: dict[str, bool], readings: dict[str, dict] | None = None) -> int:
     """Write the coding sheet for `select_coded` rows; `expected` maps model -> templated main condition.
 
     Empty responses arrive coded (`EMPTY_CODES`). The blind sample (`sample_frac`) is drawn from the
-    rows that are coded by hand, so agreement is not inflated by rows no one judged."""
+    rows that are coded by hand, so agreement is not inflated by rows no one judged. Its rows carry an
+    opaque `row_id` and are ordered by item and version, then by that id, so neither the id nor the
+    position of a row gives its model away; the key file leads back to the full sheet's `row_id`
+    (`source_row_id`). `readings` (item id -> the four `READINGS` fields) puts the two readings of
+    each item beside its rows."""
     df = select_coded(_all_responses(response_root), expected)
     empty = df["response"].str.strip() == ""
     if sample_frac is not None:
-        df = df[~empty].sample(frac=sample_frac, random_state=seed).sort_values("row_id")
-        df[["row_id", *HIDDEN]].to_csv(Path(out).with_suffix(".key.csv"), index=False)
+        df = df[~empty].sample(frac=sample_frac, random_state=seed).rename(columns={"row_id": "source_row_id"})
+        df["row_id"] = [_blind_id(r, seed) for r in df["source_row_id"]]
+        if not df["row_id"].is_unique:
+            raise ValueError("blind ids collide; choose another seed")
+        df = df.sort_values(["item_id", "version", "row_id"])
+        df[["row_id", "source_row_id", *HIDDEN]].to_csv(Path(out).with_suffix(".key.csv"), index=False)
         cols = PUBLIC
+        if readings is not None:
+            missing = sorted(set(df["item_id"]) - set(readings))
+            if missing:
+                raise ValueError(f"no readings for item(s): {missing[:5]}")
+            for field in READINGS:
+                df[field] = [readings[i][field] or "" for i in df["item_id"]]
+            cols = PUBLIC + READINGS
     else:
         cols = PUBLIC + HIDDEN
     sheet = df[cols].copy()
@@ -86,6 +108,8 @@ def load_sheet(path: Path, key: Path | None = None) -> pd.DataFrame:
     if key is not None:
         k = pd.read_csv(key, dtype=str)
         df = df.merge(k, on="row_id", how="left")
+        if "source_row_id" in df.columns:        # a blind sheet: back to the ids of the full sheet
+            df["row_id"] = df.pop("source_row_id")
     df["control"] = df["control"].str.lower() == "true"
     if "template" in df.columns:
         df["template"] = df["template"].astype(str).str.lower() == "true"

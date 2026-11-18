@@ -20,6 +20,11 @@ those are the author's alone, and coder 2's codes feed the agreement measure
 only. The open item of §11 is closed. This amendment was written before
 coder 2 gave any code.
 
+**2026-11-18 (note): coder 2 has coded.** Eight Haiku agents coded the 335
+rows of the blind sample on 2026-11-18 (§5.1, step 15). On `intent`, Cohen's
+kappa between the author and coder 2 is 0.775, with the same code on 290
+rows (86.6%). Nothing compares `correctness` yet.
+
 **2026-11-18 (note): codebook and sheet for coder 2.** The codebook is
 `docs/codebook-coder2.md`; §5.1, step 14, says how it was compiled, which
 four unwritten conventions the author confirmed, and why it carries no
@@ -679,6 +684,23 @@ only coding rule. What the page does:
     that filled it, with the reason; no one else enters or changes a code
     of coder 2. The sheet is committed as entered, and doubts the agents
     wrote down are kept in `data/coding/coder2_notes.md`.
+
+    *Outcome (written after the run).* The eight agents ran on 2026-11-18,
+    about a minute each, and coded 43, 42, 42, 43, 43, 41, 40 and 41 rows.
+    Each reported that it opened its codebook, its batch and its form and no
+    other file. Every form passed the checks at the first entry, so none
+    went back to its agent. All eight wrote notes: 70 of the 335 rows carry
+    a doubt. The sheet is committed as entered (`ff28c89`), and no code was
+    changed afterwards. `na` was not used.
+
+    On `intent` the two coders give the same code to 290 of the 335 rows
+    (86.6%), and Cohen's kappa is 0.775 (`paper/*/kappa.txt`; the number is
+    the same in both folders, because it is computed on the whole sample
+    and not per ladder). Coder 1 has 170 `intended`, 47 `literal` and 118
+    `neither` on these rows; coder 2 has 177, 48 and 110. The largest cell
+    of disagreement is 13 rows that are `neither` for coder 1 and
+    `intended` for coder 2. Agreement on `correctness` has not been
+    computed: the author fixes the measure first.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

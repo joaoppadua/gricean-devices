@@ -1,10 +1,24 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-18 (amendment): coder 2 is an agent, not a person.** The text of
+§5.1 said "an independent coder" and §11 said "recruit the second coder",
+which reads as a person; the author's design was an agent all along, and the
+spec now says so. Coder 2 is a Claude Haiku model run from Claude Code, in a
+fresh context, with the codebook and the rows of the blind sheet and nothing
+else (§5.1, step 15). The author chose a small model on purpose: coder 2
+stands for an ordinary coder, not for an expert one. Three passages change
+with it. Constraint 2 of §3 (no paid APIs, no subscription-only models)
+applies to the models the experiment is about, not to the coding of their
+outputs. "No LLM-as-judge" in §10 holds for every code that feeds a table:
+those are the author's alone, and coder 2's codes feed the agreement measure
+only. The open item of §11 is closed. This amendment was written before
+coder 2 gave any code.
 
 **2026-11-18 (note): codebook and sheet for coder 2.** The codebook is
 `docs/codebook-coder2.md`; §5.1, step 14, says how it was compiled, which
@@ -186,6 +200,10 @@ is argued conceptually, not simulated separately.
    small tables, one or two figures.
 2. Everything open-source and runnable on an ordinary laptop (reference
    machine: Apple M3, 16 GB). No paid APIs, no subscription-only models.
+   This applies to the models that are the object of the experiments
+   (clarified 2026-11-18). It does not apply to the coding of their outputs:
+   coder 2 of §5.1 is a hosted model. Its codes are committed, so every
+   table and the agreement measure regenerate without it.
 3. Full replication package: pinned model revisions, pinned Python
    dependencies, committed intermediate data, one-command regeneration of
    tables.
@@ -407,6 +425,25 @@ of the rows coder 1 codes by hand (rule-coded empty responses are left out,
 since no one judges them), blind to model stage. Report Cohen's kappa. The coding sheet is a CSV emitted
 by `gricean.coding.export` and read back by `gricean.coding.load`.
 
+**Coder 2 is an agent (stated 2026-11-18, before it gave any code).** It is
+a Claude Haiku model, run from Claude Code in a fresh context that holds the
+codebook and the rows of the blind sheet and nothing else; step 15 below is
+the procedure. Three things follow.
+
+- *Why a small model.* Coder 2 stands for an ordinary coder who applies the
+  written codebook, not for an expert. The author chose Haiku over the more
+  capable Claude models for that reason.
+- *What it is for.* Coder 2 is a control on a control. Line 1 is already
+  checked by Line 2, which uses no judge (§5.2); coder 2 checks the codes of
+  Line 1 themselves. It is not an object of the experiment and gives no
+  result of its own. Every code that feeds a table is the author's; coder
+  2's codes feed the agreement measure and nothing else.
+- *How it is reported.* Kappa is the agreement between the author and a
+  language model that applied the author's written codebook, and the paper
+  says so and names the model. It is not agreement between two human coders.
+  The paper also states that this coder is an instruction-tuned model, the
+  kind of system the paper is about.
+
 **Coding interface (a convenience, not part of the experiment; note of
 2026-11-12).** Coder 1 enters the codes through a temporary web page instead
 of a spreadsheet. The page is not in this repository and nothing in the
@@ -616,6 +653,32 @@ only coding rule. What the page does:
     readings and the example continuations of each item, which coder 1 saw
     in the coding page. The draw is as stated above: 25% of the rows coded
     by hand, seed 0.
+15. *Coder 2's run (2026-11-18).* The procedure was fixed before the run.
+    `gricean coder2 --batches DIR --n 8` writes the blind sheet as eight
+    text files in a folder outside the repository, in the order of the
+    sheet, without splitting an item: the codebook asks for the same codes
+    on the same text within an item, so all rows of an item must be read
+    together. A batch shows the columns of the sheet, the bookkeeping ones
+    (`mode`, `seed`, `coder`) and the codes left out, and comes with a form
+    that lists its `row_id`s with both codes blank. The folder also holds a
+    copy of `docs/codebook-coder2.md`. Each batch goes to a separate agent
+    (Claude Code's `haiku` setting) with the brief in
+    `docs/coder2-brief.md`, the same for all but the batch number. The
+    agents share nothing: eight fresh contexts, so no judgement carries
+    from one batch to the next. A human coder would carry it. The
+    difference can only make coder 2 less consistent from batch to batch.
+
+    Blindness: the folder holds no key, no code of coder 1 and no model
+    name, and the brief tells the agent to open no other file, to run no
+    code and to write no rule that assigns codes. Nothing enforces this.
+    Each agent reports the files it opened.
+
+    `gricean coder2 --enter DIR` copies the forms into `coder2.csv`. It
+    writes nothing unless the forms hold every row of the sheet once and
+    every code is a valid one. A form that fails goes back to the agent
+    that filled it, with the reason; no one else enters or changes a code
+    of coder 2. The sheet is committed as entered, and doubts the agents
+    wrote down are kept in `data/coding/coder2_notes.md`.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 
@@ -832,13 +895,15 @@ model.
 ## 10. Out of scope
 
 No benchmarks, no larger models, no API models, no mechanistic
-interpretability, no LLM-as-judge. Portuguese is a generalization check, not a
+interpretability, no LLM-as-judge for any code that feeds a table (coder 2 of
+§5.1 is an agent whose codes feed the agreement measure only; amended
+2026-11-18). Portuguese is a generalization check, not a
 parallel study. Prong (2) of the summary is argued, not simulated (§1).
 
 ## 11. Open items for the author
 
 - Write the 48 + 12 English items and the Portuguese mirror.
-- Recruit the second coder.
+- ~~Recruit the second coder.~~ Closed 2026-11-18: coder 2 is an agent (§5.1).
 - Decide, after seeing results, whether the Instruct column stays in the
   paper.
 - Decide, after seeing results, whether the Base (mid-training) rung is

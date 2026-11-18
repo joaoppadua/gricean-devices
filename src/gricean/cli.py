@@ -104,6 +104,16 @@ def cmd_sheet(args, loader) -> int:
     return 0
 
 
+def cmd_coder2(args, loader) -> int:
+    sheet = Path("data/coding/coder2.csv")
+    if args.batches:
+        paths = coding.write_batches(sheet, Path(args.batches), args.n)
+        print(f"coder2: {len(paths)} batches under {args.batches}")
+    else:
+        print(f"coder2: {coding.enter_codes(sheet, Path(args.enter))} rows coded in {sheet}")
+    return 0
+
+
 def cmd_report(args, loader) -> int:
     models = ladders()[args.ladder]
     c2 = Path("data/coding/coder2.csv")
@@ -141,6 +151,9 @@ def build_parser() -> argparse.ArgumentParser:
         s.set_defaults(fn=fn)
     s = sub.add_parser("sheet"); s.add_argument("--coder2", action="store_true"); s.add_argument("--frac", type=float, default=0.25)
     s.set_defaults(fn=cmd_sheet)
+    c = sub.add_parser("coder2"); c.add_argument("--n", type=int, default=8); c.set_defaults(fn=cmd_coder2)
+    how = c.add_mutually_exclusive_group(required=True)
+    how.add_argument("--batches", metavar="DIR"); how.add_argument("--enter", metavar="DIR")
     r = sub.add_parser("report"); r.add_argument("--ladder", default="olmo"); r.set_defaults(fn=cmd_report)
     f = sub.add_parser("finetune"); f.add_argument("--set", action="append"); f.set_defaults(fn=cmd_finetune)
     return p

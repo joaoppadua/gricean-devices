@@ -206,3 +206,21 @@ def cohen_kappa(a: list[str], b: list[str]) -> float:
     ca, cb = Counter(a), Counter(b)
     pe = sum(ca[k] * cb[k] for k in set(a) | set(b)) / (n * n)
     return 1.0 if pe == 1.0 else (po - pe) / (1 - pe)
+
+
+def agreement(a: pd.DataFrame, b: pd.DataFrame) -> pd.DataFrame:
+    """Agreement of two coders on the rows both coded (matched by `row_id`): `n`, `same`, `kappa` per measure.
+
+    `intent` is compared on all those rows. `correctness` is compared twice: on the rows where the
+    two coders gave the same intent, which is the main measure, because `correct` means one thing
+    under `neither` and another under the other two codes; and on all rows, so that the first number
+    can be seen not to depend on what it leaves out. A measure without rows has no kappa."""
+    m = a.merge(b[["row_id", "intent", "correctness"]], on="row_id", suffixes=("", "_b"))
+    same_intent = m[m["intent"] == m["intent_b"]]
+    out = {}
+    for name, rows, col in (("intent", m, "intent"), ("correctness_same_intent", same_intent, "correctness"),
+                            ("correctness_all", m, "correctness")):
+        x, y = rows[col].tolist(), rows[f"{col}_b"].tolist()
+        out[name] = {"n": len(x), "same": sum(p == q for p, q in zip(x, y)),
+                     "kappa": cohen_kappa(x, y) if x else float("nan")}
+    return pd.DataFrame.from_dict(out, orient="index")

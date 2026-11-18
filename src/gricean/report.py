@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .coding import INTENT, cohen_kappa, load_sheet, select_main
+from .coding import INTENT, agreement, load_sheet, select_main
 from .io import read_jsonl
 
 INDEX = ["category", "condition"]
@@ -227,16 +227,20 @@ def build(coded_path: Path, key_path: Path | None, coder2_path: Path | None, res
             rows = [r for p in sorted(Path(resp_root).glob("*.jsonl")) for r in read_jsonl(p)]
             example_ids = sorted({r["item_id"] for r in rows})[:6]
     (out_dir / "examples.md").write_text(examples(resp_root, models, example_ids, expected))
-    kappa = None
+    kappa, agree = None, None
     if coded is not None and coder2_path is not None:
         try:
-            c2 = load_sheet(coder2_path, key=key_path)
-            merged = coded.merge(c2[["row_id", "intent"]], on="row_id", suffixes=("", "_c2"))
-            kappa = cohen_kappa(merged["intent"].tolist(), merged["intent_c2"].tolist())
-            (out_dir / "kappa.txt").write_text(f"cohen_kappa_intent={kappa:.3f} n={len(merged)}\n")
+            table = agreement(coded, load_sheet(coder2_path, key=key_path))
+            if not table.loc["intent", "n"]:
+                raise ValueError("no row of coder 2 is in coder 1's sheet")
+            agree = {name: {"n": int(r["n"]), "same": int(r["same"]), "kappa": float(r["kappa"])}
+                     for name, r in table.iterrows()}
+            kappa = agree["intent"]["kappa"]
+            (out_dir / "kappa.txt").write_text("".join(
+                f"cohen_kappa_{name}={v['kappa']:.3f} n={v['n']} same={v['same']}\n" for name, v in agree.items()))
         except (FileNotFoundError, ValueError) as e:
             warns.append(f"kappa skipped (coder 2 sheet not usable): {e}")
     for w in warns:
         warnings.warn(w)
-    return {"n_coded": int(len(coded)) if coded is not None else 0, "kappa": kappa, "models": models,
-            "warnings": warns}
+    return {"n_coded": int(len(coded)) if coded is not None else 0, "kappa": kappa, "agreement": agree,
+            "models": models, "warnings": warns}

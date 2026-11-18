@@ -699,8 +699,18 @@ only coding rule. What the page does:
     and not per ladder). Coder 1 has 170 `intended`, 47 `literal` and 118
     `neither` on these rows; coder 2 has 177, 48 and 110. The largest cell
     of disagreement is 13 rows that are `neither` for coder 1 and
-    `intended` for coder 2. Agreement on `correctness` has not been
-    computed: the author fixes the measure first.
+    `intended` for coder 2.
+16. *Agreement on `correctness` (2026-11-18).* The author fixed the measure
+    after coder 2's codes were entered and before anyone compared the two
+    coders on `correctness`. It is reported twice. The main number is
+    Cohen's kappa on the rows where the two coders gave the same `intent`:
+    what `correct` means depends on the intent (under `neither` it means
+    well formed as language; elsewhere it means right), so only on those
+    rows do the two coders answer the same question. The second number is
+    kappa on all rows of the sample, given so that the first can be seen
+    not to depend on what it leaves out. `gricean.coding.agreement`
+    computes both, and `make report` writes them to `kappa.txt` under the
+    kappa on `intent`, each with its number of rows and of equal codes.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

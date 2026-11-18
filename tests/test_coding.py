@@ -312,3 +312,39 @@ def test_batches_are_not_written_over_forms_that_may_hold_codes(tmp_path: Path):
     with pytest.raises(ValueError, match="already holds forms"):
         C.write_batches(tmp_path / "coder2.csv", folder, 2)
     assert set(pd.read_csv(folder / "codes_01.csv", dtype=str)["intent"]) == {"intended"}
+
+
+# --- agreement between the two coders ----------------------------------------------------------------
+
+def _two_coders():
+    a = pd.DataFrame({"row_id": list("1234567"),
+                      "intent": ["intended", "intended", "intended", "literal", "neither", "neither", "neither"],
+                      "correctness": ["correct", "correct", "incorrect", "correct", "correct", "incorrect", "correct"]})
+    b = pd.DataFrame({"row_id": list("123456"),                      # coder 2 codes a sample: row 7 is not in it
+                      "intent": ["intended", "intended", "literal", "literal", "neither", "intended"],
+                      "correctness": ["correct", "incorrect", "incorrect", "correct", "correct", "correct"]})
+    return a, b
+
+
+def test_agreement_on_intent_covers_the_rows_both_coders_coded():
+    out = C.agreement(*_two_coders())
+    assert out.loc["intent", ["n", "same"]].tolist() == [6, 4]
+    assert math.isclose(out.loc["intent", "kappa"], 11 / 23)
+
+
+def test_agreement_on_correctness_is_given_for_rows_of_the_same_intent_and_for_all_rows():
+    """`correct` means one thing under `neither` and another elsewhere, so the main measure keeps to the
+    rows the coders read the same way; the measure on all rows shows that nothing was left out."""
+    out = C.agreement(*_two_coders())
+    assert out.loc["correctness_same_intent", ["n", "same"]].tolist() == [4, 3]
+    assert math.isclose(out.loc["correctness_same_intent", "kappa"], 0.0, abs_tol=1e-12)
+    assert out.loc["correctness_all", ["n", "same"]].tolist() == [6, 4]
+    assert math.isclose(out.loc["correctness_all", "kappa"], 0.25)
+
+
+def test_agreement_without_a_row_of_the_same_intent_has_no_kappa_for_that_measure():
+    a, b = _two_coders()
+    b["intent"] = ["neither", "neither", "neither", "intended", "literal", "literal"]
+    out = C.agreement(a, b)
+    assert out.loc["correctness_same_intent", "n"] == 0 and math.isnan(out.loc["correctness_same_intent", "kappa"])
+    assert out.loc["correctness_all", "n"] == 6

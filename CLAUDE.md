@@ -156,10 +156,12 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   now refuses a sheet whose ids do not match its key (it used to drop such rows unseen).
 - **Kappa on `intent`: 0.775**, n = 335, same code on 290 rows (`paper/*/kappa.txt`, identical in
   both folders: it is computed on the whole sample, not per ladder).
-- Next: the author decides how `correctness` is compared between the coders (rows with the same
-  intent, all rows, both, or not at all); it must not be computed before that. Open gaps:
-  `correctness` in no table; ladder figure without CIs; `make finetune` trains `full` first
-  although smallest-first is the safer order.
+- **Kappa on `correctness`** (spec §5.1 step 16, measure fixed by the author before it was
+  computed): 0.855 on the 290 rows with the same `intent` (main; 269 the same), 0.833 on all 335
+  (307 the same). `coding.agreement` computes the three measures; `kappa.txt` has three lines.
+- Next: nothing is owed on Line 1 agreement. Open gaps: `correctness` in no table; ladder figure
+  without CIs; `make finetune` trains `full` first although smallest-first is the safer order;
+  kappa is written per ladder folder although it is one number for the whole sample.
 - The coding page is kept (author's instruction). Its store matches `coder1.csv`.
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
   broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.

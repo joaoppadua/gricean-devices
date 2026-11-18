@@ -23,7 +23,9 @@ coder 2 gave any code.
 **2026-11-18 (note): coder 2 has coded.** Eight Haiku agents coded the 335
 rows of the blind sample on 2026-11-18 (§5.1, step 15). On `intent`, Cohen's
 kappa between the author and coder 2 is 0.775, with the same code on 290
-rows (86.6%). Nothing compares `correctness` yet.
+rows (86.6%). On `correctness`, by the measure the author then fixed (step
+16), kappa is 0.855 on the 290 rows with the same `intent` and 0.833 on all
+335.
 
 **2026-11-18 (note): codebook and sheet for coder 2.** The codebook is
 `docs/codebook-coder2.md`; §5.1, step 14, says how it was compiled, which
@@ -711,6 +713,11 @@ only coding rule. What the page does:
     not to depend on what it leaves out. `gricean.coding.agreement`
     computes both, and `make report` writes them to `kappa.txt` under the
     kappa on `intent`, each with its number of rows and of equal codes.
+
+    *Outcome (written after the first computation).* On the 290 rows with
+    the same `intent`, the two coders give the same `correctness` to 269,
+    and kappa is 0.855. On all 335 rows they give the same `correctness` to
+    307, and kappa is 0.833.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

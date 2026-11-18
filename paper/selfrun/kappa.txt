@@ -1,1 +1,3 @@
-cohen_kappa_intent=0.775 n=335
+cohen_kappa_intent=0.775 n=335 same=290
+cohen_kappa_correctness_same_intent=0.855 n=290 same=269
+cohen_kappa_correctness_all=0.833 n=335 same=307

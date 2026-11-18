@@ -200,3 +200,32 @@ def test_blind_sample_carries_the_readings_of_each_item(tmp_path: Path):
 def test_blind_sample_refuses_an_item_without_readings(tmp_path: Path):
     with pytest.raises(ValueError, match="a3"):
         _blind(tmp_path, 1.0, readings={k: v for k, v in READINGS.items() if k != "a3"})
+
+
+def _coded_blind(tmp_path: Path) -> pd.DataFrame:
+    """A blind sample with both codes entered, as coder 2 would return it."""
+    _, blind, _ = _blind(tmp_path, 1.0)
+    return blind.assign(intent="neither", correctness="incorrect")
+
+
+def test_load_refuses_a_blind_sheet_with_an_id_its_key_does_not_hold(tmp_path: Path):
+    """A spreadsheet rewrites ids that look like numbers; such a row must not drop out unseen."""
+    blind = _coded_blind(tmp_path)
+    blind.loc[0, "row_id"] = "4.10363E+11"
+    blind.to_csv(tmp_path / "coder2.csv", index=False)
+    with pytest.raises(ValueError, match=r"not in the key.*4\.10363E\+11"):
+        C.load_sheet(tmp_path / "coder2.csv", key=tmp_path / "coder2.key.csv")
+
+
+def test_load_refuses_a_blind_sheet_that_lacks_a_row_of_its_key(tmp_path: Path):
+    blind = _coded_blind(tmp_path)
+    blind.iloc[1:].to_csv(tmp_path / "coder2.csv", index=False)
+    with pytest.raises(ValueError, match="missing from the sheet"):
+        C.load_sheet(tmp_path / "coder2.csv", key=tmp_path / "coder2.key.csv")
+
+
+def test_load_refuses_a_blind_sheet_with_a_repeated_row(tmp_path: Path):
+    blind = _coded_blind(tmp_path)
+    pd.concat([blind, blind.iloc[:1]]).to_csv(tmp_path / "coder2.csv", index=False)
+    with pytest.raises(ValueError, match="more than once"):
+        C.load_sheet(tmp_path / "coder2.csv", key=tmp_path / "coder2.key.csv")

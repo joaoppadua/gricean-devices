@@ -95,6 +95,23 @@ def export_sheet(response_root: Path, out: Path, *, coder: str, sample_frac: flo
     return len(sheet)
 
 
+def _check_against_key(ids: pd.Series, key_ids: pd.Series) -> None:
+    """A sheet read with a key holds every row of the key once, under the id the key gives it.
+
+    The merge with the key would drop any other row without a word. A spreadsheet makes such rows:
+    it rewrites an id that looks like a number (`0374…` loses its zero, twelve digits turn into
+    `4.10363E+11`)."""
+    repeated = sorted(set(ids[ids.duplicated()]))
+    if repeated:
+        raise ValueError(f"row_id(s) more than once in the sheet: {repeated[:5]}")
+    unknown, missing = sorted(set(ids) - set(key_ids)), sorted(set(key_ids) - set(ids))
+    if unknown:
+        raise ValueError(f"{len(unknown)} row_id(s) not in the key: {unknown[:5]}; "
+                         f"ids of the key without a row: {missing[:5]}")
+    if missing:
+        raise ValueError(f"{len(missing)} row_id(s) of the key missing from the sheet: {missing[:5]}")
+
+
 def load_sheet(path: Path, key: Path | None = None) -> pd.DataFrame:
     df = pd.read_csv(path, dtype=str, keep_default_na=False)
     for col, allowed in (("intent", INTENT), ("correctness", CORRECT)):
@@ -107,6 +124,7 @@ def load_sheet(path: Path, key: Path | None = None) -> pd.DataFrame:
         df[col] = df[col].str.strip().str.lower()
     if key is not None:
         k = pd.read_csv(key, dtype=str)
+        _check_against_key(df["row_id"], k["row_id"])
         df = df.merge(k, on="row_id", how="left")
         if "source_row_id" in df.columns:        # a blind sheet: back to the ids of the full sheet
             df["row_id"] = df.pop("source_row_id")

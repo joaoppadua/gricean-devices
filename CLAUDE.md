@@ -138,10 +138,14 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   `source_row_id`, and `load_sheet(key=…)` restores the real ids for kappa. Before this the
   `row_id` shown to coder 2 began with the model name. `coder1.csv` and its `row_id` format are
   untouched. A dry run outside the repo gave 335 rows, no cell naming a model, 48 control rows.
-- Next, in order: (1) `uv run gricean sheet --coder2 --frac 0.25`, once, on the author's word:
-  335 of the 1,339 hand-coded rows, one draw over both batches (seed 0), written with
-  `coder2.key.csv`; commit it blank; coder 2 receives `coder2.csv` and the codebook, never the
-  key. (2) After coder 2: `make report` gives kappa. Open gaps: `correctness` in no table; ladder figure without
+- **The draw for coder 2 is made** (2026-11-18): `data/coding/coder2.csv`, 335 of the 1,339
+  hand-coded rows (206 first batch, 129 second; 270 en, 65 pt; 48 control rows), committed blank
+  with `coder2.key.csv`. Do not run `gricean sheet --coder2` with another fraction or seed: the
+  sample is fixed. A re-run with the same arguments keeps entered codes. Until coder 2 returns
+  the sheet, `make report` warns "kappa skipped" (blank codes) and writes everything else.
+- Next, in order: (1) the author sends coder 2 `coder2.csv` and `docs/codebook-coder2.md`, never
+  the key. (2) The returned sheet replaces `coder2.csv` in one commit, as entered. (3)
+  `make report` gives kappa (`intent` only; nothing compares `correctness` yet). Open gaps: `correctness` in no table; ladder figure without
   CIs; `make finetune` trains `full` first although smallest-first is the safer order.
 - The coding page is kept (author's instruction). Its store matches `coder1.csv`.
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two

@@ -4,7 +4,7 @@
 The rules are the first coder's, compiled from spec §5.1 and from the decisions
 recorded in `data/coding/coder1_check*.csv`. The tags in brackets (`g01` to
 `g35`, spec steps) point to that record. You do not need the record to code,
-and you should not open it before you return the sheet.*
+and you must not open it.*
 
 ## 1. The task
 
@@ -18,17 +18,18 @@ code, `intent`, says which reading the response follows. The second,
 
 You code alone.
 
-- The sheet does not say which model produced a response. Do not try to work it
+- The rows do not say which model produced a response. Do not try to work it
   out.
-- Until you have returned the sheet, do not open `data/coding/` or `paper/` in
-  the project's repository, and do not discuss individual rows with the first
-  coder.
+- Read nothing but this codebook and the rows you were given. In particular, do
+  not open `data/coding/` or `paper/` in the project's repository.
 - If a row leaves you in doubt, code it anyway and write the doubt in a separate
   note, with the row's `row_id`.
 
 ## 2. The sheet
 
-One row is one response. You fill two columns and change nothing else.
+One row is one response. You fill two columns and change nothing else. The rows
+may reach you as text, one block per row, with the fields named as the columns
+below; the two codes then go into the form that comes with them.
 
 | Column | What it holds |
 |---|---|
@@ -43,9 +44,9 @@ One row is one response. You fill two columns and change nothing else.
 | `intent` | **You fill it:** `literal`, `intended` or `neither`. |
 | `correctness` | **You fill it:** `correct` or `incorrect`. |
 
-The columns `mode`, `seed` and `coder` are bookkeeping; ignore them. Every row
-gets both codes: a blank cell or any other value makes the sheet unreadable for
-the analysis.
+The columns `mode`, `seed` and `coder` are bookkeeping; ignore them (the text
+form leaves them out). Every row gets both codes: a blank cell or any other
+value makes the sheet unreadable for the analysis.
 
 ## 3. The two readings
 

@@ -227,4 +227,8 @@ def test_build_reports_kappa_from_a_blind_sheet(tmp_path: Path):
     summary = R.build(tmp_path / "coded.csv", tmp_path / "c2.key.csv", tmp_path / "c2.csv", tmp_path / "resp",
                       tmp_path / "lp", MODELS, tmp_path / "paper", EXPECTED)
     assert summary["kappa"] == 1.0
-    assert (tmp_path / "paper" / "kappa.txt").read_text().strip().endswith("n=6")
+    lines = (tmp_path / "paper" / "kappa.txt").read_text().splitlines()
+    assert lines == ["cohen_kappa_intent=1.000 n=6 same=6",                   # the key led every row back
+                     "cohen_kappa_correctness_same_intent=1.000 n=6 same=6",
+                     "cohen_kappa_correctness_all=1.000 n=6 same=6"]
+    assert summary["agreement"]["correctness_same_intent"] == {"n": 6, "same": 6, "kappa": 1.0}

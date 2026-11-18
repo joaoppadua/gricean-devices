@@ -200,3 +200,151 @@ def test_blind_sample_carries_the_readings_of_each_item(tmp_path: Path):
 def test_blind_sample_refuses_an_item_without_readings(tmp_path: Path):
     with pytest.raises(ValueError, match="a3"):
         _blind(tmp_path, 1.0, readings={k: v for k, v in READINGS.items() if k != "a3"})
+
+
+def _coded_blind(tmp_path: Path) -> pd.DataFrame:
+    """A blind sample with both codes entered, as coder 2 would return it."""
+    _, blind, _ = _blind(tmp_path, 1.0)
+    return blind.assign(intent="neither", correctness="incorrect")
+
+
+def test_load_refuses_a_blind_sheet_with_an_id_its_key_does_not_hold(tmp_path: Path):
+    """A spreadsheet rewrites ids that look like numbers; such a row must not drop out unseen."""
+    blind = _coded_blind(tmp_path)
+    blind.loc[0, "row_id"] = "4.10363E+11"
+    blind.to_csv(tmp_path / "coder2.csv", index=False)
+    with pytest.raises(ValueError, match=r"not in the key.*4\.10363E\+11"):
+        C.load_sheet(tmp_path / "coder2.csv", key=tmp_path / "coder2.key.csv")
+
+
+def test_load_refuses_a_blind_sheet_that_lacks_a_row_of_its_key(tmp_path: Path):
+    blind = _coded_blind(tmp_path)
+    blind.iloc[1:].to_csv(tmp_path / "coder2.csv", index=False)
+    with pytest.raises(ValueError, match="missing from the sheet"):
+        C.load_sheet(tmp_path / "coder2.csv", key=tmp_path / "coder2.key.csv")
+
+
+def test_load_refuses_a_blind_sheet_with_a_repeated_row(tmp_path: Path):
+    blind = _coded_blind(tmp_path)
+    pd.concat([blind, blind.iloc[:1]]).to_csv(tmp_path / "coder2.csv", index=False)
+    with pytest.raises(ValueError, match="more than once"):
+        C.load_sheet(tmp_path / "coder2.csv", key=tmp_path / "coder2.key.csv")
+
+
+# --- coder 2 as an agent: rows out as text, codes back into the sheet --------------------------------
+
+def _batches(tmp_path: Path, n: int = 2):
+    """The blind sheet of the fixture written as `n` batches; returns the sheet and the batch folder."""
+    _, blind, _ = _blind(tmp_path, 1.0, readings=READINGS)
+    C.write_batches(tmp_path / "coder2.csv", tmp_path / "b", n)
+    return blind, tmp_path / "b"
+
+
+def _ids_in(text: str) -> list[str]:
+    return [line.split(": ", 1)[1] for line in text.splitlines() if line.startswith("row_id: ")]
+
+
+def _fill(folder: Path, intent: str = "intended", correctness: str = "correct") -> None:
+    for path in sorted(folder.glob("codes_*.csv")):
+        pd.read_csv(path, dtype=str).assign(intent=intent, correctness=correctness).to_csv(path, index=False)
+
+
+def test_batches_cover_the_sheet_once_and_keep_the_rows_of_an_item_together(tmp_path: Path):
+    blind, folder = _batches(tmp_path)
+    texts = [p.read_text() for p in sorted(folder.glob("batch_*.md"))]
+    ids = [_ids_in(t) for t in texts]
+    assert len(texts) == 2 and sorted(sum(ids, [])) == sorted(blind["row_id"])
+    item_of = dict(zip(blind["row_id"], blind["item_id"]))
+    items = [{item_of[i] for i in batch} for batch in ids]
+    assert not items[0] & items[1]          # "same text, same codes" needs every row of an item in one place
+
+
+def test_a_batch_shows_what_the_sheet_shows_and_nothing_of_the_key(tmp_path: Path):
+    blind, folder = _batches(tmp_path)
+    text = "".join(p.read_text() for p in sorted(folder.glob("batch_*.md")))
+    row = blind.iloc[0]
+    for field in ("item_id", "category", "version", "stimulus_text", "response", "literal_reading", "intended_reading"):
+        assert row[field] in text
+    assert "<tmpl>" not in text and "prompt_text" not in text and "model:" not in text   # the key's columns
+
+
+def test_each_batch_comes_with_a_blank_form_for_its_codes(tmp_path: Path):
+    _, folder = _batches(tmp_path)
+    for batch in sorted(folder.glob("batch_*.md")):
+        form = pd.read_csv(folder / batch.name.replace("batch_", "codes_").replace(".md", ".csv"),
+                           dtype=str, keep_default_na=False)
+        assert list(form.columns) == ["row_id", "intent", "correctness"]
+        assert form["row_id"].tolist() == _ids_in(batch.read_text())
+        assert (form[["intent", "correctness"]] == "").all().all()
+
+
+def test_enter_codes_changes_the_two_code_columns_and_nothing_else(tmp_path: Path):
+    blind, folder = _batches(tmp_path)
+    _fill(folder, "Literal ", "incorrect")
+    assert C.enter_codes(tmp_path / "coder2.csv", folder) == len(blind)
+    after = pd.read_csv(tmp_path / "coder2.csv", dtype=str, keep_default_na=False)
+    rest = [c for c in blind.columns if c not in ("intent", "correctness")]
+    assert after[rest].equals(blind[rest])
+    assert set(after["intent"]) == {"literal"} and set(after["correctness"]) == {"incorrect"}
+    assert len(C.load_sheet(tmp_path / "coder2.csv", key=tmp_path / "coder2.key.csv")) == len(blind)
+
+
+@pytest.mark.parametrize("damage, message", [
+    (lambda f: f.iloc[1:], "missing"),
+    (lambda f: f.assign(row_id=["zzz"] + f["row_id"].tolist()[1:]), "not in the sheet"),
+    (lambda f: pd.concat([f, f.iloc[:1]]), "more than once"),
+    (lambda f: f.assign(intent=["intendd"] + f["intent"].tolist()[1:]), "invalid intent"),
+    (lambda f: f.assign(correctness=[""] + f["correctness"].tolist()[1:]), "invalid correctness"),
+])
+def test_enter_codes_refuses_a_form_that_does_not_fit_and_leaves_the_sheet_alone(tmp_path: Path, damage, message):
+    blind, folder = _batches(tmp_path)
+    _fill(folder)
+    form = folder / "codes_01.csv"
+    damage(pd.read_csv(form, dtype=str, keep_default_na=False)).to_csv(form, index=False)
+    with pytest.raises(ValueError, match=message):
+        C.enter_codes(tmp_path / "coder2.csv", folder)
+    assert pd.read_csv(tmp_path / "coder2.csv", dtype=str, keep_default_na=False).equals(blind)
+
+
+def test_batches_are_not_written_over_forms_that_may_hold_codes(tmp_path: Path):
+    _, folder = _batches(tmp_path)
+    _fill(folder)
+    with pytest.raises(ValueError, match="already holds forms"):
+        C.write_batches(tmp_path / "coder2.csv", folder, 2)
+    assert set(pd.read_csv(folder / "codes_01.csv", dtype=str)["intent"]) == {"intended"}
+
+
+# --- agreement between the two coders ----------------------------------------------------------------
+
+def _two_coders():
+    a = pd.DataFrame({"row_id": list("1234567"),
+                      "intent": ["intended", "intended", "intended", "literal", "neither", "neither", "neither"],
+                      "correctness": ["correct", "correct", "incorrect", "correct", "correct", "incorrect", "correct"]})
+    b = pd.DataFrame({"row_id": list("123456"),                      # coder 2 codes a sample: row 7 is not in it
+                      "intent": ["intended", "intended", "literal", "literal", "neither", "intended"],
+                      "correctness": ["correct", "incorrect", "incorrect", "correct", "correct", "correct"]})
+    return a, b
+
+
+def test_agreement_on_intent_covers_the_rows_both_coders_coded():
+    out = C.agreement(*_two_coders())
+    assert out.loc["intent", ["n", "same"]].tolist() == [6, 4]
+    assert math.isclose(out.loc["intent", "kappa"], 11 / 23)
+
+
+def test_agreement_on_correctness_is_given_for_rows_of_the_same_intent_and_for_all_rows():
+    """`correct` means one thing under `neither` and another elsewhere, so the main measure keeps to the
+    rows the coders read the same way; the measure on all rows shows that nothing was left out."""
+    out = C.agreement(*_two_coders())
+    assert out.loc["correctness_same_intent", ["n", "same"]].tolist() == [4, 3]
+    assert math.isclose(out.loc["correctness_same_intent", "kappa"], 0.0, abs_tol=1e-12)
+    assert out.loc["correctness_all", ["n", "same"]].tolist() == [6, 4]
+    assert math.isclose(out.loc["correctness_all", "kappa"], 0.25)
+
+
+def test_agreement_without_a_row_of_the_same_intent_has_no_kappa_for_that_measure():
+    a, b = _two_coders()
+    b["intent"] = ["neither", "neither", "neither", "intended", "literal", "literal"]
+    out = C.agreement(a, b)
+    assert out.loc["correctness_same_intent", "n"] == 0 and math.isnan(out.loc["correctness_same_intent", "kappa"])
+    assert out.loc["correctness_all", "n"] == 6

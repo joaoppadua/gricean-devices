@@ -62,6 +62,13 @@ def test_full_pipeline_with_fakes(tmp_path: Path, monkeypatch):
     assert (root / "paper/t/intent.csv").exists() and (root / "paper/t/examples.md").exists()
     assert (root / "paper/t/logodds_template_control.csv").exists()   # the raw control is reported from Line 2
     assert not (root / "paper/t/template_control.csv").exists()
+    assert not (root / "paper/t/kappa.txt").exists()            # coder 2's sheet is still blank
+    assert cli.main(["coder2", "--batches", "forms", "--n", "2"]) == 0      # rows out as text, with forms
+    for form in sorted((root / "forms").glob("codes_*.csv")):
+        pd.read_csv(form, dtype=str).assign(intent="intended", correctness="correct").to_csv(form, index=False)
+    assert cli.main(["coder2", "--enter", "forms"]) == 0                     # codes back into the sheet
+    assert cli.main(["report", "--ladder", "t"]) == 0
+    assert (root / "paper/t/kappa.txt").read_text().startswith("cohen_kappa_intent=1.000")
 
 
 def test_generate_refuses_stale_stimuli(tmp_path: Path, monkeypatch):

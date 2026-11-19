@@ -74,6 +74,34 @@ def template_control_table(coded: pd.DataFrame, models: list[str], expected: dic
     return _rates(_one_language(df, language), models)
 
 
+JUDGED = ("intended", "literal")     # the intents under which `correct` means right (spec 5.1, step 17)
+
+
+def correctness_table(coded: pd.DataFrame, models: list[str], expected: dict[str, bool],
+                      language: str | None = None) -> pd.DataFrame:
+    """For the responses that follow a reading: how many there are (`n`) and the share of them coded `correct`.
+
+    Rows and conditions are those of `intent_table`. `neither` has no column: under it the code says whether
+    the text is well formed, not whether it is right. Where no response follows the reading, `n` is 0 and the
+    share is empty; a model without rows is missing in both."""
+    df = _one_language(select_main(coded[coded["model"].isin(models)], expected), language)
+    df = df.assign(condition=_condition(df), right=df["correctness"] == "correct")
+    unjudged = df[df["intent"].isin(JUDGED) & (df["correctness"] == "na")]
+    if len(unjudged):
+        raise ValueError(f"{len(unjudged)} response(s) coded `na` under intended or literal: "
+                         f"{unjudged['row_id'].tolist()[:5]}")
+    cells = pd.MultiIndex.from_frame(df[INDEX].drop_duplicates()).sort_values()
+    out = {}
+    for model in models:
+        rows = df[df["model"] == model]
+        for intent in JUDGED:
+            right = rows[rows["intent"] == intent].groupby(INDEX)["right"]
+            n = right.size().reindex(cells, fill_value=0).astype("Int64")
+            out[(model, intent, "n")] = n if len(rows) else n.mask(n == 0)
+            out[(model, intent, "correct")] = right.mean().reindex(cells).astype(float)
+    return pd.DataFrame(out, index=cells)
+
+
 def _bootstrap_ci(x: np.ndarray, n_boot: int = 1000, seed: int = 0) -> tuple[float, float]:
     rng = np.random.default_rng(seed)
     if len(x) < 2:
@@ -187,10 +215,11 @@ def build(coded_path: Path, key_path: Path | None, coder2_path: Path | None, res
     out_dir.mkdir(parents=True, exist_ok=True)
     warns: list[str] = []
 
-    def write(table: pd.DataFrame, name: str, language: str, tex: bool = True) -> None:
+    def write(table: pd.DataFrame, name: str, language: str, tex: bool = True, na_rep: str = "NaN") -> None:
         table.to_csv(out_dir / f"{name}{_suffix(language)}.csv")
         if tex:
-            (out_dir / f"{name}{_suffix(language)}.tex").write_text(table.to_latex(float_format="%.2f"))
+            (out_dir / f"{name}{_suffix(language)}.tex").write_text(
+                table.to_latex(float_format="%.2f", na_rep=na_rep))
 
     coded = intent = None
     try:
@@ -200,6 +229,10 @@ def build(coded_path: Path, key_path: Path | None, coder2_path: Path | None, res
             table = intent_table(coded, models, expected, language)
             write(table, "intent", language)
             intent = table if intent is None else intent        # the first language is the main one when present
+            try:
+                write(correctness_table(coded, models, expected, language), "correctness", language, na_rep="--")
+            except ValueError as e:
+                warns.append(f"correctness skipped ({language}): {e}")
             if len(_one_language(select_template_control(mine, expected), language)):   # coded only if asked for
                 write(template_control_table(coded, models, expected, language), "template_control", language, tex=False)
     except (FileNotFoundError, ValueError) as e:

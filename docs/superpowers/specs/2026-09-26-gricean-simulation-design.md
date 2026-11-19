@@ -1,10 +1,23 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18, note added 2026-11-19
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-19 (note): `correctness` has a table.** Until now `correctness`
+was coded and reported nowhere. The author fixed the form of its table
+before any count of `correctness` by model, category or condition was made
+(§5.1, step 17): for the responses coded `intended` and for those coded
+`literal`, each apart, the number of responses and the share of them coded
+`correct`. `neither` is left out, because under it `correct` answers
+another question. On the 48 English dissociation items in the `full`
+version, `correct` among `intended` responses is 0 of 7 at Stage 1, 3 of 11
+at the released base, and 40 of 41, 40 of 41 and 38 of 41 at SFT, DPO and
+Instruct. On the self-run ladder it is 2 of 24 at Stage 1 under the Alpaca
+template and 23 of 37, 25 of 36 and 28 of 37 for the adapters trained on
+500, 2,000 and all pairs.
 
 **2026-11-18 (amendment): coder 2 is an agent, not a person.** The text of
 §5.1 said "an independent coder" and §11 said "recruit the second coder",
@@ -718,6 +731,59 @@ only coding rule. What the page does:
     the same `intent`, the two coders give the same `correctness` to 269,
     and kappa is 0.855. On all 335 rows they give the same `correctness` to
     307, and kappa is 0.833.
+17. *The correctness table (2026-11-19).* The author fixed the form of the
+    table before any count of `correctness` by model, category or condition
+    was made. Three denominators were put to them: the responses coded
+    `intended`; those coded `intended` and those coded `literal`, each
+    apart; and all three intents. They chose the second. For each category,
+    condition and model the table therefore gives two pairs of numbers: how
+    many responses are coded `intended` and the share of them coded
+    `correct`, and the same for `literal`. The rubric's "only if the task
+    was addressed" is read here as: the response follows one of the item's
+    two readings.
+
+    Rows, conditions and languages are those of the intent table: the main
+    condition of each model, controls as a condition of their own,
+    Portuguese written apart. `neither` has no column, because under it
+    `correct` means well formed as language and not right (step 14). The 41
+    empty responses coded `na` by rule are all `neither`, so none enters
+    the table. Where no response follows a reading, the share is left
+    empty and not set to zero; the count stands next to every share so that
+    one resting on one or two responses can be seen as such. A response
+    coded `na` under `intended` or `literal` would not have been judged,
+    and the table refuses such a sheet instead of counting the row as not
+    correct. The table is descriptive and carries no interval.
+    `gricean.report.correctness_table` computes it, and `make report`
+    writes `correctness.csv` and `correctness.tex` (`_pt` for Portuguese).
+
+    What was known when the form was fixed: the author had coded every row
+    and knew their own codes, and the agreement on `correctness` of step 16
+    had been computed. The table itself had not.
+
+    *Outcome (written after the first computation).* The four tables hold
+    836 of the 1,380 coded responses: 364 English and 89 Portuguese on the
+    official ladder, 318 and 65 on the self-run ladder. The sums below are
+    taken over the six categories, for the 48 English dissociation items
+    in the `full` version; the files give each category apart.
+
+    | Model | `intended` | of them `correct` | `literal` | of them `correct` |
+    |---|---|---|---|---|
+    | Stage 1 | 7 | 0 | 14 | 1 |
+    | Released base | 11 | 3 | 10 | 1 |
+    | SFT | 41 | 40 | 6 | 5 |
+    | DPO | 41 | 40 | 6 | 5 |
+    | Instruct | 41 | 38 | 6 | 6 |
+    | Stage 1, Alpaca template | 24 | 2 | 10 | 1 |
+    | Adapter, 500 pairs | 37 | 23 | 8 | 4 |
+    | Adapter, 2,000 pairs | 36 | 25 | 6 | 4 |
+    | Adapter, all pairs | 37 | 28 | 7 | 4 |
+    | Adapter, format only | 0 | | 0 | |
+
+    Two rules of the coding bear on how these shares are read. A right
+    answer followed by run-on nonsense is `incorrect` (codebook, §5.1), and
+    so is an English answer to a Portuguese prompt under `intended` or
+    `literal` (step 13). A low share is therefore not by itself a sign of
+    wrong information.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

@@ -1,0 +1,33 @@
+\begin{tabular}{llrrrrrrrrrrrrrrrrrrrr}
+\toprule
+ &  & \multicolumn{4}{r}{olmo_stage1_alpaca} & \multicolumn{4}{r}{olmo_n500} & \multicolumn{4}{r}{olmo_n2000} & \multicolumn{4}{r}{olmo_full} & \multicolumn{4}{r}{olmo_format_only} \\
+ &  & \multicolumn{2}{r}{intended} & \multicolumn{2}{r}{literal} & \multicolumn{2}{r}{intended} & \multicolumn{2}{r}{literal} & \multicolumn{2}{r}{intended} & \multicolumn{2}{r}{literal} & \multicolumn{2}{r}{intended} & \multicolumn{2}{r}{literal} & \multicolumn{2}{r}{intended} & \multicolumn{2}{r}{literal} \\
+ &  & n & correct & n & correct & n & correct & n & correct & n & correct & n & correct & n & correct & n & correct & n & correct & n & correct \\
+category & condition &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
+\midrule
+\multirow[t]{4}{*}{embedded_instruction} & control & 2 & 0.00 & 0 & -- & 2 & 1.00 & 0 & -- & 2 & 1.00 & 0 & -- & 2 & 1.00 & 0 & -- & 0 & -- & 0 & -- \\
+ & embedded & 0 & -- & 2 & 0.00 & 0 & -- & 3 & 0.00 & 0 & -- & 3 & 0.00 & 0 & -- & 4 & 0.00 & 0 & -- & 2 & 0.00 \\
+ & full & 2 & 0.00 & 3 & 0.33 & 8 & 0.88 & 0 & -- & 8 & 0.75 & 0 & -- & 8 & 0.88 & 0 & -- & 0 & -- & 0 & -- \\
+ & stripped & 2 & 0.00 & 2 & 0.00 & 8 & 0.62 & 0 & -- & 8 & 0.62 & 0 & -- & 8 & 0.62 & 0 & -- & 0 & -- & 0 & -- \\
+\cline{1-22}
+\multirow[t]{4}{*}{indirect_request} & control & 2 & 0.00 & 0 & -- & 2 & 1.00 & 0 & -- & 2 & 0.50 & 0 & -- & 2 & 0.50 & 0 & -- & 0 & -- & 0 & -- \\
+ & embedded & 0 & -- & 0 & -- & 0 & -- & 0 & -- & 0 & -- & 0 & -- & 0 & -- & 0 & -- & 0 & -- & 0 & -- \\
+ & full & 3 & 0.00 & 3 & 0.00 & 6 & 0.33 & 1 & 1.00 & 6 & 0.67 & 1 & 1.00 & 6 & 0.67 & 1 & 1.00 & 0 & -- & 0 & -- \\
+ & stripped & 3 & 0.00 & 3 & 0.00 & 6 & 0.33 & 1 & 1.00 & 5 & 0.80 & 1 & 1.00 & 5 & 0.60 & 1 & 1.00 & 0 & -- & 0 & -- \\
+\cline{1-22}
+\multirow[t]{2}{*}{malformed_instruction} & control & 2 & 0.00 & 0 & -- & 2 & 1.00 & 0 & -- & 2 & 1.00 & 0 & -- & 2 & 1.00 & 0 & -- & 0 & -- & 0 & -- \\
+ & full & 5 & 0.40 & 3 & 0.00 & 6 & 0.67 & 2 & 0.00 & 6 & 0.83 & 0 & -- & 6 & 0.83 & 1 & 0.00 & 0 & -- & 0 & -- \\
+\cline{1-22}
+\multirow[t]{4}{*}{pattern_continuation} & control & 2 & 0.00 & 0 & -- & 2 & 0.00 & 0 & -- & 2 & 0.50 & 0 & -- & 2 & 1.00 & 0 & -- & 0 & -- & 0 & -- \\
+ & embedded & 0 & -- & 0 & -- & 0 & -- & 3 & 0.00 & 0 & -- & 0 & -- & 0 & -- & 2 & 0.00 & 0 & -- & 1 & 0.00 \\
+ & full & 8 & 0.00 & 0 & -- & 8 & 0.62 & 0 & -- & 8 & 0.75 & 0 & -- & 8 & 0.88 & 0 & -- & 0 & -- & 0 & -- \\
+ & stripped & 8 & 0.00 & 0 & -- & 8 & 0.62 & 0 & -- & 8 & 0.62 & 0 & -- & 8 & 0.88 & 0 & -- & 0 & -- & 0 & -- \\
+\cline{1-22}
+\multirow[t]{2}{*}{rhetorical_question} & control & 2 & 0.00 & 0 & -- & 2 & 1.00 & 0 & -- & 2 & 1.00 & 0 & -- & 2 & 1.00 & 0 & -- & 0 & -- & 0 & -- \\
+ & full & 1 & 0.00 & 1 & 0.00 & 2 & 0.50 & 5 & 0.60 & 2 & 0.50 & 5 & 0.60 & 2 & 0.00 & 5 & 0.60 & 0 & -- & 0 & -- \\
+\cline{1-22}
+\multirow[t]{2}{*}{underspecified_request} & control & 2 & 0.00 & 0 & -- & 2 & 0.50 & 0 & -- & 2 & 1.00 & 0 & -- & 2 & 1.00 & 0 & -- & 0 & -- & 0 & -- \\
+ & full & 5 & 0.00 & 0 & -- & 7 & 0.57 & 0 & -- & 6 & 0.50 & 0 & -- & 7 & 0.71 & 0 & -- & 0 & -- & 0 & -- \\
+\cline{1-22}
+\bottomrule
+\end{tabular}

@@ -8,12 +8,12 @@ MODELS = ["m_base", "m_sft"]
 EXPECTED = {"m_base": False, "m_sft": True}
 
 
-def _row(model, template, i, intent, version="full", control=False):
+def _row(model, template, i, intent, version="full", control=False, correctness="correct"):
     return {"row_id": f"{model}|{int(template)}|a{i}|{version}|greedy|", "item_id": f"a{i}",
             "category": "indirect_request", "language": "en", "control": control,
             "version": version, "mode": "greedy", "seed": "", "prompt_text": "p", "stimulus_text": "p",
             "response": "r", "model": model, "template": template, "coder": "c1",
-            "intent": intent, "correctness": "na"}
+            "intent": intent, "correctness": correctness}
 
 
 def coded():
@@ -232,3 +232,105 @@ def test_build_reports_kappa_from_a_blind_sheet(tmp_path: Path):
                      "cohen_kappa_correctness_same_intent=1.000 n=6 same=6",
                      "cohen_kappa_correctness_all=1.000 n=6 same=6"]
     assert summary["agreement"]["correctness_same_intent"] == {"n": 6, "same": 6, "kappa": 1.0}
+
+
+# --- correctness, for the responses that follow a reading (spec 5.1, step 17) ---
+
+def judged():
+    """m_base: two intended (one correct), three literal (two correct), two neither. m_sft: four intended,
+    three correct; its raw rows are literal and are not its main condition."""
+    codes = [("intended", "correct"), ("intended", "incorrect"), ("literal", "correct"), ("literal", "correct"),
+             ("literal", "incorrect"), ("neither", "incorrect"), ("neither", "na")]
+    rows = [_row("m_base", False, i, intent, correctness=c) for i, (intent, c) in enumerate(codes)]
+    rows += [_row("m_sft", True, i, "intended", correctness=c) for i, c in enumerate(["correct"] * 3 + ["incorrect"])]
+    rows += [_row("m_sft", False, i, "literal", correctness="incorrect") for i in range(4)]
+    rows.append(_row("m_base", False, 9, "intended", control=True, correctness="incorrect"))
+    return pd.DataFrame(rows)
+
+
+def test_correctness_table_counts_the_responses_of_a_reading_and_gives_the_share_coded_correct():
+    t = R.correctness_table(judged(), MODELS, EXPECTED)
+    assert t.loc[IR_FULL, ("m_base", "intended", "n")] == 2
+    assert t.loc[IR_FULL, ("m_base", "intended", "correct")] == 0.5
+    assert t.loc[IR_FULL, ("m_base", "literal", "n")] == 3
+    assert t.loc[IR_FULL, ("m_base", "literal", "correct")] == pytest.approx(2 / 3)
+    assert t.loc[IR_FULL, ("m_sft", "intended", "correct")] == 0.75
+
+
+def test_correctness_table_has_no_column_for_neither():
+    """Under `neither` the code says whether the text is well formed, which is another question."""
+    t = R.correctness_table(judged(), MODELS, EXPECTED)
+    assert set(t.columns.get_level_values(1)) == {"intended", "literal"}
+
+
+def test_correctness_table_uses_main_condition_only():
+    t = R.correctness_table(judged(), MODELS, EXPECTED)
+    assert t.loc[IR_FULL, ("m_sft", "literal", "n")] == 0          # the four raw rows of the tuned model are left out
+
+
+def test_correctness_table_leaves_the_share_empty_where_no_response_follows_the_reading():
+    t = R.correctness_table(judged(), MODELS, EXPECTED)
+    assert pd.isna(t.loc[IR_FULL, ("m_sft", "literal", "correct")])   # no response to judge: not a share of zero
+
+
+def test_correctness_table_reports_controls_as_their_own_condition():
+    t = R.correctness_table(judged(), MODELS, EXPECTED)
+    control = ("indirect_request", "control")
+    assert t.loc[control, ("m_base", "intended", "n")] == 1
+    assert t.loc[control, ("m_base", "intended", "correct")] == 0.0
+    assert t.loc[control, ("m_sft", "intended", "n")] == 0          # a model with rows, none of them in this cell
+
+
+def test_correctness_table_marks_a_model_without_rows_as_missing():
+    t = R.correctness_table(judged(), MODELS + ["m_new"], {**EXPECTED, "m_new": True})
+    assert pd.isna(t.loc[IR_FULL, ("m_new", "intended", "n")])     # not coded yet is not "no intended response"
+
+
+def test_correctness_table_refuses_a_response_that_follows_a_reading_and_was_not_judged():
+    df = judged()
+    df.loc[0, "correctness"] = "na"
+    with pytest.raises(ValueError, match="na"):
+        R.correctness_table(df, MODELS, EXPECTED)
+
+
+def judged_two_languages():
+    pt = [dict(_row("m_sft", True, 20 + i, "intended", correctness=c), language="pt")
+          for i, c in enumerate(["incorrect", "incorrect", "correct", "incorrect"])]
+    return pd.concat([judged(), pd.DataFrame(pt)], ignore_index=True)
+
+
+def test_correctness_table_refuses_to_pool_languages():
+    with pytest.raises(ValueError, match="language"):
+        R.correctness_table(judged_two_languages(), MODELS, EXPECTED)
+
+
+def test_correctness_table_reports_one_language_when_asked():
+    en = R.correctness_table(judged_two_languages(), MODELS, EXPECTED, language="en")
+    pt = R.correctness_table(judged_two_languages(), MODELS, EXPECTED, language="pt")
+    assert en.loc[IR_FULL, ("m_sft", "intended", "correct")] == 0.75
+    assert pt.loc[IR_FULL, ("m_sft", "intended", "correct")] == 0.25
+
+
+def test_build_writes_the_correctness_table_of_each_language(tmp_path: Path):
+    judged_two_languages().to_csv(tmp_path / "coded.csv", index=False)
+    resp_rows(tmp_path / "resp")
+    summary = R.build(tmp_path / "coded.csv", None, None, tmp_path / "resp", tmp_path / "lp", MODELS,
+                      tmp_path / "paper", EXPECTED)
+    assert not [w for w in summary["warnings"] if "correctness" in w]
+    read = lambda name: pd.read_csv(tmp_path / "paper" / name, header=[0, 1, 2], index_col=[0, 1])
+    assert read("correctness.csv").loc[IR_FULL, ("m_base", "literal", "n")] == 3
+    assert read("correctness.csv").loc[IR_FULL, ("m_sft", "intended", "correct")] == 0.75
+    assert read("correctness_pt.csv").loc[IR_FULL, ("m_sft", "intended", "correct")] == 0.25
+    assert (tmp_path / "paper" / "correctness.tex").exists() and (tmp_path / "paper" / "correctness_pt.tex").exists()
+
+
+def test_build_skips_the_correctness_table_and_keeps_the_intent_table_when_a_row_was_not_judged(tmp_path: Path):
+    df = judged()
+    df.loc[0, "correctness"] = "na"
+    df.to_csv(tmp_path / "coded.csv", index=False)
+    resp_rows(tmp_path / "resp")
+    summary = R.build(tmp_path / "coded.csv", None, None, tmp_path / "resp", tmp_path / "lp", MODELS,
+                      tmp_path / "paper", EXPECTED)
+    assert any("correctness skipped" in w for w in summary["warnings"])
+    assert (tmp_path / "paper" / "intent.csv").exists()
+    assert not (tmp_path / "paper" / "correctness.csv").exists()

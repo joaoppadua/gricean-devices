@@ -1,10 +1,18 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18, note added 2026-11-19
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-19 (note): `correctness` has a table.** Until now `correctness`
+was coded and reported nowhere. The author fixed the form of its table
+before any count of `correctness` by model, category or condition was made
+(§5.1, step 17): for the responses coded `intended` and for those coded
+`literal`, each apart, the number of responses and the share of them coded
+`correct`. `neither` is left out, because under it `correct` answers
+another question.
 
 **2026-11-18 (amendment): coder 2 is an agent, not a person.** The text of
 §5.1 said "an independent coder" and §11 said "recruit the second coder",
@@ -718,6 +726,34 @@ only coding rule. What the page does:
     the same `intent`, the two coders give the same `correctness` to 269,
     and kappa is 0.855. On all 335 rows they give the same `correctness` to
     307, and kappa is 0.833.
+17. *The correctness table (2026-11-19).* The author fixed the form of the
+    table before any count of `correctness` by model, category or condition
+    was made. Three denominators were put to them: the responses coded
+    `intended`; those coded `intended` and those coded `literal`, each
+    apart; and all three intents. They chose the second. For each category,
+    condition and model the table therefore gives two pairs of numbers: how
+    many responses are coded `intended` and the share of them coded
+    `correct`, and the same for `literal`. The rubric's "only if the task
+    was addressed" is read here as: the response follows one of the item's
+    two readings.
+
+    Rows, conditions and languages are those of the intent table: the main
+    condition of each model, controls as a condition of their own,
+    Portuguese written apart. `neither` has no column, because under it
+    `correct` means well formed as language and not right (step 14). The 41
+    empty responses coded `na` by rule are all `neither`, so none enters
+    the table. Where no response follows a reading, the share is left
+    empty and not set to zero; the count stands next to every share so that
+    one resting on one or two responses can be seen as such. A response
+    coded `na` under `intended` or `literal` would not have been judged,
+    and the table refuses such a sheet instead of counting the row as not
+    correct. The table is descriptive and carries no interval.
+    `gricean.report.correctness_table` computes it, and `make report`
+    writes `correctness.csv` and `correctness.tex` (`_pt` for Portuguese).
+
+    What was known when the form was fixed: the author had coded every row
+    and knew their own codes, and the agreement on `correctness` of step 16
+    had been computed. The table itself had not.
 
 ### 5.2 Line 2: three-way continuation scoring, no judge
 

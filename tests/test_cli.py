@@ -56,10 +56,11 @@ def test_full_pipeline_with_fakes(tmp_path: Path, monkeypatch):
     tuned_raw = sheet[(sheet["model"] == "s") & ~sheet["template"] & (sheet["version"] != "embedded")]
     assert tuned_raw.empty                                      # and each model's main condition only
     assert set(sheet["model"]) == {"b", "s", "a", "q"}
-    sheet["intent"] = "intended"; sheet["correctness"] = "na"
+    sheet["intent"] = "intended"; sheet["correctness"] = "correct"
     sheet.to_csv(root / "data/coding/coder1.csv", index=False)
     assert cli.main(["report", "--ladder", "t"]) == 0
     assert (root / "paper/t/intent.csv").exists() and (root / "paper/t/examples.md").exists()
+    assert (root / "paper/t/correctness.csv").exists()          # correctness, for responses that follow a reading
     assert (root / "paper/t/logodds_template_control.csv").exists()   # the raw control is reported from Line 2
     assert not (root / "paper/t/template_control.csv").exists()
     assert not (root / "paper/t/kappa.txt").exists()            # coder 2's sheet is still blank

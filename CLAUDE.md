@@ -28,8 +28,8 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   flagged `neither` rows block scoring until `approved: true`.
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
-## Current status (2026-11-18)
-- PRs #1–#13 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`). #1–#8: pipeline; pre-run gates + spec revision 2; the
+## Current status (2026-11-19)
+- PRs #1–#14 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`). #1–#8: pipeline; pre-run gates + spec revision 2; the
   78-item stimulus set; removal of the seed dry-run data; the `neither` set and the pre-run fixes
   below; the first real run (`data/responses`, `data/logprobs`); notebooks that run from any
   folder; the Line 1 subset. #9–#11: the blank sheet, the first batch coded, per-language tables.
@@ -143,8 +143,8 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   with `coder2.key.csv`. Do not run `gricean sheet --coder2` with another fraction or seed: the
   sample is fixed. A re-run with the same arguments keeps entered codes. Until coder 2 returns
   the sheet, `make report` warns "kappa skipped" (blank codes) and writes everything else.
-- **Coder 2 is an agent, not a person** (author, 2026-11-18; spec amended before any code, branch
-  `coder2-return`): a Claude Haiku model run from Claude Code, chosen small on purpose to stand for
+- **Coder 2 is an agent, not a person** (author, 2026-11-18; spec amended before any code, PR
+  #14): a Claude Haiku model run from Claude Code, chosen small on purpose to stand for
   an ordinary coder. Spec constraint 2 (no paid APIs) applies to the models under study, not to
   the coding of their outputs; "no LLM-as-judge" holds for every code that feeds a table. Coder 2's
   codes feed the agreement measure only. Never assume a role in the design is a person; ask.
@@ -159,9 +159,19 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - **Kappa on `correctness`** (spec §5.1 step 16, measure fixed by the author before it was
   computed): 0.855 on the 290 rows with the same `intent` (main; 269 the same), 0.833 on all 335
   (307 the same). `coding.agreement` computes the three measures; `kappa.txt` has three lines.
-- Next: nothing is owed on Line 1 agreement. Open gaps: `correctness` in no table; ladder figure
-  without CIs; `make finetune` trains `full` first although smallest-first is the safer order;
-  kappa is written per ladder folder although it is one number for the whole sample.
+- **Correctness table** (2026-11-19, branch `correctness-table`, spec §5.1 step 17): the author
+  chose its form among three before any count by model was made. For responses coded `intended`
+  and for those coded `literal`, each apart: `n` and the share coded `correct`, by category,
+  condition and model, per language (`paper/*/correctness{,_pt}.{csv,tex}`,
+  `report.correctness_table`). `neither` has no column. An empty share means no response followed
+  that reading. `na` under `intended` or `literal` is refused (the report then skips the table with
+  a warning). English, `full`, 48 dissociation items, `correct` of `intended`: 0/7, 3/11, 40/41,
+  40/41, 38/41 on the official ladder; 2/24 (Stage 1 Alpaca), 23/37, 25/36, 28/37 (500, 2,000, all
+  pairs) on the self-run ladder. `incorrect` also covers a right answer followed by run-on text
+  and an English answer to a Portuguese prompt, so a low share is not only wrong information.
+- Next: nothing is owed on Line 1. Open gaps: ladder figure without CIs; `make finetune` trains
+  `full` first although smallest-first is the safer order; kappa is written per ladder folder
+  although it is one number for the whole sample.
 - The coding page is kept (author's instruction). Its store matches `coder1.csv`.
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
   broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.

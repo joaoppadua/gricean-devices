@@ -6,6 +6,14 @@ Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
 
+**2026-11-20 (note): the printed examples are drawn at random.** §6 said
+"selected items"; `examples.md` held the first six items in alphabetical
+order, all of one category and none in Portuguese. At the author's
+instruction the examples are now drawn at random with a fixed seed and no
+item is chosen by hand (§6). The rule, the numbers and the seed were fixed
+before any draw was made. The same day, the determinism check of §9 was run
+and its result written there.
+
 **2026-11-20 (note): the figure draws the Line 2 intervals.** The right
 panel of the ladder figure now shows, around each mean log-odds, the
 interval that the Line 2 table already held (§5.2: 95% bootstrap over the
@@ -872,8 +880,20 @@ set is frozen alongside the stimuli.
 - Table: self-run fine-tune on Stage 1 with controls.
 - Historical anchor: the GPT-3 / InstructGPT pairs quoted from Ouyang et al.
   (2022) beside the Stage 1 / SFT responses to the same prompt.
-- Printed examples: for selected items, the greedy response at each stage
-  side by side. Portuguese examples from the mirrored subset.
+- Printed examples (rule of 2026-11-20, fixed before any draw): greedy
+  responses drawn at random with a fixed seed, none chosen by hand. The
+  pool is the response of each model in its main condition to the `full`
+  version of the dissociation items. Two parts, per language: one item of
+  each category, with the response of every rung to that same prompt; and
+  three responses of each rung, drawn for the rung on its own. The first
+  draw does not depend on the ladder, so the official and the self-run
+  ladder show the same prompts. Each response is printed whole, as text,
+  with the codes coder 1 gave it. Numbers and seed are in
+  `gricean.report.EXAMPLES` (seed 0, the only one tried); a longer draw
+  begins with the shorter one, so asking for more examples adds to those
+  already printed and replaces none. English in `examples.md`, Portuguese
+  in `examples_pt.md`. A quotation in the paper is taken from these files,
+  and the paper says how they were drawn.
 
 ## 7. Self-run fine-tune
 
@@ -1007,6 +1027,13 @@ model.
 - Determinism check: greedy generation compared across two runs on the same
   machine. If MPS proves nondeterministic, the paper says so and reports
   sampled means only.
+  *Result (2026-11-20).* `scripts/determinism_check.py olmo_base` gave 5 of
+  5 identical greedy outputs across two runs on MPS (five items, 60 new
+  tokens, one process). The committed data agree across processes: the two
+  passes of Stage 1 over the `embedded` prompts, raw and under the Alpaca
+  template (that version is untemplated in both), are identical on 120 of
+  120 responses, the seeded samples included. Greedy decoding is taken as
+  deterministic on this machine, and Line 1 is reported on greedy responses.
 
 ## 10. Out of scope
 

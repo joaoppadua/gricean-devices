@@ -80,13 +80,6 @@ def test_logodds_table_means_and_ci_ignore_template_control(tmp_path: Path):
     assert t.loc[("indirect_request", "full"), ("m_sft", "ci_low")] <= 2.5 <= t.loc[("indirect_request", "full"), ("m_sft", "ci_high")]
 
 
-def test_examples_print_main_condition_and_raw_stimulus(tmp_path: Path):
-    resp = tmp_path / "resp"; resp_rows(resp)
-    md = R.examples(resp, MODELS, ["a0"], EXPECTED)
-    assert "answer from m_base" in md and "answer from m_sft" in md and "raw answer" not in md
-    assert "**Prompt:** Can you tell me the time?" in md and "<user>" not in md
-
-
 def test_build_writes_all_outputs(tmp_path: Path):
     coded().to_csv(tmp_path / "coded.csv", index=False)
     lp_rows(tmp_path / "lp"); resp_rows(tmp_path / "resp")
@@ -107,15 +100,6 @@ def test_build_tolerates_uncoded_sheet_and_missing_logprobs(tmp_path: Path):
     assert summary["n_coded"] == 0 and summary["warnings"]
     assert (tmp_path / "paper" / "examples.md").exists()
     assert not (tmp_path / "paper" / "intent.csv").exists()
-
-
-def test_examples_marks_empty_greedy_response(tmp_path: Path):
-    resp = tmp_path / "resp"
-    write_jsonl(resp / "m_base__raw.jsonl", [{"item_id": "a0", "category": "indirect_request", "language": "en",
-        "control": False, "version": "full", "model": "m_base", "template": False, "mode": "greedy", "seed": None,
-        "stimulus_text": "Can you?", "prompt_text": "Can you?", "response": "", "stamp": "s", "stimuli_checksum": "c"}])
-    md = R.examples(resp, ["m_base"], ["a0"], {"m_base": False})
-    assert f"**m_base:** {R.EMPTY_RESPONSE}" in md
 
 
 def test_logodds_template_control_table_holds_only_raw_rows_of_tuned_models(tmp_path: Path):
@@ -378,3 +362,149 @@ def test_ladder_figure_names_the_models_in_ladder_order_under_both_panels(tmp_pa
     labels = [[t.get_text() for t in ax.get_xticklabels()] for ax in fig.axes]
     plt.close(fig)
     assert labels == [MODELS, MODELS]
+
+
+# --- printed examples: drawn at random, never chosen (spec 6) ---
+
+import re
+
+CATEGORIES = (("ir", "indirect_request"), ("pc", "pattern_continuation"))
+
+
+def _response(model, template, item, category, **changes):
+    return {"item_id": item, "category": category, "language": "en", "control": False, "version": "full",
+            "model": model, "template": template, "mode": "greedy", "seed": None,
+            "prompt_text": f"<t>prompt of {item}</t>" if template else f"prompt of {item}",
+            "stimulus_text": f"prompt of {item}", "response": f"{model} answers {item}", "stamp": "s",
+            "stimuli_checksum": "c", **changes}
+
+
+def example_rows(resp: Path, change=None):
+    """Two models on two categories of four dissociation items, in English, and on two Portuguese items; with
+    them, the rows that no example may show: controls, another version, samples and the raw control."""
+    base, sft, raw = [], [], []
+    for short, category in CATEGORIES:
+        for i in range(4):
+            item = f"{short}{i}"
+            base.append(_response("m_base", False, item, category))
+            sft.append(_response("m_sft", True, item, category))
+            sft.append(_response("m_sft", True, item, category, version="stripped", response=f"stripped {item}"))
+            sft.append(_response("m_sft", True, item, category, mode="sample", seed=1, response=f"sampled {item}"))
+            raw.append(_response("m_sft", False, item, category, response=f"raw control {item}"))
+        base.append(_response("m_base", False, f"{short}_c", category, control=True, response=f"control {short}"))
+        base.append(_response("m_base", False, f"pt_{short}", category, language="pt"))
+        sft.append(_response("m_sft", True, f"pt_{short}", category, language="pt"))
+    rows = {"m_base__raw": base, "m_sft__tmpl": sft, "m_sft__raw": raw}
+    if change:
+        change(rows)
+    for name, rs in rows.items():
+        write_jsonl(resp / f"{name}.jsonl", rs)
+    return resp
+
+
+def _parts(md: str) -> tuple[str, str]:
+    """The two parts of the examples: the same prompt at every rung, and the responses drawn for each rung."""
+    _, same_prompt, per_rung = md.split("\n## ")
+    return same_prompt, per_rung
+
+
+def _drawn(part: str, level: str) -> list[str]:
+    """Item ids under headings of one level, in the order printed."""
+    return re.findall(rf"^{level} (\S+)", part, flags=re.M)
+
+
+def _for_rung(per_rung: str, model: str) -> str:
+    return per_rung.split(f"### {model}\n")[1].split("\n### ")[0]
+
+
+def test_examples_show_one_prompt_of_each_category_with_the_response_of_every_rung(tmp_path: Path):
+    same_prompt, _ = _parts(R.examples(example_rows(tmp_path), MODELS, EXPECTED, language="en"))
+    items = _drawn(same_prompt, "###")
+    assert sorted(i[:2] for i in items) == ["ir", "pc"]
+    for item in items:
+        assert same_prompt.index(f"m_base answers {item}") < same_prompt.index(f"m_sft answers {item}")   # ladder order
+
+
+def test_examples_show_as_many_responses_of_each_rung_as_asked(tmp_path: Path):
+    _, per_rung = _parts(R.examples(example_rows(tmp_path), MODELS, EXPECTED, language="en", per_rung=3))
+    for model in MODELS:
+        items = _drawn(_for_rung(per_rung, model), "####")
+        assert len(set(items)) == 3
+        assert all(f"{model} answers {item}" in _for_rung(per_rung, model) for item in items)
+
+
+def test_examples_are_drawn_from_greedy_full_main_condition_responses_to_dissociation_items(tmp_path: Path):
+    md = R.examples(example_rows(tmp_path), MODELS, EXPECTED, language="en", per_rung=8, per_category=4)
+    assert md.count("m_sft answers ir0") == 2                    # every item is shown, in both parts
+    for excluded in ("control ", "stripped ", "sampled ", "raw control "):
+        assert excluded not in md
+
+
+def test_examples_show_the_prompt_as_written_not_as_templated(tmp_path: Path):
+    md = R.examples(example_rows(tmp_path), MODELS, EXPECTED, language="en")
+    assert "prompt of " in md and "<t>" not in md
+
+
+def test_examples_hold_one_language(tmp_path: Path):
+    resp = example_rows(tmp_path)
+    pt = R.examples(resp, MODELS, EXPECTED, language="pt", per_rung=8)
+    assert "m_base answers pt_ir" in pt and "answers ir" not in pt
+    with pytest.raises(ValueError, match="language"):
+        R.examples(resp, MODELS, EXPECTED)
+
+
+def test_the_draw_of_examples_is_fixed_by_the_seed(tmp_path: Path):
+    resp = example_rows(tmp_path)
+    draw = lambda seed: R.examples(resp, MODELS, EXPECTED, language="en", seed=seed).split("\n", 1)[1]   # less the header
+    assert draw(0) == draw(0)
+    assert len({draw(seed) for seed in range(6)}) > 1
+
+
+def test_a_longer_draw_of_examples_begins_with_the_shorter_one(tmp_path: Path):
+    resp = example_rows(tmp_path)
+    drawn = lambda n: _drawn(_for_rung(_parts(R.examples(resp, MODELS, EXPECTED, language="en", per_rung=n))[1],
+                                       "m_sft"), "####")
+    assert drawn(3)[:2] == drawn(2)
+
+
+def test_the_prompts_shown_at_every_rung_are_the_same_for_any_ladder(tmp_path: Path):
+    resp = example_rows(tmp_path)
+    items = lambda models: _drawn(_parts(R.examples(resp, models, EXPECTED, language="en"))[0], "###")
+    assert items(MODELS) == items(["m_base"])
+
+
+def test_examples_keep_the_text_of_a_response_out_of_the_page_structure(tmp_path: Path):
+    def run_on(rows):
+        for r in rows["m_base__raw"]:
+            r["response"] = "An answer.\n\n### Instruction:\n```\nmore"
+    md = R.examples(example_rows(tmp_path, run_on), MODELS, EXPECTED, language="en")
+    assert "### Instruction:" in md                              # the response is printed as it is
+    outside = re.sub(r"^(`{3,})text\n.*?\n\1$", "", md, flags=re.M | re.S)   # less the quoted blocks
+    assert "### Instruction:" not in outside and "more" not in outside     # the fence in the response ends nothing
+
+
+def test_examples_mark_an_empty_response(tmp_path: Path):
+    def empty(rows):
+        for r in rows["m_base__raw"]:
+            r["response"] = ""
+    md = R.examples(example_rows(tmp_path, empty), ["m_base"], {"m_base": False}, language="en")
+    assert R.EMPTY_RESPONSE in md
+
+
+def test_examples_give_the_codes_of_a_response_when_the_sheet_has_them(tmp_path: Path):
+    resp = example_rows(tmp_path)
+    sheet = pd.DataFrame([{"model": "m_sft", "item_id": f"{short}{i}", "version": "full", "intent": "intended",
+                           "correctness": "incorrect"} for short, _ in CATEGORIES for i in range(4)])
+    md = R.examples(resp, MODELS, EXPECTED, language="en", coded=sheet)
+    assert "**m_sft** (coded `intended` · `incorrect`)" in md
+    assert "**m_base** (coded" not in md                         # no code in the sheet: none is shown
+    assert "coded `" not in R.examples(resp, MODELS, EXPECTED, language="en")
+
+
+def test_build_writes_the_examples_of_each_language(tmp_path: Path):
+    example_rows(tmp_path / "resp")
+    R.build(tmp_path / "no_sheet.csv", None, None, tmp_path / "resp", tmp_path / "lp", MODELS, tmp_path / "paper",
+            EXPECTED)
+    assert "m_sft answers ir" in (tmp_path / "paper" / "examples.md").read_text()
+    assert "m_sft answers pt_" in (tmp_path / "paper" / "examples_pt.md").read_text()
+    assert "pt_" not in (tmp_path / "paper" / "examples.md").read_text()

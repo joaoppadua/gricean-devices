@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import re
 import warnings
 from pathlib import Path
 
@@ -110,16 +112,17 @@ def _bootstrap_ci(x: np.ndarray, n_boot: int = 1000, seed: int = 0) -> tuple[flo
     return float(np.percentile(means, 2.5)), float(np.percentile(means, 97.5))
 
 
-def _load_logprobs(lp_root: Path) -> pd.DataFrame:
+def _load_rows(root: Path) -> pd.DataFrame:
+    """Every row of the JSONL files of one stage (`data/logprobs`, `data/responses`)."""
     rows = []
-    for path in sorted(Path(lp_root).glob("*.jsonl")):
+    for path in sorted(Path(root).glob("*.jsonl")):
         rows.extend(read_jsonl(path))
     return pd.DataFrame(rows)
 
 
 def logodds_table(lp_root: Path, models: list[str], expected: dict[str, bool],
                   language: str | None = None) -> pd.DataFrame:
-    df = _load_logprobs(lp_root)
+    df = _load_rows(lp_root)
     if df.empty:
         raise ValueError(f"no log-prob rows under {lp_root}")
     return _logodds(_one_language(select_main(df[df["model"].isin(models)], expected), language), models)
@@ -130,7 +133,7 @@ def logodds_template_control_table(lp_root: Path, models: list[str], expected: d
     """Line 2 on the raw passes of tuned models: the template control, scored without a judge.
 
     Columns are the models that have a raw control, in ladder order."""
-    df = _load_logprobs(lp_root)
+    df = _load_rows(lp_root)
     df = _one_language(select_template_control(df[df["model"].isin(models)], expected), language) if not df.empty else df
     if df.empty:
         raise ValueError(f"no template-control log-prob rows under {lp_root}")
@@ -158,26 +161,66 @@ def _logodds(df: pd.DataFrame, models: list[str]) -> pd.DataFrame:
 EMPTY_RESPONSE = "⟨empty: model emitted end-of-sequence⟩"
 
 
-def examples(resp_root: Path, models: list[str], item_ids: list[str], expected: dict[str, bool]) -> str:
-    rows = []
-    for path in sorted(Path(resp_root).glob("*.jsonl")):
-        rows.extend(read_jsonl(path))
-    df = pd.DataFrame(rows)
+EXAMPLES = {"per_rung": 3, "per_category": 1, "seed": 0}     # the draw of the printed examples (spec 6)
+
+
+def _draw_rank(seed: int, *key: str) -> str:
+    """A fixed pseudo-random rank: sorting by it shuffles, and the first n of a longer draw are the shorter one."""
+    return hashlib.sha256("|".join([str(seed), *key]).encode()).hexdigest()
+
+
+def _quoted(text: str) -> str:
+    """Text as a fenced block, so that nothing in it (`### Instruction:`, a fence) is read as markup."""
+    fence = "`" * max(3, 1 + max((len(run) for run in re.findall(r"`+", text)), default=0))
+    return f"{fence}text\n{text}\n{fence}\n"
+
+
+def examples(resp_root: Path, models: list[str], expected: dict[str, bool], language: str | None = None,
+             coded: pd.DataFrame | None = None, per_rung: int = EXAMPLES["per_rung"],
+             per_category: int = EXAMPLES["per_category"], seed: int = EXAMPLES["seed"]) -> str:
+    """Printed examples in one language, drawn at random and never chosen.
+
+    The pool is the greedy response of each model's main condition to the `full` version of the dissociation
+    items. Two parts: `per_category` items of each category with the response of every rung to the same prompt,
+    and `per_rung` responses of each rung. The first draw does not depend on the models, so two ladders show
+    the same prompts. With `coded`, each response carries the codes the sheet gives it."""
+    df = _load_rows(resp_root)
     if df.empty:
         return ""
-    df = select_main(df[(df["mode"] == "greedy") & (df["version"] == "full") & df["model"].isin(models)], expected)
-    blocks = []
-    for item_id in item_ids:
-        sub = df[df["item_id"] == item_id]
-        if sub.empty:
+    df = df[(df["mode"] == "greedy") & (df["version"] == "full") & ~df["control"].astype(bool) & df["model"].isin(models)]
+    df = _one_language(select_main(df, expected), language)
+    if df.empty:
+        return ""
+    codes = {} if coded is None else {(r.model, r.item_id, r.version): (r.intent, r.correctness)
+                                      for r in coded.itertuples()}
+
+    def prompt(row: pd.Series) -> str:
+        shown = row["stimulus_text"] if pd.notna(row.get("stimulus_text")) else row["prompt_text"]
+        return f"**Prompt**\n\n{_quoted(shown)}"
+
+    def response(row: pd.Series, head: str) -> str:
+        code = codes.get((row["model"], row["item_id"], row["version"]))
+        text = row["response"].strip()
+        return (f"**{head}**" + (f" (coded `{code[0]}` · `{code[1]}`)" if code else "") + "\n\n"
+                + (_quoted(text) if text else EMPTY_RESPONSE + "\n"))
+
+    blocks = [f"Greedy responses to the `full` version of the dissociation items, each model in its main condition "
+              f"(spec §6). Items are drawn at random with seed {seed}; none was chosen by hand.\n",
+              "## The same prompt at every rung\n"]
+    for category, items in df.drop_duplicates("item_id").groupby("category")["item_id"]:
+        for item_id in sorted(items, key=lambda i: _draw_rank(seed, "prompt", i))[:per_category]:
+            rows = df[df["item_id"] == item_id]
+            blocks += [f"### {item_id} · {category}\n", prompt(rows.iloc[0])]
+            blocks += [response(r, r["model"]) for m in models for _, r in rows[rows["model"] == m].iterrows()]
+    blocks.append("## Responses drawn for each rung\n")
+    for model in models:
+        rows = df[df["model"] == model]
+        if rows.empty:
             continue
-        first = sub.iloc[0]
-        prompt = first["stimulus_text"] if "stimulus_text" in sub.columns and pd.notna(first["stimulus_text"]) else first["prompt_text"]
-        blocks.append(f"### {item_id}\n\n**Prompt:** {prompt}\n")
-        for model in models:
-            r = sub[sub["model"] == model]
-            if not r.empty:
-                blocks.append(f"**{model}:** {r.iloc[0]['response'].strip() or EMPTY_RESPONSE}\n")
+        blocks.append(f"### {model}\n")
+        drawn = sorted(rows.index, key=lambda i: _draw_rank(seed, model, rows.at[i, "item_id"]))[:per_rung]
+        for _, r in rows.loc[drawn].iterrows():
+            blocks += [f"#### {r['item_id']} · {r['category']}\n", prompt(r), response(r, "Response")]
     return "\n".join(blocks)
 
 
@@ -226,8 +269,7 @@ def ladder_figure(intent: pd.DataFrame | None, logodds: pd.DataFrame | None, mod
 
 
 def build(coded_path: Path, key_path: Path | None, coder2_path: Path | None, resp_root: Path,
-          lp_root: Path, models: list[str], out_dir: Path, expected: dict[str, bool],
-          example_ids: list[str] | None = None) -> dict:
+          lp_root: Path, models: list[str], out_dir: Path, expected: dict[str, bool]) -> dict:
     """Write every table the data supports, one set per language; skip (with a warning) what is not there yet.
 
     The main language's tables carry no suffix and feed the figure; the others are written as `<name>_<language>`."""
@@ -259,7 +301,7 @@ def build(coded_path: Path, key_path: Path | None, coder2_path: Path | None, res
         warns.append(f"Line 1 skipped (coding sheet not usable): {e}")
     lo = None
     try:
-        lp = _load_logprobs(lp_root)
+        lp = _load_rows(lp_root)
         if lp.empty:
             raise ValueError(f"no log-prob rows under {lp_root}")
         for language in _languages(lp[lp["model"].isin(models)]):
@@ -274,12 +316,11 @@ def build(coded_path: Path, key_path: Path | None, coder2_path: Path | None, res
         warns.append(f"Line 2 skipped (no log-prob rows): {e}")
     if intent is not None or lo is not None:
         ladder_figure(intent, lo, models, out_dir / "ladder.png")
-    if example_ids is None:
-        example_ids = sorted(coded["item_id"].unique())[:6] if coded is not None else []
-        if not example_ids:
-            rows = [r for p in sorted(Path(resp_root).glob("*.jsonl")) for r in read_jsonl(p)]
-            example_ids = sorted({r["item_id"] for r in rows})[:6]
-    (out_dir / "examples.md").write_text(examples(resp_root, models, example_ids, expected))
+    resp = _load_rows(resp_root)
+    shown = _languages(resp[resp["model"].isin(models)]) if not resp.empty else []
+    for language in shown or [MAIN_LANGUAGE]:               # without responses the main file is written empty
+        (out_dir / f"examples{_suffix(language)}.md").write_text(
+            examples(resp_root, models, expected, language, coded) if shown else "")
     kappa, agree = None, None
     if coded is not None and coder2_path is not None:
         try:

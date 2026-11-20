@@ -29,7 +29,7 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
 ## Current status (2026-11-20)
-- PRs #1–#15 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`; #15, the correctness table, as `38eb107`). #1–#8: pipeline; pre-run gates + spec revision 2; the
+- PRs #1–#16 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`; #15, the correctness table, as `38eb107`; #16, the figure with Line 2 intervals, as `348dfe1`). #1–#8: pipeline; pre-run gates + spec revision 2; the
   78-item stimulus set; removal of the seed dry-run data; the `neither` set and the pre-run fixes
   below; the first real run (`data/responses`, `data/logprobs`); notebooks that run from any
   folder; the Line 1 subset. #9–#11: the blank sheet, the first batch coded, per-language tables.
@@ -169,14 +169,27 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   40/41, 38/41 on the official ladder; 2/24 (Stage 1 Alpaca), 23/37, 25/36, 28/37 (500, 2,000, all
   pairs) on the self-run ladder. `incorrect` also covers a right answer followed by run-on text
   and an English answer to a Portuguese prompt, so a low share is not only wrong information.
-- **Ladder figure with Line 2 intervals** (2026-11-20, branch `ladder-intervals`): the right panel
+- **Ladder figure with Line 2 intervals** (2026-11-20, PR #16): the right panel
   draws each mean log-odds with the `ci_low` / `ci_high` of `logodds.csv`, categories set slightly
   apart at each model (`report.draw_ladder`, `DODGE`), and a line at 0. The left panel (Line 1
   rates) has no interval, by the author's decision: eight items per category. The intervals are
   per model; two rungs are compared on the same items, not by overlap.
-- Next: nothing is owed. Open gaps: `make finetune` trains `full` first although smallest-first is
-  the safer order; kappa is written per ladder folder although it is one number for the whole
-  sample; no paired test of one rung against another (Line 2) or of data scale (correctness).
+- **Printed examples are a random draw** (2026-11-20, branch `examples-random`, spec §6; rule
+  fixed before any draw): `report.examples` draws, per language, one item of each category shown
+  at every rung, and three responses of each rung; pool = greedy, `full`, dissociation items, main
+  condition. `report.EXAMPLES` holds the numbers and the seed (0). Do not try other seeds; to get
+  more examples raise the numbers, which extends the draw and replaces nothing. The draw of
+  prompts does not depend on the ladder. Responses are printed in fenced blocks with coder 1's
+  codes. Files: `paper/*/examples.md`, `examples_pt.md`.
+- **Determinism checked** (2026-11-20, spec §9): `scripts/determinism_check.py olmo_base`, 5 of 5
+  greedy outputs identical on MPS; two committed passes of Stage 1 on `embedded` agree on 120 of
+  120 responses.
+- Next: the experiment pipeline is complete; the author drafts the paper. Open for the author
+  (spec §11): keep the Instruct column or not; Base as column or dose note; the Ouyang et al.
+  pairs. Open gaps: `make finetune` trains `full` first although smallest-first is the safer
+  order; kappa is written per ladder folder although it is one number for the whole sample; no
+  paired test of one rung against another (Line 2) or of data scale (correctness); the Line 2
+  table prints `share_neither` only of the three shares.
 - The coding page is kept (author's instruction). Its store matches `coder1.csv`.
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
   broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.

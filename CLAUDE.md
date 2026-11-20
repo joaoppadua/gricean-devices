@@ -29,7 +29,7 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
 ## Current status (2026-11-20)
-- PRs #1–#16 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`; #15, the correctness table, as `38eb107`; #16, the figure with Line 2 intervals, as `348dfe1`). #1–#8: pipeline; pre-run gates + spec revision 2; the
+- PRs #1–#17 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`; #15, the correctness table, as `38eb107`; #16, the figure with Line 2 intervals, as `348dfe1`; #17, the random examples, as `422ccac`). #1–#8: pipeline; pre-run gates + spec revision 2; the
   78-item stimulus set; removal of the seed dry-run data; the `neither` set and the pre-run fixes
   below; the first real run (`data/responses`, `data/logprobs`); notebooks that run from any
   folder; the Line 1 subset. #9–#11: the blank sheet, the first batch coded, per-language tables.
@@ -174,7 +174,7 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   apart at each model (`report.draw_ladder`, `DODGE`), and a line at 0. The left panel (Line 1
   rates) has no interval, by the author's decision: eight items per category. The intervals are
   per model; two rungs are compared on the same items, not by overlap.
-- **Printed examples are a random draw** (2026-11-20, branch `examples-random`, spec §6; rule
+- **Printed examples are a random draw** (2026-11-20, PR #17, spec §6; rule
   fixed before any draw): `report.examples` draws, per language, one item of each category shown
   at every rung, and three responses of each rung; pool = greedy, `full`, dissociation items, main
   condition. `report.EXAMPLES` holds the numbers and the seed (0). Do not try other seeds; to get
@@ -184,6 +184,12 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - **Determinism checked** (2026-11-20, spec §9): `scripts/determinism_check.py olmo_base`, 5 of 5
   greedy outputs identical on MPS; two committed passes of Stage 1 on `embedded` agree on 120 of
   120 responses.
+- **Wrap-up** (2026-11-20): `paper/WORKFLOW.md` is a suggested order of work for the author's
+  phase (reading the tables against spec §5.4, exploring, drafting); it is hand-written and
+  `make report` does not touch it. GitHub's default branch is now `main`; the stale `pipeline`
+  branch and every merged branch are deleted, so the repository has `main` only. Small
+  documentation commits may go straight to `main` when the author says so; code, data and spec
+  changes still go through a branch and a PR merged with a merge commit.
 - Next: the experiment pipeline is complete; the author drafts the paper. Open for the author
   (spec §11): keep the Instruct column or not; Base as column or dose note; the Ouyang et al.
   pairs. Open gaps: `make finetune` trains `full` first although smallest-first is the safer

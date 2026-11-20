@@ -28,8 +28,8 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   flagged `neither` rows block scoring until `approved: true`.
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
-## Current status (2026-11-19)
-- PRs #1–#14 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`). #1–#8: pipeline; pre-run gates + spec revision 2; the
+## Current status (2026-11-20)
+- PRs #1–#15 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`; #15, the correctness table, as `38eb107`). #1–#8: pipeline; pre-run gates + spec revision 2; the
   78-item stimulus set; removal of the seed dry-run data; the `neither` set and the pre-run fixes
   below; the first real run (`data/responses`, `data/logprobs`); notebooks that run from any
   folder; the Line 1 subset. #9–#11: the blank sheet, the first batch coded, per-language tables.
@@ -159,7 +159,7 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - **Kappa on `correctness`** (spec §5.1 step 16, measure fixed by the author before it was
   computed): 0.855 on the 290 rows with the same `intent` (main; 269 the same), 0.833 on all 335
   (307 the same). `coding.agreement` computes the three measures; `kappa.txt` has three lines.
-- **Correctness table** (2026-11-19, branch `correctness-table`, spec §5.1 step 17): the author
+- **Correctness table** (2026-11-19, PR #15, spec §5.1 step 17): the author
   chose its form among three before any count by model was made. For responses coded `intended`
   and for those coded `literal`, each apart: `n` and the share coded `correct`, by category,
   condition and model, per language (`paper/*/correctness{,_pt}.{csv,tex}`,
@@ -169,15 +169,19 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   40/41, 38/41 on the official ladder; 2/24 (Stage 1 Alpaca), 23/37, 25/36, 28/37 (500, 2,000, all
   pairs) on the self-run ladder. `incorrect` also covers a right answer followed by run-on text
   and an English answer to a Portuguese prompt, so a low share is not only wrong information.
-- Next: nothing is owed on Line 1. Open gaps: ladder figure without CIs; `make finetune` trains
-  `full` first although smallest-first is the safer order; kappa is written per ladder folder
-  although it is one number for the whole sample.
+- **Ladder figure with Line 2 intervals** (2026-11-20, branch `ladder-intervals`): the right panel
+  draws each mean log-odds with the `ci_low` / `ci_high` of `logodds.csv`, categories set slightly
+  apart at each model (`report.draw_ladder`, `DODGE`), and a line at 0. The left panel (Line 1
+  rates) has no interval, by the author's decision: eight items per category. The intervals are
+  per model; two rungs are compared on the same items, not by overlap.
+- Next: nothing is owed. Open gaps: `make finetune` trains `full` first although smallest-first is
+  the safer order; kappa is written per ladder folder although it is one number for the whole
+  sample; no paired test of one rung against another (Line 2) or of data scale (correctness).
 - The coding page is kept (author's instruction). Its store matches `coder1.csv`.
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
   broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.
 - Deferred minors from review: row ids render seeds as `1.0`/`nan`; rows of deleted stimuli persist
-  until another row recomputes; responses notebook run button only does `--raw`; ladder figure omits
-  CIs; `_strip` removes every period; `pin_registry` rejects quoted `revision: "main"`; no `--hub`
+  until another row recomputes; responses notebook run button only does `--raw`; `_strip` removes every period; `pin_registry` rejects quoted `revision: "main"`; no `--hub`
   flag to bypass a stale local cache; the stripped-equals-full ablation check cannot fire alone
   while `strip_punctuation` covers `?!.`; spec §5.3 says "non-empty" where the code requires two
   words; the Qwen contrast can generate but not score.

@@ -334,3 +334,47 @@ def test_build_skips_the_correctness_table_and_keeps_the_intent_table_when_a_row
     assert any("correctness skipped" in w for w in summary["warnings"])
     assert (tmp_path / "paper" / "intent.csv").exists()
     assert not (tmp_path / "paper" / "correctness.csv").exists()
+
+
+# --- the ladder figure: Line 2 means with their intervals ---
+
+def _intervals(ax):
+    """(x, low, high) of every interval drawn on an axis, in drawing order."""
+    from matplotlib.container import ErrorbarContainer
+    out = []
+    for c in ax.containers:
+        if isinstance(c, ErrorbarContainer):
+            out += [(seg[0][0], seg[0][1], seg[1][1]) for bars in c.lines[2] for seg in bars.get_segments()]
+    return out
+
+
+def test_ladder_figure_draws_the_interval_of_each_line2_mean(tmp_path: Path):
+    import matplotlib.pyplot as plt
+    lp_rows(tmp_path)
+    table = R.logodds_table(tmp_path, MODELS, EXPECTED)
+    fig = R.draw_ladder(None, table, MODELS)
+    drawn = _intervals(fig.axes[1])
+    plt.close(fig)
+    assert [(low, high) for _, low, high in drawn] == [
+        pytest.approx((table.loc[IR_FULL, (m, "ci_low")], table.loc[IR_FULL, (m, "ci_high")])) for m in MODELS]
+    assert drawn[0][1] < table.loc[IR_FULL, ("m_base", "mean")] < drawn[0][2]     # a real interval, around the mean
+
+
+def test_ladder_figure_sets_the_categories_apart_so_that_intervals_do_not_overlap(tmp_path: Path):
+    import matplotlib.pyplot as plt
+    lp_rows(tmp_path)
+    one = R.logodds_table(tmp_path, MODELS, EXPECTED)
+    two = pd.concat([one, one.rename(index={"indirect_request": "pattern_continuation"})])
+    fig = R.draw_ladder(None, two, MODELS)
+    xs = [x for x, _, _ in _intervals(fig.axes[1])]
+    plt.close(fig)
+    assert len(set(xs)) == 4                                    # two categories at two models: four places
+
+
+def test_ladder_figure_names_the_models_in_ladder_order_under_both_panels(tmp_path: Path):
+    import matplotlib.pyplot as plt
+    lp_rows(tmp_path)
+    fig = R.draw_ladder(R.intent_table(coded(), MODELS, EXPECTED), R.logodds_table(tmp_path, MODELS, EXPECTED), MODELS)
+    labels = [[t.get_text() for t in ax.get_xticklabels()] for ax in fig.axes]
+    plt.close(fig)
+    assert labels == [MODELS, MODELS]

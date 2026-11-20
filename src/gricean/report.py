@@ -181,25 +181,45 @@ def examples(resp_root: Path, models: list[str], item_ids: list[str], expected: 
     return "\n".join(blocks)
 
 
-def ladder_figure(intent: pd.DataFrame | None, logodds: pd.DataFrame | None, models: list[str], out: Path) -> None:
+DODGE = 0.07       # distance on the x axis between two categories at one model, in units of one model
+
+
+def draw_ladder(intent: pd.DataFrame | None, logodds: pd.DataFrame | None, models: list[str]):
+    """The two measures along the ladder, `full` version: rate of intended responses (Line 1) and mean log-odds (Line 2).
+
+    Each Line 2 mean carries the interval of its table (`ci_low`, `ci_high`); the categories are set slightly
+    apart at each model so that the intervals do not hide one another. Line 1 rates carry no interval."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     fig, axes = plt.subplots(1, 2, figsize=(9, 3.5))
+    x = np.arange(len(models))
     if intent is not None:
         full_i = intent.xs("full", level="condition")
         for cat in full_i.index:
-            axes[0].plot(models, [full_i.loc[cat, (m, "intended")] for m in models], marker="o", label=cat)
+            axes[0].plot(x, [full_i.loc[cat, (m, "intended")] for m in models], marker="o", label=cat)
         axes[0].legend(fontsize=7)
     if logodds is not None:
         full_l = logodds.xs("full", level="condition")
-        for cat in full_l.index:
-            axes[1].plot(models, [full_l.loc[cat, (m, "mean")] for m in models], marker="o", label=cat)
+        axes[1].axhline(0.0, color="0.6", linewidth=0.8, zorder=0)      # no preference between the two readings
+        for k, cat in enumerate(full_l.index):
+            mean, low, high = (np.array([full_l.loc[cat, (m, col)] for m in models], dtype=float)
+                               for col in ("mean", "ci_low", "ci_high"))
+            axes[1].errorbar(x + (k - (len(full_l.index) - 1) / 2) * DODGE, mean, yerr=[mean - low, high - mean],
+                             marker="o", markersize=4, linewidth=1.2, elinewidth=1, capsize=2, label=cat)
     axes[0].set_ylabel("rate of intended responses"); axes[0].set_ylim(0, 1)
-    axes[1].set_ylabel("log-odds intended vs literal (per token)")
+    axes[1].set_ylabel("log-odds intended vs literal\n(per token)")     # two lines: one is cut on a short panel
+    axes[1].set_title("mean over items, with its 95% bootstrap interval", fontsize=8)
     for ax in axes:
+        ax.set_xticks(x, models)
         ax.tick_params(axis="x", rotation=30)
     fig.tight_layout()
+    return fig
+
+
+def ladder_figure(intent: pd.DataFrame | None, logodds: pd.DataFrame | None, models: list[str], out: Path) -> None:
+    import matplotlib.pyplot as plt
+    fig = draw_ladder(intent, logodds, models)
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=200)
     plt.close(fig)

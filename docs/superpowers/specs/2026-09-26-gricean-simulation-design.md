@@ -1,10 +1,20 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18, note added 2026-11-19
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18, notes added 2026-11-19 and 2026-11-20
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-20 (note): the figure draws the Line 2 intervals.** The right
+panel of the ladder figure now shows, around each mean log-odds, the
+interval that the Line 2 table already held (§5.2: 95% bootstrap over the
+items of the category). No number changed. The left panel, the rate of
+`intended` responses, carries no interval, by the author's decision: with
+eight items per category an interval on a rate would say little. Each
+interval is that of one model on its own; the comparison between two rungs
+is made on the same items and is not read from whether two intervals
+overlap.
 
 **2026-11-19 (note): `correctness` has a table.** Until now `correctness`
 was coded and reported nowhere. The author fixed the form of its table
@@ -856,7 +866,8 @@ set is frozen alongside the stimuli.
 - Table: mean log-odds and three-way shares by category × stage (Line 2).
 - Table: template control, the same Line 2 measures for SFT, DPO and
   Instruct on raw text (`logodds_template_control`).
-- Figure: both measures across the five OLMo rungs (Stage 1 → Instruct).
+- Figure: both measures across the five OLMo rungs (Stage 1 → Instruct);
+  the Line 2 means with their intervals, the Line 1 rates without.
 - Table: cue-ablation results (intended rate by version × stage).
 - Table: self-run fine-tune on Stage 1 with controls.
 - Historical anchor: the GPT-3 / InstructGPT pairs quoted from Ouyang et al.

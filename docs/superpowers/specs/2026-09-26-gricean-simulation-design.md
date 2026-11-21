@@ -1221,8 +1221,9 @@ between these two adapters rests on the choice of the 48 items.
 
 **What was known when the definition was fixed.** The author had coded every
 row and read the responses. The intent and correctness tables and the
-agreement measures existed. Claude Code had read the first three items of
-`paper/selfrun/examples.md`, in which Stage 1 under the Alpaca template runs
-to the limit on all three, the adapters trained on 500 and 2,000 pairs do so
-on one, and the format-only adapter ends after one sentence. No one had
-counted the tokens of any response.
+agreement measures existed. Claude Code had read the first 140 lines of
+`paper/selfrun/examples.md`: two items at every rung and the Stage 1
+response to a third. In them Stage 1 under the Alpaca template runs on in
+all three responses, the adapters trained on 500 and 2,000 pairs do so on
+one item of the two, and the format-only adapter ends after one sentence.
+No one had counted the tokens of any response.

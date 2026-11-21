@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 
-from . import coding, generate, logprobs, neither, report, stimuli
+from . import coding, generate, logprobs, neither, report, stimuli, turns
 from .lm import expected_templates, ladders, load_model, load_registry, neither_source
 
 CONFIGS = Path("configs")
@@ -121,6 +121,39 @@ def cmd_report(args, loader) -> int:
                            c2 if c2.exists() else None, Path("data/responses"), Path("data/logprobs"),
                            models, Path("paper") / args.ladder, expected_templates())
     print(summary)
+    if LENGTHS.exists() and CALIBRATION.exists():       # post hoc (spec 13.1); absent before `turns --count`
+        print(_turn_tables(args.ladder))
+    return 0
+
+
+LENGTHS, CALIBRATION = Path("data/lengths/coded_en.csv"), Path("data/lengths/calibration.jsonl")
+
+
+def _turn_tables(ladder: str) -> dict:
+    models = ladders()[ladder]
+    comparison = turns.COMPARISON if set(turns.COMPARISON) <= set(models) else None
+    return turns.build(Path("data/coding/coder1.csv"), LENGTHS, CALIBRATION, models, Path("paper") / ladder,
+                       expected_templates(), cap=_gen_cfg()["max_new_tokens"], comparison=comparison)
+
+
+def cmd_turns(args, loader) -> int:
+    """Turn completion (spec 13.1): calibrate one model, count the tokens of the coded rows, or write the tables."""
+    reg, cap = load_registry(), _gen_cfg()["max_new_tokens"]
+    if args.calibrate:
+        turns.check_prompts(turns.CALIBRATION_PROMPTS, [it.prompt for it in stimuli.load_all()])
+        spec = reg[args.calibrate]
+        lm = loader(spec)
+        rows = []
+        for template in ([False, True] if spec.template != "none" else [False]):
+            rows += turns.calibrate(lm, turns.CALIBRATION_PROMPTS, template=template, max_new_tokens=cap)
+        turns.save_calibration(CALIBRATION, spec.name, rows)
+        print(f"turns[calibrate {spec.name}]: {len(rows)} rows -> {CALIBRATION}")
+    elif args.count:
+        n = turns.write_lengths(Path("data/responses"), LENGTHS, expected_templates(),
+                                lambda name: turns.load_tokenizer(reg[name]))
+        print(f"turns[count]: {n} rows -> {LENGTHS}")
+    else:
+        print(_turn_tables(args.ladder))
     return 0
 
 
@@ -155,6 +188,10 @@ def build_parser() -> argparse.ArgumentParser:
     how = c.add_mutually_exclusive_group(required=True)
     how.add_argument("--batches", metavar="DIR"); how.add_argument("--enter", metavar="DIR")
     r = sub.add_parser("report"); r.add_argument("--ladder", default="olmo"); r.set_defaults(fn=cmd_report)
+    t = sub.add_parser("turns"); t.set_defaults(fn=cmd_turns)
+    what = t.add_mutually_exclusive_group(required=True)
+    what.add_argument("--calibrate", metavar="MODEL"); what.add_argument("--count", action="store_true")
+    what.add_argument("--ladder")
     f = sub.add_parser("finetune"); f.add_argument("--set", action="append"); f.set_defaults(fn=cmd_finetune)
     return p
 

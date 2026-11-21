@@ -73,6 +73,10 @@ def test_hf_logprob_boundary_space():
     assert lp_a != lp_b  # tokenized at the true boundary, not by string concatenation
     out = m.generate("The cat", max_new_tokens=3, temperature=None, seed=None)
     assert isinstance(out, str)
+    tokens = m.generate_tokens("The cat", max_new_tokens=3, temperature=None, seed=None)
+    assert len(tokens) <= 3 and all(isinstance(t, int) for t in tokens)
+    assert m.decode(tokens) == out                    # a stored response is the decoded new tokens
+    assert m.eos_ids == {m.tokenizer.eos_token_id}
 
 
 class _StubTok:

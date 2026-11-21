@@ -6,6 +6,19 @@ Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
 
+**2026-11-21 (note, made after the results): a page records the outcomes.**
+`paper/RESULTS.md` records what each prediction of §5.4 came to and the
+decisions of §11. Its tables are generated from the committed tables under
+`paper/` (`gricean results`); the verdicts and the decisions are the
+author's, written in the page, and the page was committed with every one of
+them blank and with its tables empty. Three things on it were chosen after
+the results were known, and the page says so: the split of the four
+predictions into twelve claims; the cells shown under each prediction; and
+one sum, the Line 1 count of `intended` responses over the categories of a
+condition. It adds no measure and no test. Where no test compares two
+cells, the page says that the verdict is a reading of the table. Design:
+`docs/superpowers/specs/2026-11-21-results-page-design.md`.
+
 **2026-11-21 (note): the left panel of the figure sets the categories
 apart.** A Line 1 rate is a multiple of one eighth, so two categories often
 have the same rate at a model and one marker hid the other. The left panel
@@ -1086,6 +1099,9 @@ parallel study. Prong (2) of the summary is argued, not simulated (§1).
 - Decide, after seeing results, whether the Base (mid-training) rung is
   reported as a column or as a one-line dose note under the figure.
 - Select the Ouyang et al. (2022) pairs to quote beside the OLMo responses.
+
+The three decisions still open are recorded in `paper/RESULTS.md` when the
+author takes them (note of 2026-11-21).
 
 ## 12. Configuration implied by rev. 2 (for the implementation plan)
 

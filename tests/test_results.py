@@ -1,0 +1,101 @@
+from pathlib import Path
+import pandas as pd
+import pytest
+from gricean import results
+
+
+def write_tables(paper: Path, ladder: str = "t", suffix: str = "", rate: float = 0.25) -> None:
+    out = paper / ladder; out.mkdir(parents=True, exist_ok=True)
+    idx = pd.MultiIndex.from_tuples(
+        [("indirect_request", "control"), ("indirect_request", "full"), ("indirect_request", "stripped"),
+         ("malformed_instruction", "full"), ("pattern_continuation", "full")], names=["category", "condition"])
+    cols = pd.MultiIndex.from_product([["olmo_stage1", "s"], ["literal", "intended", "neither"]])
+    intent = pd.DataFrame(0.0, index=idx, columns=cols)
+    intent[("olmo_stage1", "intended")] = [0.5, rate, 0.375, 0.0, 0.375]
+    intent[("s", "intended")] = [1.0, 1.0, 1.0, 0.75, 1.0]
+    intent.to_csv(out / f"intent{suffix}.csv")
+    cols = pd.MultiIndex.from_product([["olmo_stage1", "s"], ["mean", "ci_low", "ci_high", "share_neither"]])
+    lo = pd.DataFrame(0.0, index=idx[1:], columns=cols)
+    lo[("olmo_stage1", "mean")] = [0.434, 1.134, 2.39, -0.529]
+    lo[("olmo_stage1", "ci_low")] = [-0.035, 0.62, 1.12, -0.88]
+    lo[("olmo_stage1", "ci_high")] = [0.808, 1.59, 3.64, -0.116]
+    lo.to_csv(out / f"logodds{suffix}.csv")
+
+
+def rows(block: str) -> list[list[str]]:
+    return [[c.strip() for c in line.strip("|").split("|")] for line in block.splitlines()
+            if line.startswith("|") and not set(line) <= set("|- ")]
+
+
+def test_parse_spec_reads_lists_and_defaults():
+    spec = results.parse_spec("table=intent ladder=olmo condition=full,stripped")
+    assert spec == {"table": "intent", "ladder": "olmo", "language": "en", "condition": ["full", "stripped"]}
+
+
+@pytest.mark.parametrize("text", ["table=intent ladder=olmo", "table=nope ladder=olmo", "ladder=olmo condition=full",
+                                  "table=intent ladder=olmo condition=full colour=red", "table=intent olmo condition=full",
+                                  "table=kappa"])
+def test_parse_spec_refuses_what_it_cannot_read(text):
+    with pytest.raises(ValueError):
+        results.parse_spec(text)
+
+
+def test_intent_block_gives_counts_labels_and_a_total(tmp_path):
+    write_tables(tmp_path)
+    block = results.render_block(results.parse_spec("table=intent ladder=t condition=full"), tmp_path)
+    assert block.splitlines()[0] == ("Line 1. English, `full`: responses coded `intended`, "
+                                     "of the items in each cell (`paper/t/intent.csv`).")
+    assert rows(block) == [["Category", "Stage 1", "s"],
+                           ["Indirect request", "2/8", "8/8"],
+                           ["Malformed instruction", "0/8", "6/8"],
+                           ["Pattern continuation", "3/8", "8/8"],
+                           ["All 3 categories", "5/24", "22/24"]]
+    widths = {len(line) for line in block.splitlines() if line.startswith("|")}
+    assert len(widths) == 1                                        # padded: the source reads as a table too
+
+
+def test_intent_block_uses_the_control_quota_and_no_total_for_one_row(tmp_path):
+    write_tables(tmp_path)
+    block = results.render_block(results.parse_spec("table=intent ladder=t condition=control"), tmp_path)
+    assert rows(block) == [["Category", "Stage 1", "s"], ["Indirect request", "1/2", "2/2"]]
+
+
+def test_several_conditions_label_each_row_and_total_each_condition(tmp_path):
+    write_tables(tmp_path)
+    block = results.render_block(results.parse_spec(
+        "table=intent ladder=t condition=full,stripped category=indirect_request models=s,olmo_stage1"), tmp_path)
+    assert rows(block) == [["Category", "s", "Stage 1"],
+                           ["Indirect request, `full`", "8/8", "2/8"],
+                           ["Indirect request, `stripped`", "8/8", "3/8"]]
+
+
+def test_portuguese_reads_its_own_file_and_quota(tmp_path):
+    write_tables(tmp_path, suffix="_pt", rate=0.5)
+    block = results.render_block(results.parse_spec(
+        "table=intent ladder=t language=pt condition=full category=indirect_request"), tmp_path)
+    assert "Portuguese" in block and "`paper/t/intent_pt.csv`" in block
+    assert rows(block)[1] == ["Indirect request", "1/2", "2/2"]
+
+
+def test_a_rate_that_is_not_a_count_is_refused(tmp_path):
+    write_tables(tmp_path, rate=0.3)
+    with pytest.raises(ValueError, match="indirect_request.*full.*olmo_stage1"):
+        results.render_block(results.parse_spec("table=intent ladder=t condition=full"), tmp_path)
+
+
+def test_logodds_block_gives_mean_and_interval(tmp_path):
+    write_tables(tmp_path)
+    block = results.render_block(results.parse_spec("table=logodds ladder=t condition=full models=olmo_stage1"), tmp_path)
+    assert rows(block) == [["Category", "Stage 1"],
+                           ["Indirect request", "0.43 [−0.04, 0.81]"],
+                           ["Malformed instruction", "2.39 [1.12, 3.64]"],
+                           ["Pattern continuation", "−0.53 [−0.88, −0.12]"]]
+
+
+@pytest.mark.parametrize("text", ["table=intent ladder=absent condition=full", "table=intent ladder=t condition=embedded",
+                                  "table=intent ladder=t condition=full models=nobody",
+                                  "table=intent ladder=t condition=stripped category=malformed_instruction"])
+def test_a_block_that_asks_for_what_is_not_there_is_refused(tmp_path, text):
+    write_tables(tmp_path)
+    with pytest.raises(ValueError):
+        results.render_block(results.parse_spec(text), tmp_path)

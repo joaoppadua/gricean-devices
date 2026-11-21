@@ -130,7 +130,8 @@ def test_several_conditions_label_each_row_and_total_each_condition(tmp_path):
 
 def test_portuguese_reads_its_own_file_and_quota(tmp_path):
     write_tables(tmp_path, suffix="_pt", rate=0.5)
-    block = results.render_block(results.parse_spec("table=intent ladder=t language=pt condition=full"), tmp_path)
+    block = results.render_block(results.parse_spec(
+        "table=intent ladder=t language=pt condition=full category=indirect_request"), tmp_path)
     assert "Portuguese" in block and "`paper/t/intent_pt.csv`" in block
     assert rows(block)[1] == ["Indirect request", "1/2", "2/2"]
 

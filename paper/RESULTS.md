@@ -242,9 +242,10 @@ Read the Format only column against Stage 1 Alpaca.
 ### 4e. Grows with data scale
 
 Read 500, 2,000 and All pairs, in that order. The spec already has a note
-on this claim for Line 1: revision log, note of 2026-11-16.
+on this claim for Line 1: revision log, note of 2026-11-16. The one paired
+test that was run (spec §13.1) is on turn completion, a different measure.
 
-- Support: table reading; the one paired test run (spec §13.1) is on turn completion, a different measure
+- Support: table reading; no paired test on this measure
 - Line 1 verdict:
 - Line 2 verdict:
 - Decided on:

@@ -1,10 +1,23 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18, notes added 2026-11-19 and 2026-11-20
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18, notes added 2026-11-19 and 2026-11-20, post hoc analysis added 2026-11-20
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-20 (analysis added after the results; not part of the original
+design): turn completion.** A new section, §13, holds analyses that the
+results prompted. The first, §13.1, asks whether a response ends by itself
+before the limit of 150 new tokens, and counts as a complete turn a response
+that is coded `intended` and ends. What prompted it: Stage 1 under the
+Alpaca template is `intended` on 24 of 48 items and `correct` on 2 of those
+24, because the response opens with the intended reading and then runs on to
+the limit; and `correctness` mixes that with wrong information. The measure
+uses no coder. It covers the English rows coder 1 coded and no Portuguese
+row, by the author's decision. Its definition, the rule that fixes its one
+free number, the form of its two tables and the reading of its one
+comparison were written before any token of any response was counted.
 
 **2026-11-20 (note): the printed examples are drawn at random.** §6 said
 "selected items"; `examples.md` held the first six items in alphabetical
@@ -894,6 +907,8 @@ set is frozen alongside the stimuli.
   already printed and replaces none. English in `examples.md`, Portuguese
   in `examples_pt.md`. A quotation in the paper is taken from these files,
   and the paper says how they were drawn.
+- Post hoc, and reported as such (§13.1): turn completion, English only.
+  Two tables and one exploratory comparison.
 
 ## 7. Self-run fine-tune
 
@@ -973,6 +988,7 @@ gricean-devices/
     coding.py           export coding sheet; load coded sheet; kappa
     finetune.py         LoRA runs (full, format-only, scale curve) -> adapters/
     report.py           tables and figures -> paper/
+    turns.py            post hoc (spec 13.1): token counts -> data/lengths/; turn-completion tables -> paper/
     cli.py              one subcommand per stage
   notebooks/            marimo notebooks (see 8.2)
   data/                 JSONL outputs, one file per model x stimulus version; committed
@@ -1068,3 +1084,145 @@ and the `qwen` ladder leave the default run; they may stay in the file as
 optional. `configs/finetune.yaml`: `base: olmo_stage1`. `configs/generation.yaml`:
 `neither.n: 5`, five seeds. `make pin` resolves the stage-1 branch name to its
 commit sha like any other revision.
+
+## 13. Analyses added after the results
+
+Everything in this section was added after the tables of §6 existed, and
+those tables prompted it. None of it belongs to the design of §§1 to 12, and
+no prediction of §5.4 covers it. The paper reports each analysis here as
+post hoc and says what prompted it. The order of work is the one used for
+every measure in this repository: the definition is committed first, the
+computation comes second, and the outcome is committed apart.
+
+### 13.1 Turn completion (added 2026-11-20)
+
+**What prompted it.** Two results, both in `paper/selfrun/`.
+
+- Stage 1 under the Alpaca template is `intended` on 24 of the 48 English
+  dissociation items in the `full` version, against 7 for Stage 1 on raw
+  text, with no change of weights. Only 2 of those 24 are `correct`. The
+  response opens with the intended reading and then goes on to the limit of
+  150 new tokens: it repeats a sentence, or it writes further
+  `### Instruction:` and `### Response:` blocks. The author's reading is
+  that the model gives the opening of an answer and does not take a turn. A
+  turn has an end, and ending it is part of following what the speaker
+  wants.
+- Among the adapters trained on 500, 2,000 and all pairs, `correct` among
+  the `intended` responses is 23, 25 and 28 (§5.1, step 17). The question is
+  whether what grows there is the ending of the turn.
+
+`correctness` cannot answer either. By rule a right answer followed by
+run-on text is `incorrect` (step 17), so the code already contains "did not
+stop" and mixes it with wrong information. An association between `intended`
+and `correct` is therefore partly built into the codes.
+
+**Who decided what.** Claude Code proposed the measure in discussion with
+the author. The author decided the route to the count, that its free number
+is fixed by calibration, the scope, the two tables and their form, the
+restriction to English, and that the comparison is made and read as
+exploratory.
+
+**The measure.** For each response, the number of new tokens. Two variables
+follow from it.
+
+- *Ended*: the model ended the response itself, before the limit of 150 new
+  tokens (`max_new_tokens` in `configs/generation.yaml`).
+- *Complete turn*: the response is coded `intended` by coder 1 and it ended.
+
+"Ended" alone is not a turn. An empty response ended at once, and an adapter
+can learn to stop from the format of its training rows, whose labels keep
+the end-of-text token (§7).
+
+**Scope.** The rows coder 1 coded (§5.1): the greedy response of each
+model's main condition. English only (author's decision): the Portuguese
+subset is small, its responses were already noisy, and it would add nothing
+here. No Portuguese response is counted.
+
+**How the count is obtained.** A stored response is decoded text; the rows
+hold no count and no record of why generation stopped. Two routes were put
+to the author: to tokenize the stored text again, or to generate again and
+record the count. The author chose the first. Each response is tokenized
+with the tokenizer of the model that wrote it, without special tokens and
+with no model loaded. `gricean turns --count` writes the counts once to
+`data/lengths/coded_en.csv` (`row_id`, `n_tokens`), which is committed. The
+tables are computed from that file, so they regenerate without a tokenizer.
+
+**The tolerance, fixed by calibration.** Decoding a sequence of tokens and
+tokenizing the text again need not give the same number of tokens. A
+response is therefore taken to have *reached the limit* when its count is at
+least 150 − τ, and to have ended otherwise. τ is fixed on text that is not
+part of the experiment, by a rule written before the calibration was run:
+
+1. Twenty English prompts, listed in `gricean.turns.CALIBRATION_PROMPTS`,
+   none of them a stimulus: six requests that invite a long answer, six
+   short questions and eight openings of running text.
+2. Every model that has coded rows gives a greedy response to each prompt,
+   with the decoding and the limit of the experiment, in every prompt format
+   in which it has coded rows: raw text for all ten models (the `embedded`
+   version is never templated), and the model's template for the eight
+   that have one. That is 360 responses.
+3. For each response the record holds the true number of new tokens,
+   whether the model produced the end-of-sequence token, and the count
+   obtained by tokenizing the decoded text again.
+4. τ is the largest value of 150 minus that second count, over the
+   calibration responses that did reach the limit; it is 0 if the second
+   count never falls short.
+5. If τ is larger than 10, or if fewer than 20 calibration responses
+   reached the limit, this route is abandoned and the author decides again.
+
+The calibration rows are committed (`data/lengths/calibration.jsonl`), and
+`gricean.turns.tolerance` computes τ from them; the number is not typed by
+hand. Two checks go with it. The calibration record says how many responses
+that ended have a second count inside the band from 150 − τ to 149, which
+the rule would read as having reached the limit. And the report gives the
+number of coded responses whose count falls in that band: those are the
+responses that τ = 0 would read otherwise.
+
+**Tables** (form fixed by the author before any count). Rows and conditions
+are those of the intent table.
+
+1. `termination`: for each model and each of the three intents, the number
+   of responses and the share of them that ended. Where no response has the
+   intent, the share is left empty.
+2. `termination_correctness`: for the responses coded `intended`, and
+   within them for those coded `correct` and those coded `incorrect`, each
+   apart: the number of responses and how many of them reached the limit.
+   Among the `incorrect`, this sets the responses that did not end apart
+   from the other errors. Among the `correct`, a response that reached the
+   limit is a long answer cut off; that count is the check on the measure.
+
+Both are descriptive and carry no interval. `gricean turns --ladder NAME`
+writes them to `paper/NAME/`, and `make report` does the same.
+
+**One comparison across data scale, exploratory.** Fixed in advance: the
+complete turns of the adapter trained on 500 pairs against those of the
+adapter trained on all pairs, on the 48 English dissociation items in the
+`full` version. The report gives the four counts (complete in both, in the
+first only, in the second only, in neither) and the exact two-sided McNemar
+test, which is a binomial test on the items where the two adapters differ.
+The adapter trained on 2,000 pairs is given as a count.
+
+Its reading is fixed beforehand too. The comparison is exploratory. The
+question came from the counts 23, 25 and 28 on these same responses, and
+each adapter was trained once, with one seed and one draw of pairs. A small
+p therefore does not support "grows with data scale", and a large p does
+not support "does not grow". The p-value says only how far the difference
+between these two adapters rests on the choice of the 48 items.
+
+**What the measure cannot show.**
+
+- Reaching the limit is not always run-on text. A long and good answer cut
+  at 150 tokens reaches it too. The second table shows how many `correct`
+  responses do.
+- It does not say how a response failed to end: whether it repeats a
+  sentence or writes new blocks of the template.
+- It is a property of the greedy response under a limit of 150 tokens, not
+  of the model under every limit.
+
+**What was known when the definition was fixed.** The author had coded every
+row and read the responses. The intent and correctness tables and the
+agreement measures existed. Claude Code had read the first three items of
+`paper/selfrun/examples.md`, in which Stage 1 under the Alpaca template runs
+to the limit on all three, the adapters trained on 500 and 2,000 pairs do so
+on one, and the format-only adapter ends after one sentence. No one had
+counted the tokens of any response.

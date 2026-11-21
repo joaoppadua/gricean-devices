@@ -173,7 +173,9 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   draws each mean log-odds with the `ci_low` / `ci_high` of `logodds.csv`, categories set slightly
   apart at each model (`report.draw_ladder`, `DODGE`), and a line at 0. The left panel (Line 1
   rates) has no interval, by the author's decision: eight items per category. The intervals are
-  per model; two rungs are compared on the same items, not by overlap.
+  per model; two rungs are compared on the same items, not by overlap. Since 2026-11-21 the left
+  panel sets the categories apart in the same way (rates are multiples of 1/8 and markers hid one
+  another) and its y axis runs from -0.05 to 1.05.
 - **Printed examples are a random draw** (2026-11-20, PR #17, spec §6; rule
   fixed before any draw): `report.examples` draws, per language, one item of each category shown
   at every rung, and three responses of each rung; pool = greedy, `full`, dissociation items, main

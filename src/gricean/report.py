@@ -230,8 +230,9 @@ DODGE = 0.07       # distance on the x axis between two categories at one model,
 def draw_ladder(intent: pd.DataFrame | None, logodds: pd.DataFrame | None, models: list[str]):
     """The two measures along the ladder, `full` version: rate of intended responses (Line 1) and mean log-odds (Line 2).
 
-    Each Line 2 mean carries the interval of its table (`ci_low`, `ci_high`); the categories are set slightly
-    apart at each model so that the intervals do not hide one another. Line 1 rates carry no interval."""
+    Each Line 2 mean carries the interval of its table (`ci_low`, `ci_high`). In both panels the categories are
+    set slightly apart at each model: Line 2 intervals would hide one another, and Line 1 rates are multiples of
+    one over the number of items, so two categories often have the same rate. Line 1 rates carry no interval."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -239,8 +240,9 @@ def draw_ladder(intent: pd.DataFrame | None, logodds: pd.DataFrame | None, model
     x = np.arange(len(models))
     if intent is not None:
         full_i = intent.xs("full", level="condition")
-        for cat in full_i.index:
-            axes[0].plot(x, [full_i.loc[cat, (m, "intended")] for m in models], marker="o", label=cat)
+        for k, cat in enumerate(full_i.index):
+            axes[0].plot(x + (k - (len(full_i.index) - 1) / 2) * DODGE, [full_i.loc[cat, (m, "intended")] for m in models],
+                         marker="o", markersize=4, linewidth=1.2, label=cat)
         axes[0].legend(fontsize=7)
     if logodds is not None:
         full_l = logodds.xs("full", level="condition")
@@ -250,7 +252,7 @@ def draw_ladder(intent: pd.DataFrame | None, logodds: pd.DataFrame | None, model
                                for col in ("mean", "ci_low", "ci_high"))
             axes[1].errorbar(x + (k - (len(full_l.index) - 1) / 2) * DODGE, mean, yerr=[mean - low, high - mean],
                              marker="o", markersize=4, linewidth=1.2, elinewidth=1, capsize=2, label=cat)
-    axes[0].set_ylabel("rate of intended responses"); axes[0].set_ylim(0, 1)
+    axes[0].set_ylabel("rate of intended responses"); axes[0].set_ylim(-0.05, 1.05)        # room for the markers at 0 and at 1
     axes[1].set_ylabel("log-odds intended vs literal\n(per token)")     # two lines: one is cut on a short panel
     axes[1].set_title("mean over items, with its 95% bootstrap interval", fontsize=8)
     for ax in axes:

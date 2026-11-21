@@ -1,10 +1,17 @@
 # Design spec: computational simulation for "LLMs are Gricean machines"
 
-Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18, notes added 2026-11-19 and 2026-11-20, post hoc analysis added 2026-11-20
+Date: 2026-09-26, revised 2026-11-08, amended 2026-11-11, notes added 2026-11-12, 2026-11-14, 2026-11-15 and 2026-11-16, amended 2026-11-18, notes added 2026-11-19 and 2026-11-20, post hoc analysis added 2026-11-20, note added 2026-11-21
 Status: revision 2 for author review
 Paper: Pádua, "LLMs are Gricean machines", Revista Texto Livre 2027 dossier
 
 ## Revision log
+
+**2026-11-21 (note): the left panel of the figure sets the categories
+apart.** A Line 1 rate is a multiple of one eighth, so two categories often
+have the same rate at a model and one marker hid the other. The left panel
+now sets the categories slightly apart at each model, as the right panel
+already did, and leaves room for the markers at 0 and at 1. No number
+changed, and the panel still carries no interval.
 
 **2026-11-20 (analysis added after the results; not part of the original
 design): turn completion.** A new section, §13, holds analyses that the

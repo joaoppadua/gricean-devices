@@ -1,0 +1,33 @@
+\begin{tabular}{llrrrrrrrrrrrrrrrrrrrr}
+\toprule
+ &  & \multicolumn{4}{r}{olmo_stage1_alpaca} & \multicolumn{4}{r}{olmo_n500} & \multicolumn{4}{r}{olmo_n2000} & \multicolumn{4}{r}{olmo_full} & \multicolumn{4}{r}{olmo_format_only} \\
+ &  & \multicolumn{2}{r}{correct} & \multicolumn{2}{r}{incorrect} & \multicolumn{2}{r}{correct} & \multicolumn{2}{r}{incorrect} & \multicolumn{2}{r}{correct} & \multicolumn{2}{r}{incorrect} & \multicolumn{2}{r}{correct} & \multicolumn{2}{r}{incorrect} & \multicolumn{2}{r}{correct} & \multicolumn{2}{r}{incorrect} \\
+ &  & n & at_limit & n & at_limit & n & at_limit & n & at_limit & n & at_limit & n & at_limit & n & at_limit & n & at_limit & n & at_limit & n & at_limit \\
+category & condition &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
+\midrule
+\multirow[t]{4}{*}{embedded_instruction} & control & 0 & 0 & 2 & 2 & 2 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ & embedded & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ & full & 0 & 0 & 2 & 2 & 7 & 0 & 1 & 1 & 6 & 0 & 2 & 1 & 7 & 0 & 1 & 1 & 0 & 0 & 0 & 0 \\
+ & stripped & 0 & 0 & 2 & 2 & 5 & 0 & 3 & 2 & 5 & 0 & 3 & 3 & 5 & 0 & 3 & 2 & 0 & 0 & 0 & 0 \\
+\cline{1-22}
+\multirow[t]{4}{*}{indirect_request} & control & 0 & 0 & 2 & 2 & 2 & 1 & 0 & 0 & 1 & 0 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 0 & 0 & 0 \\
+ & embedded & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ & full & 0 & 0 & 3 & 3 & 2 & 0 & 4 & 2 & 4 & 0 & 2 & 1 & 4 & 0 & 2 & 0 & 0 & 0 & 0 & 0 \\
+ & stripped & 0 & 0 & 3 & 3 & 2 & 0 & 4 & 2 & 4 & 1 & 1 & 0 & 3 & 0 & 2 & 1 & 0 & 0 & 0 & 0 \\
+\cline{1-22}
+\multirow[t]{2}{*}{malformed_instruction} & control & 0 & 0 & 2 & 2 & 2 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ & full & 2 & 1 & 3 & 2 & 4 & 0 & 2 & 0 & 5 & 0 & 1 & 0 & 5 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+\cline{1-22}
+\multirow[t]{4}{*}{pattern_continuation} & control & 0 & 0 & 2 & 2 & 0 & 0 & 2 & 1 & 1 & 1 & 1 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ & embedded & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ & full & 0 & 0 & 8 & 7 & 5 & 0 & 3 & 2 & 6 & 0 & 2 & 2 & 7 & 0 & 1 & 1 & 0 & 0 & 0 & 0 \\
+ & stripped & 0 & 0 & 8 & 6 & 5 & 0 & 3 & 2 & 5 & 0 & 3 & 2 & 7 & 0 & 1 & 1 & 0 & 0 & 0 & 0 \\
+\cline{1-22}
+\multirow[t]{2}{*}{rhetorical_question} & control & 0 & 0 & 2 & 2 & 2 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ & full & 0 & 0 & 1 & 1 & 1 & 0 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 0 & 2 & 2 & 0 & 0 & 0 & 0 \\
+\cline{1-22}
+\multirow[t]{2}{*}{underspecified_request} & control & 0 & 0 & 2 & 2 & 1 & 0 & 1 & 0 & 2 & 0 & 0 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ & full & 0 & 0 & 5 & 4 & 4 & 0 & 3 & 0 & 3 & 0 & 3 & 2 & 5 & 0 & 2 & 1 & 0 & 0 & 0 & 0 \\
+\cline{1-22}
+\bottomrule
+\end{tabular}

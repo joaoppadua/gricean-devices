@@ -36,6 +36,7 @@ Do it for `paper/olmo/` first, then for `paper/selfrun/`.
 | 4 | `correctness.csv` | Whether a response that follows a reading is also right |
 | 5 | `kappa.txt` | How far the two coders agree |
 | 6 | `examples.md` | What the responses look like |
+| 7 | `termination.csv`, `termination_correctness.csv`, `termination.txt` | Post hoc (spec §13.1), English only: whether a response ended before the 150-token limit |
 
 Files ending in `_pt` are the Portuguese subset. It is reported apart and
 never pooled with English (spec §4.4).
@@ -100,6 +101,14 @@ number of `intended` responses coded `correct` rises with data scale (23,
 the paper says correctness "grows" with scale, that sentence needs a
 paired test on the same items first. The same holds for any sentence that
 says a measure "rises" between two rungs.
+
+One part of that question became an analysis (spec §13.1, added
+2026-11-20): whether what grows is the ending of the turn. It is not.
+Complete turns are 31, 29 and 32 of 48, and the rise of `correct` is in the
+responses that ended. The paired test on `correct` itself has not been
+run. Read `termination_correctness.csv` before using the official ladder's
+numbers: from DPO on, about half of the `correct` responses reach the
+limit because the answer is long.
 
 ## 6. Draft from the files
 

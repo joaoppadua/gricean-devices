@@ -355,6 +355,20 @@ def test_ladder_figure_sets_the_categories_apart_so_that_intervals_do_not_overla
     assert len(set(xs)) == 4                                    # two categories at two models: four places
 
 
+def test_ladder_figure_shows_two_categories_with_the_same_line1_rates(tmp_path: Path):
+    import matplotlib.pyplot as plt
+    one = R.intent_table(coded(), MODELS, EXPECTED)
+    two = pd.concat([one, one.rename(index={"indirect_request": "pattern_continuation"})])     # same rates at every model
+    fig = R.draw_ladder(two, None, MODELS)
+    ax = fig.axes[0]
+    points = [tuple(xy) for line in ax.get_lines() for xy in line.get_xydata()]
+    low, high = ax.get_ylim()
+    plt.close(fig)
+    assert len(points) == 2 * len(MODELS)
+    assert len(set(points)) == len(points)                      # no marker is drawn on top of another
+    assert low < 0 and high > 1                                 # markers at 0 and at 1 are drawn whole
+
+
 def test_ladder_figure_names_the_models_in_ladder_order_under_both_panels(tmp_path: Path):
     import matplotlib.pyplot as plt
     lp_rows(tmp_path)

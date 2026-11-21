@@ -149,8 +149,17 @@ class HFLM:
     def _ids(self, text: str, special: bool):
         return self.tokenizer(text, add_special_tokens=special, return_tensors="pt").input_ids
 
-    def generate(self, prompt: str, *, max_new_tokens: int, temperature: float | None,
-                 seed: int | None) -> str:
+    @property
+    def eos_ids(self) -> set[int]:
+        """The token ids that end a generation."""
+        ids = getattr(self.model.generation_config, "eos_token_id", None)
+        if ids is None:
+            ids = self.tokenizer.eos_token_id
+        return set(ids) if isinstance(ids, (list, tuple)) else {ids}
+
+    def generate_tokens(self, prompt: str, *, max_new_tokens: int, temperature: float | None,
+                        seed: int | None) -> list[int]:
+        """The new tokens, end-of-sequence included when the model produced it."""
         torch = self._torch
         ids = self._ids(prompt, special=True).to(self.device)
         if seed is not None:
@@ -162,7 +171,15 @@ class HFLM:
             kwargs.update(do_sample=True, temperature=temperature)
         with torch.no_grad():
             out = self.model.generate(ids, **kwargs)
-        return self.tokenizer.decode(out[0, ids.shape[1]:], skip_special_tokens=True)
+        return out[0, ids.shape[1]:].tolist()
+
+    def decode(self, tokens: list[int]) -> str:
+        return self.tokenizer.decode(tokens, skip_special_tokens=True)
+
+    def generate(self, prompt: str, *, max_new_tokens: int, temperature: float | None,
+                 seed: int | None) -> str:
+        return self.decode(self.generate_tokens(prompt, max_new_tokens=max_new_tokens,
+                                                temperature=temperature, seed=seed))
 
     def continuation_logprob(self, prompt: str, continuation: str) -> tuple[float, int]:
         """Tokenize prompt and continuation separately so the boundary matches training."""

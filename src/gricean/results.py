@@ -7,6 +7,7 @@ the cells it shows.
 """
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -30,6 +31,11 @@ CAPTIONS = {
     "logodds": ("Line 2. {language}, {conditions}: mean log-odds of the intended over the literal continuation, "
                 "with its bootstrap interval (`{file}`)."),
 }
+KAPPA_NAMES = {
+    "cohen_kappa_intent": "`intent`",
+    "cohen_kappa_correctness_same_intent": "`correctness`, rows with the same `intent`",
+    "cohen_kappa_correctness_all": "`correctness`, all rows",
+}
 NO_VALUE = "—"
 MINUS = "−"
 
@@ -51,6 +57,9 @@ def parse_spec(text: str) -> dict:
         raise ValueError(f"table={table} needs ladder=")
     if table in CELL_TABLES and "condition" not in spec:
         raise ValueError(f"table={table} needs condition=")
+    if table not in CELL_TABLES:                # these blocks show one file whole: there is nothing to select
+        if extra := [k for k in spec if k in (*LISTS, "language") or (k == "ladder" and table == "summary")]:
+            raise ValueError(f"table={table} does not take {', '.join(extra)}")
     spec.setdefault("language", MAIN_LANGUAGE)
     if spec["language"] not in QUOTAS:
         raise ValueError(f"language must be one of {', '.join(QUOTAS)}; found {spec['language']!r}")
@@ -137,8 +146,51 @@ def _cell_table(spec: dict, paper: Path) -> str:
     return caption + "\n\n" + _markdown_table(["Category", *(MODEL_LABELS.get(m, m) for m in models)], rows)
 
 
+def _text_file(spec: dict, paper: Path) -> tuple[list[str], str]:
+    shown = f"paper/{spec['ladder']}/{spec['table']}.txt"
+    path = Path(paper) / spec["ladder"] / f"{spec['table']}.txt"
+    if not path.exists():
+        raise ValueError(f"{shown} is not there")
+    return path.read_text().splitlines(), shown
+
+
+def _kappa(spec: dict, paper: Path) -> str:
+    lines, shown = _text_file(spec, paper)
+    found = [m for m in (re.fullmatch(r"(\S+)=(\S+) n=(\d+) same=(\d+)", line.strip()) for line in lines) if m]
+    if not found:
+        raise ValueError(f"{shown} holds no agreement measure")
+    items = [f"- {KAPPA_NAMES.get(name, name)}: κ = {value} (n = {n}, same code on {same})" for name, value, n, same
+             in (m.groups() for m in found)]
+    return "\n".join([f"Agreement between the two coders, one sample for both ladders (`{shown}`).", "", *items])
+
+
+def _termination(spec: dict, paper: Path) -> str:
+    lines, shown = _text_file(spec, paper)
+    limit = next((m[1] for m in (re.match(r"limit=(\d+)", line) for line in lines) if m), None)
+    turns = next((line.split()[1:] for line in lines if line.startswith("complete_turns ")), None)
+    if limit is None or not turns:
+        raise ValueError(f"{shown} holds no `limit=` or no `complete_turns` line")
+    models, counts = zip(*(pair.split("=", 1) for pair in turns))
+    out = [f"Post hoc (spec §13.1). English, `full`, dissociation items: responses coded `intended` that ended "
+           f"before the limit of {limit} tokens (`{shown}`).", "",
+           _markdown_table(["", *(MODEL_LABELS.get(m, m) for m in models)], [["Complete turns", *counts]])]
+    for line in lines:                                      # the comparison fixed in advance, where the ladder has one
+        if m := re.fullmatch(r"(\S+) vs (\S+): (.+)", line.strip()):
+            first, second = (MODEL_LABELS.get(name, name) for name in m.groups()[:2])
+            v = dict(pair.split("=", 1) for pair in m[3].split() if "=" in pair)
+            if lacking := [k for k in ("only_first", "only_second", "mcnemar_exact_p") if k not in v]:
+                raise ValueError(f"{shown}: the comparison line has no {', '.join(lacking)}")
+            out += ["", f"Exploratory comparison fixed in advance, {first} against {second}: {v['only_first']} items one "
+                        f"way, {v['only_second']} the other; exact McNemar p = {float(v['mcnemar_exact_p']):.2f}."]
+    return "\n".join(out)
+
+
 def render_block(spec: dict, paper: Path) -> str:
     """The Markdown of one generated block, without its markers and without a final line break."""
     if spec["table"] in CELL_TABLES:
         return _cell_table(spec, paper)
+    if spec["table"] == "kappa":
+        return _kappa(spec, paper)
+    if spec["table"] == "termination":
+        return _termination(spec, paper)
     raise ValueError(f"table={spec['table']} cannot be rendered here")

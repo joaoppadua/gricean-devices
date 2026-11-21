@@ -99,3 +99,53 @@ def test_a_block_that_asks_for_what_is_not_there_is_refused(tmp_path, text):
     write_tables(tmp_path)
     with pytest.raises(ValueError):
         results.render_block(results.parse_spec(text), tmp_path)
+KAPPA = ("cohen_kappa_intent=0.775 n=335 same=290\n"
+         "cohen_kappa_correctness_same_intent=0.855 n=290 same=269\n"
+         "cohen_kappa_correctness_all=0.833 n=335 same=307\n")
+TERMINATION = ("# turn completion (spec 13.1): post hoc, English coded rows only\n"
+               "limit=150 tolerance=0\n"
+               "complete_turns olmo_n500=31/48 olmo_full=32/48\n"
+               "# exploratory: read as fixed beforehand in spec 13.1\n"
+               "olmo_n500 vs olmo_full: n=48 both=28 only_first=3 only_second=4 neither=13 mcnemar_exact_p=1.0000\n")
+
+
+def test_kappa_block_lists_the_three_measures(tmp_path):
+    (tmp_path / "t").mkdir(); (tmp_path / "t/kappa.txt").write_text(KAPPA)
+    block = results.render_block(results.parse_spec("table=kappa ladder=t"), tmp_path)
+    assert block.splitlines()[0] == "Agreement between the two coders, one sample for both ladders (`paper/t/kappa.txt`)."
+    assert block.splitlines()[2:] == ["- `intent`: κ = 0.775 (n = 335, same code on 290)",
+                                      "- `correctness`, rows with the same `intent`: κ = 0.855 (n = 290, same code on 269)",
+                                      "- `correctness`, all rows: κ = 0.833 (n = 335, same code on 307)"]
+
+
+def test_termination_block_gives_complete_turns_and_the_comparison(tmp_path):
+    (tmp_path / "t").mkdir(); (tmp_path / "t/termination.txt").write_text(TERMINATION)
+    block = results.render_block(results.parse_spec("table=termination ladder=t"), tmp_path)
+    assert "limit of 150 tokens (`paper/t/termination.txt`)" in block.splitlines()[0]
+    assert rows(block) == [["", "500", "All pairs"], ["Complete turns", "31/48", "32/48"]]
+    assert block.splitlines()[-1] == ("Exploratory comparison fixed in advance, 500 against All pairs: "
+                                      "3 items one way, 4 the other; exact McNemar p = 1.00.")
+
+
+def test_termination_block_without_a_comparison_ends_at_the_table(tmp_path):
+    (tmp_path / "t").mkdir()
+    (tmp_path / "t/termination.txt").write_text("\n".join(TERMINATION.splitlines()[:3]) + "\n")
+    block = results.render_block(results.parse_spec("table=termination ladder=t"), tmp_path)
+    assert block.splitlines()[-1].startswith("| Complete turns")
+
+
+def test_text_blocks_refuse_a_file_they_cannot_read(tmp_path):
+    (tmp_path / "t").mkdir(); (tmp_path / "t/termination.txt").write_text("limit=150 tolerance=0\n")
+    with pytest.raises(ValueError):
+        results.render_block(results.parse_spec("table=termination ladder=t"), tmp_path)
+    with pytest.raises(ValueError):
+        results.render_block(results.parse_spec("table=kappa ladder=t"), tmp_path)
+    with pytest.raises(ValueError):
+        results.parse_spec("table=kappa ladder=t condition=full")
+
+
+def test_a_comparison_line_without_its_counts_is_refused(tmp_path):
+    (tmp_path / "t").mkdir()
+    (tmp_path / "t/termination.txt").write_text(TERMINATION.replace("only_first=3 ", ""))
+    with pytest.raises(ValueError, match="only_first"):
+        results.render_block(results.parse_spec("table=termination ladder=t"), tmp_path)

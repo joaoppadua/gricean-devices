@@ -1178,6 +1178,15 @@ the rule would read as having reached the limit. And the report gives the
 number of coded responses whose count falls in that band: those are the
 responses that τ = 0 would read otherwise.
 
+*Outcome of the calibration (2026-11-20, written before any response of
+the experiment was counted).* The ten models gave the 360 responses, one
+process per model, in about 40 minutes. 224 reached the limit and 136 ended;
+every model reached it in raw text at least 9 times of 20, and the
+format-only adapter never did under its template. In all 360 the second
+count equals the true number of new tokens. τ is therefore 0: a response
+reached the limit when its count is 150 or more. The band is empty, so
+neither check has anything to report, and the tables have one reading.
+
 **Tables** (form fixed by the author before any count). Rows and conditions
 are those of the intent table.
 

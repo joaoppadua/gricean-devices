@@ -1,7 +1,7 @@
 from pathlib import Path
 import pandas as pd
 import pytest
-from gricean import results
+from gricean import cli, results
 
 
 def write_tables(paper: Path, ladder: str = "t", suffix: str = "", rate: float = 0.25) -> None:
@@ -232,3 +232,17 @@ def test_update_writes_once_checks_without_writing_and_never_writes_on_error(tmp
     with pytest.raises(ValueError):
         results.update(page, tmp_path / "paper")
     assert page.read_text() == broken
+def test_results_command(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    assert cli.main(["results"]) == 1 and "written by hand" in capsys.readouterr().out
+    write_tables(tmp_path / "paper")
+    (tmp_path / "paper/RESULTS.md").write_text(PAGE)
+    assert cli.main(["results", "--check"]) == 1 and "out of date" in capsys.readouterr().out
+    assert cli.main(["results"]) == 0 and "rewritten" in capsys.readouterr().out
+    assert cli.main(["results"]) == 0 and "up to date" in capsys.readouterr().out
+    assert cli.main(["results", "--check"]) == 0
+    page = tmp_path / "paper/RESULTS.md"
+    page.write_text(page.read_text().replace("- Line 1 verdict: failed", "- Line 1 verdict: maybe"))
+    before = page.read_text()
+    assert cli.main(["results"]) == 1 and "held, failed or mixed" in capsys.readouterr().out
+    assert page.read_text() == before

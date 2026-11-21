@@ -6,7 +6,7 @@ from pathlib import Path
 
 import yaml
 
-from . import coding, generate, logprobs, neither, report, stimuli, turns
+from . import coding, generate, logprobs, neither, report, results, stimuli, turns
 from .lm import expected_templates, ladders, load_model, load_registry, neither_source
 
 CONFIGS = Path("configs")
@@ -126,6 +126,28 @@ def cmd_report(args, loader) -> int:
     return 0
 
 
+RESULTS_PAGE = Path("paper/RESULTS.md")
+
+
+def cmd_results(args, loader) -> int:
+    """Rewrite the generated blocks of the results page from the tables under `paper/`, or check them.
+
+    The page is the author's; outside its marked blocks nothing is written (design of 2026-11-21)."""
+    if not RESULTS_PAGE.exists():
+        print(f"{RESULTS_PAGE} is not there; it is written by hand (see the design of 2026-11-21)")
+        return 1
+    try:
+        up_to_date = results.update(RESULTS_PAGE, RESULTS_PAGE.parent, check=args.check)
+    except ValueError as e:
+        print(f"results: {e}")
+        return 1
+    if args.check and not up_to_date:
+        print(f"results: {RESULTS_PAGE} is out of date; run `gricean results`")
+        return 1
+    print(f"results: {RESULTS_PAGE} {'is up to date' if up_to_date else 'rewritten'}")
+    return 0
+
+
 LENGTHS, CALIBRATION = Path("data/lengths/coded_en.csv"), Path("data/lengths/calibration.jsonl")
 
 
@@ -188,6 +210,7 @@ def build_parser() -> argparse.ArgumentParser:
     how = c.add_mutually_exclusive_group(required=True)
     how.add_argument("--batches", metavar="DIR"); how.add_argument("--enter", metavar="DIR")
     r = sub.add_parser("report"); r.add_argument("--ladder", default="olmo"); r.set_defaults(fn=cmd_report)
+    rs = sub.add_parser("results"); rs.add_argument("--check", action="store_true"); rs.set_defaults(fn=cmd_results)
     t = sub.add_parser("turns"); t.set_defaults(fn=cmd_turns)
     what = t.add_mutually_exclusive_group(required=True)
     what.add_argument("--calibrate", metavar="MODEL"); what.add_argument("--count", action="store_true")

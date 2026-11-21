@@ -28,8 +28,8 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   flagged `neither` rows block scoring until `approved: true`.
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
-## Current status (2026-11-20)
-- PRs #1–#17 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`; #15, the correctness table, as `38eb107`; #16, the figure with Line 2 intervals, as `348dfe1`; #17, the random examples, as `422ccac`). #1–#8: pipeline; pre-run gates + spec revision 2; the
+## Current status (2026-11-21)
+- PRs #1–#18 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`; #15, the correctness table, as `38eb107`; #16, the figure with Line 2 intervals, as `348dfe1`; #17, the random examples, as `422ccac`; #18, turn completion (a post hoc analysis) and the left panel of the figure, as `2f65ff9`). #1–#8: pipeline; pre-run gates + spec revision 2; the
   78-item stimulus set; removal of the seed dry-run data; the `neither` set and the pre-run fixes
   below; the first real run (`data/responses`, `data/logprobs`); notebooks that run from any
   folder; the Line 1 subset. #9–#11: the blank sheet, the first batch coded, per-language tables.
@@ -192,7 +192,7 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   branch and every merged branch are deleted, so the repository has `main` only. Small
   documentation commits may go straight to `main` when the author says so; code, data and spec
   changes still go through a branch and a PR merged with a merge commit.
-- **Turn completion, a post hoc analysis** (2026-11-20, branch `turn-completion`, spec §13.1; the
+- **Turn completion, a post hoc analysis** (2026-11-20, PR #18, spec §13.1; the
   author asked that the spec mark it as prompted by the results and outside the original scope):
   whether a greedy response ended before the 150-token limit, and "complete turn" = coded
   `intended` and ended. English coded rows only (author's decision; no Portuguese response is
@@ -212,8 +212,11 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   (spec §11): keep the Instruct column or not; Base as column or dose note; the Ouyang et al.
   pairs. Open gaps: `make finetune` trains `full` first although smallest-first is the safer
   order; kappa is written per ladder folder although it is one number for the whole sample; no
-  paired test of one rung against another (Line 2) or of data scale (correctness); the Line 2
-  table prints `share_neither` only of the three shares.
+  paired test of one rung against another (Line 2) or of data scale on `correct` itself (§13.1
+  tested only the ending of the turn); the Line 2 table prints `share_neither` only of the three
+  shares; turn completion cannot be read past SFT on the official ladder while the limit is 150
+  tokens (a longer limit means generating again); in `paper/selfrun/ladder.png` the legend of the
+  left panel covers part of the lines at 0.75.
 - The coding page is kept (author's instruction). Its store matches `coder1.csv`.
 - Tests must not assert on the repo's own evolving state (real stimuli, `configs/models.yaml`): two
   broke that way, at the full set and at the pin. Build the fixture in `tmp_path` instead.

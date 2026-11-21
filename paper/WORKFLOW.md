@@ -17,6 +17,11 @@ Open spec §5.4. It has four predictions. For each one, write "held",
 "failed" or "mixed", and name the table cell that says so. Use only the
 committed files under `paper/`.
 
+The place to write them is `paper/RESULTS.md`. It splits the four
+predictions into twelve claims, shows under each prediction the cells that
+bear on it, and has a line for each verdict. Its tables are generated; the
+lines that end in a colon are yours.
+
 Two are already recorded in the spec as failed on Line 1:
 
 - the `embedded` version (tuned models do worse there, not better);
@@ -61,6 +66,9 @@ settle them before drafting the results section.
 - Is the released base a column, or a one-line note under the figure?
 - Which pairs from Ouyang et al. (2022) are quoted beside the OLMo
   responses?
+
+Record each one in `paper/RESULTS.md`, under "Decisions", with its date and
+its reason.
 
 ## 4. Then open the notebooks, to understand
 

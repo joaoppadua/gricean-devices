@@ -208,7 +208,23 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   reach the limit (long answers cut off), so on the official ladder it reads from Stage 1 to SFT
   only; on the self-run ladder no `correct` adapter response reaches it in `full`. Do not rerun
   the calibration or change `CALIBRATION_PROMPTS`; the rule and its outcome are in the spec.
-- Next: the experiment pipeline is complete; the author drafts the paper. Open for the author
+- **Results page** (2026-11-21, branch `results-page`; design
+  `docs/superpowers/specs/2026-11-21-results-page-design.md`): `paper/RESULTS.md` records the
+  outcome of each §5.4 prediction (twelve claims, one verdict per measure) and the three §11
+  decisions. It is hand-written; only the text between a pair of marker lines is generated
+  (`gricean.results`, `gricean results [--check]`, run last by `make report`), from the CSV and
+  text files under `paper/<ladder>/`, never from `data/`. The opening marker names the table and
+  the cells. The summary at the top is built from the author's verdict lines. The command refuses
+  (and writes nothing) on a broken marker, a duplicate claim id, a verdict other than `held`,
+  `failed`, `mixed` or empty, and a claim heading or verdict line that is not in its exact form
+  (`### 1a. Title`, `- Line 1 verdict:`): a line the summary cannot place is never skipped. On
+  success it prints how many claims, decisions and blocks it read (12, 3 and 20 as first written). **Do not write a verdict, a decision or a note on that page**: they
+  are the author's, committed blank, and `git log -p` is their record. The split into claims, the
+  cells shown and the row "All N categories" were chosen after the results (spec revision log,
+  2026-11-21). To show another slice, add a marker pair; to support another table, add it to
+  `results.TABLES` with a test.
+- Next: the experiment pipeline is complete; the author writes the verdicts and the decisions in
+  `paper/RESULTS.md` and drafts the paper. Open for the author
   (spec §11): keep the Instruct column or not; Base as column or dose note; the Ouyang et al.
   pairs. Open gaps: `make finetune` trains `full` first although smallest-first is the safer
   order; kappa is written per ladder folder although it is one number for the whole sample; no

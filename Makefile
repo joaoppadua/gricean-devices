@@ -17,6 +17,7 @@ sheet:
 	uv run gricean sheet
 report:
 	uv run gricean report
+	uv run gricean results
 all: report
 finetune:
 	uv run gricean finetune

@@ -144,7 +144,8 @@ def cmd_results(args, loader) -> int:
     if args.check and not up_to_date:
         print(f"results: {RESULTS_PAGE} is out of date; run `gricean results`")
         return 1
-    print(f"results: {RESULTS_PAGE} {'is up to date' if up_to_date else 'rewritten'}")
+    read_as = results.describe(RESULTS_PAGE.read_text(encoding="utf-8"))
+    print(f"results: {RESULTS_PAGE} {'is up to date' if up_to_date else 'rewritten'} ({read_as})")
     return 0
 
 

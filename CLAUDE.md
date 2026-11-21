@@ -215,8 +215,10 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   (`gricean.results`, `gricean results [--check]`, run last by `make report`), from the CSV and
   text files under `paper/<ladder>/`, never from `data/`. The opening marker names the table and
   the cells. The summary at the top is built from the author's verdict lines. The command refuses
-  (and writes nothing) on a broken marker, a duplicate claim id or a verdict other than `held`,
-  `failed`, `mixed` or empty. **Do not write a verdict, a decision or a note on that page**: they
+  (and writes nothing) on a broken marker, a duplicate claim id, a verdict other than `held`,
+  `failed`, `mixed` or empty, and a claim heading or verdict line that is not in its exact form
+  (`### 1a. Title`, `- Line 1 verdict:`): a line the summary cannot place is never skipped. On
+  success it prints how many claims, decisions and blocks it read (12, 3 and 20 as first written). **Do not write a verdict, a decision or a note on that page**: they
   are the author's, committed blank, and `git log -p` is their record. The split into claims, the
   cells shown and the row "All N categories" were chosen after the results (spec revision log,
   2026-11-21). To show another slice, add a marker pair; to support another table, add it to

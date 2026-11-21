@@ -1,0 +1,8 @@
+# turn completion (spec 13.1): post hoc, English coded rows only
+limit=150 tolerance=0
+calibration responses=360 reached_limit=224 ended=136 ended_inside_band=0
+coded responses=540 reached_limit=246 inside_band=0
+# complete turns (coded `intended` and ended) on the dissociation items, `full` version
+complete_turns olmo_stage1_alpaca=4/48 olmo_n500=31/48 olmo_n2000=29/48 olmo_full=32/48 olmo_format_only=0/48
+# exploratory: read as fixed beforehand in spec 13.1
+olmo_n500 vs olmo_full: n=48 both=28 only_first=3 only_second=4 neither=13 mcnemar_exact_p=1.0000

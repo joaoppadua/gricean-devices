@@ -19,6 +19,17 @@ row, by the author's decision. Its definition, the rule that fixes its one
 free number, the form of its two tables and the reading of its one
 comparison were written before any token of any response was counted.
 
+**2026-11-20 (note): turn completion is computed.** The calibration gave a
+tolerance of 0: in 360 responses the count from the stored text equals the
+true number of new tokens. On the 48 English dissociation items in the
+`full` version, complete turns are 4 for Stage 1 under the Alpaca template,
+31, 29 and 32 for the adapters trained on 500, 2,000 and all pairs, and 0
+for the format-only adapter, all of whose responses ended. The exploratory
+comparison of 500 pairs against all pairs gives 3 items one way and 4 the
+other (exact McNemar p = 1.00). On the official ladder the measure is
+limited by the length of the answers: about half of the `correct` responses
+of DPO and Instruct reach the 150-token limit (§13.1).
+
 **2026-11-20 (note): the printed examples are drawn at random.** §6 said
 "selected items"; `examples.md` held the first six items in alphabetical
 order, all of one category and none in Portuguese. At the author's
@@ -1236,3 +1247,63 @@ response to a third. In them Stage 1 under the Alpaca template runs on in
 all three responses, the adapters trained on 500 and 2,000 pairs do so on
 one item of the two, and the format-only adapter ends after one sentence.
 No one had counted the tokens of any response.
+
+**Outcome (2026-11-20, written after the first computation).** The counts
+were made once, after the calibration was committed: 1,080 English coded
+responses, 540 on each ladder, of which 339 on the official ladder and 246
+on the self-run ladder reached the limit. The sums below are taken over the
+six categories, for the 48 English dissociation items in the `full`
+version; the files give each category and condition apart. "Ended" under
+`intended` is the number of complete turns.
+
+| Model | `intended` | of them ended | `correct` | at the limit | `incorrect` | at the limit |
+|---|---|---|---|---|---|---|
+| Stage 1 | 7 | 0 | 0 | 0 | 7 | 7 |
+| Released base | 11 | 4 | 3 | 0 | 8 | 7 |
+| SFT | 41 | 36 | 40 | 5 | 1 | 0 |
+| DPO | 41 | 19 | 40 | 22 | 1 | 0 |
+| Instruct | 41 | 22 | 38 | 19 | 3 | 0 |
+| Stage 1, Alpaca template | 24 | 4 | 2 | 1 | 22 | 19 |
+| Adapter, 500 pairs | 37 | 31 | 23 | 0 | 14 | 6 |
+| Adapter, 2,000 pairs | 36 | 29 | 25 | 0 | 11 | 7 |
+| Adapter, all pairs | 37 | 32 | 28 | 0 | 9 | 5 |
+| Adapter, format only | 0 | | 0 | | 0 | |
+
+What the tables say, against the two things that prompted the analysis:
+
+- *The Alpaca template without training.* Of the 24 `intended` responses
+  of Stage 1 under the template, 4 ended. Of the 22 coded `incorrect`, 19
+  reached the limit. The format-only adapter is the reverse: all 48
+  responses ended and none is `intended`. The adapters trained on real
+  pairs have both: 31, 29 and 32 complete turns of 48. Stage 1 on raw text
+  ended none of its 48 responses.
+- *Data scale.* Complete turns do not grow with it: 31, 29 and 32. The
+  comparison fixed in advance, 500 pairs against all pairs: complete in
+  both on 28 items, in the first only on 3, in the second only on 4, in
+  neither on 13; exact McNemar p = 1.00. It is read as fixed beforehand, as
+  exploratory. The fall of `incorrect` among the `intended` responses, 14,
+  11 and 9, is not a fall of responses at the limit (6, 7 and 5); it is in
+  the responses that ended (8, 4 and 4). So the counts 23, 25 and 28 are
+  not the adapters learning to end the turn.
+
+What the check on the measure says, and it limits the reading:
+
+- On the self-run ladder no `correct` response of the adapters reached the
+  limit in the `full` version (0 of 76). There, reaching the limit is not a
+  good answer cut off.
+- On the official ladder it often is. 22 of the 40 `correct` responses of
+  DPO reached the limit, and 19 of the 38 of Instruct, against 5 of 40 for
+  SFT. From DPO on, the answers are longer than 150 tokens about half the
+  time. The fall of complete turns from 36 at SFT to 19 and 22 is therefore
+  a fact about the length of the answers under this limit, and not evidence
+  that DPO or Instruct fail to end a turn. On that ladder the measure can be
+  read from Stage 1 to SFT (0 to 36 complete turns) and not beyond.
+- In the `embedded` version, which is never templated, almost nothing
+  ends on the self-run ladder: 0 of 24 responses at every rung, the
+  format-only adapter included.
+
+The remark that the paper can make from this, as post hoc: under the
+template, Stage 1 opens with the intended reading on half the items and
+ends the turn on 4; an adapter trained on shuffled pairs ends every turn and
+follows the intended reading on none; only training on real pairs gives
+both. That is a dissociation in the counts above and not a tested claim.

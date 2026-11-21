@@ -190,6 +190,22 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   branch and every merged branch are deleted, so the repository has `main` only. Small
   documentation commits may go straight to `main` when the author says so; code, data and spec
   changes still go through a branch and a PR merged with a merge commit.
+- **Turn completion, a post hoc analysis** (2026-11-20, branch `turn-completion`, spec §13.1; the
+  author asked that the spec mark it as prompted by the results and outside the original scope):
+  whether a greedy response ended before the 150-token limit, and "complete turn" = coded
+  `intended` and ended. English coded rows only (author's decision; no Portuguese response is
+  counted). `gricean.turns`; `gricean turns --calibrate MODEL | --count | --ladder NAME`;
+  `gricean report` also writes the tables when `data/lengths/` is there. Token counts come from
+  re-tokenizing the stored text (`data/lengths/coded_en.csv`, 1,080 rows); the tolerance is
+  computed from `data/lengths/calibration.jsonl` (360 responses to 20 prompts outside the stimuli,
+  ten models) and is 0: the recount was exact in every one. English, `full`, 48 dissociation
+  items, complete turns: 0, 4, 36, 19, 22 on the official ladder; 4 (Stage 1 Alpaca), 31, 29, 32
+  (500, 2,000, all pairs), 0 for format-only, whose 48 responses all ended. Exploratory
+  comparison fixed in advance, 500 pairs vs all: 3 items one way, 4 the other, exact McNemar
+  p = 1.00. Limit of the measure: 22 of 40 `correct` responses of DPO and 19 of 38 of Instruct
+  reach the limit (long answers cut off), so on the official ladder it reads from Stage 1 to SFT
+  only; on the self-run ladder no `correct` adapter response reaches it in `full`. Do not rerun
+  the calibration or change `CALIBRATION_PROMPTS`; the rule and its outcome are in the spec.
 - Next: the experiment pipeline is complete; the author drafts the paper. Open for the author
   (spec §11): keep the Instruct column or not; Base as column or dose note; the Ouyang et al.
   pairs. Open gaps: `make finetune` trains `full` first although smallest-first is the safer

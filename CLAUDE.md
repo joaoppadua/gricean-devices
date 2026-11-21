@@ -29,7 +29,7 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
 ## Current status (2026-11-21)
-- PRs #1–#18 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`; #15, the correctness table, as `38eb107`; #16, the figure with Line 2 intervals, as `348dfe1`; #17, the random examples, as `422ccac`; #18, turn completion (a post hoc analysis) and the left panel of the figure, as `2f65ff9`). #1–#8: pipeline; pre-run gates + spec revision 2; the
+- PRs #1–#19 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`; #15, the correctness table, as `38eb107`; #16, the figure with Line 2 intervals, as `348dfe1`; #17, the random examples, as `422ccac`; #18, turn completion (a post hoc analysis) and the left panel of the figure, as `2f65ff9`; #19, the results page `paper/RESULTS.md`, as `f0b343a`). #1–#8: pipeline; pre-run gates + spec revision 2; the
   78-item stimulus set; removal of the seed dry-run data; the `neither` set and the pre-run fixes
   below; the first real run (`data/responses`, `data/logprobs`); notebooks that run from any
   folder; the Line 1 subset. #9–#11: the blank sheet, the first batch coded, per-language tables.
@@ -208,7 +208,7 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   reach the limit (long answers cut off), so on the official ladder it reads from Stage 1 to SFT
   only; on the self-run ladder no `correct` adapter response reaches it in `full`. Do not rerun
   the calibration or change `CALIBRATION_PROMPTS`; the rule and its outcome are in the spec.
-- **Results page** (2026-11-21, branch `results-page`; design
+- **Results page** (2026-11-21, PR #19; design
   `docs/superpowers/specs/2026-11-21-results-page-design.md`): `paper/RESULTS.md` records the
   outcome of each §5.4 prediction (twelve claims, one verdict per measure) and the three §11
   decisions. It is hand-written; only the text between a pair of marker lines is generated

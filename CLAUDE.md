@@ -28,7 +28,7 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   flagged `neither` rows block scoring until `approved: true`.
 - Commit `data/`, `stimuli/neither/`, `adapters/` so tables regenerate without models.
 
-## Current status (2026-11-21)
+## Current status (2026-11-22)
 - PRs #1–#19 are merged into `main` (#12, the self-run ladder, as merge commit `ed15168`; #13, the codebook and the blank sheet for coder 2, as `0d823e6`; #14, coder 2's codes and the agreement measures, as `d0d8518`; #15, the correctness table, as `38eb107`; #16, the figure with Line 2 intervals, as `348dfe1`; #17, the random examples, as `422ccac`; #18, turn completion (a post hoc analysis) and the left panel of the figure, as `2f65ff9`; #19, the results page `paper/RESULTS.md`, as `f0b343a`). #1–#8: pipeline; pre-run gates + spec revision 2; the
   78-item stimulus set; removal of the seed dry-run data; the `neither` set and the pre-run fixes
   below; the first real run (`data/responses`, `data/logprobs`); notebooks that run from any
@@ -218,15 +218,29 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   (and writes nothing) on a broken marker, a duplicate claim id, a verdict other than `held`,
   `failed`, `mixed` or empty, and a claim heading or verdict line that is not in its exact form
   (`### 1a. Title`, `- Line 1 verdict:`): a line the summary cannot place is never skipped. On
-  success it prints how many claims, decisions and blocks it read (12, 3 and 20 as first written). **Do not write a verdict, a decision or a note on that page**: they
-  are the author's, committed blank, and `git log -p` is their record. The split into claims, the
+  success it prints how many claims, decisions and blocks it read (12, 3 and 20 as first written). **Do not write or change a verdict, a decision or a note on that page**: they
+  are the author's, committed blank, then as the author wrote them, and `git log -p` is their record. The split into claims, the
   cells shown and the row "All N categories" were chosen after the results (spec revision log,
   2026-11-21). To show another slice, add a marker pair; to support another table, add it to
   `results.TABLES` with a test.
-- Next: the experiment pipeline is complete; the author writes the verdicts and the decisions in
-  `paper/RESULTS.md` and drafts the paper. Open for the author
-  (spec §11): keep the Instruct column or not; Base as column or dose note; the Ouyang et al.
-  pairs. Open gaps: `make finetune` trains `full` first although smallest-first is the safer
+- **Verdicts and decisions written** (2026-11-22): the
+  author filled in the page by hand. `447a056` holds the first entry as entered (straight to
+  `main` at the author's word); `acd4d1d` the
+  author's revision after Claude read the entry against the tables and described what did not
+  match (flag and describe, as in the coding checks), on branch `results-verdicts`, through a
+  pull request at the author's word. `git diff 447a056 acd4d1d` is the record:
+  claim 4d on Line 2 went from `held` to `failed`, with a note; the note of claim 2 was corrected;
+  the dates were filled in. Verdicts as they stand (Line 1 / Line 2): 1a–1d `held` / `held`; 1e
+  `held` / `mixed`; 2 `failed` (Line 1 only); 3 `mixed` / `failed`; 4a `held` / `held`; 4b
+  `mixed` / `held`; 4c `failed` / `failed`; 4d `held` / `failed`; 4e `failed` / `failed`.
+  Decisions: D1, the Instruct column stays; D2, Base stays as a column (the line reads "Yes";
+  the reason says the column); D3, the Ouyang et al. pairs, deferred to the writing and perhaps
+  dropped. Every verdict is a table reading; no paired test exists. Left as the author wrote
+  them: the wording of the notes, their spelling, "Simpson's Paradox" in claims 3 and 4a, and
+  the empty `Decided on` lines of claim 4e and of the three decisions. Read the page, not this
+  summary, before quoting a verdict.
+- Next: the experiment pipeline is complete and the outcomes are recorded; the author drafts the
+  paper. Open for the author (spec §11): only the Ouyang et al. pairs (D3, deferred). Open gaps: `make finetune` trains `full` first although smallest-first is the safer
   order; kappa is written per ladder folder although it is one number for the whole sample; no
   paired test of one rung against another (Line 2) or of data scale on `correct` itself (§13.1
   tested only the ending of the turn); the Line 2 table prints `share_neither` only of the three

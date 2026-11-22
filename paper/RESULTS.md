@@ -57,24 +57,24 @@ Change those lines, not the table.
 
 | Claim                                                                    | Line 1 | Line 2 | Support                                       |
 | ------------------------------------------------------------------------ | ------ | ------ | --------------------------------------------- |
-| 1a Low at Stage 1                                                        | open   | open   | table reading                                 |
-| 1b Moves little or not at all at Base                                    | open   | open   | table reading; no paired test exists          |
-| 1c Rises sharply at SFT                                                  | open   | open   | table reading; no paired test exists          |
-| 1d Rises or holds at DPO                                                 | open   | open   | table reading; no paired test exists          |
-| 1e Stays flat at Instruct                                                | open   | open   | table reading; no paired test exists          |
-| 2 Controls stay high across stages                                       | open   | —      | table reading                                 |
-| 3 Cue ablation degrades Stage 1 and Base more than SFT, DPO and Instruct | open   | open   | table reading; no paired test exists          |
-| 4a Clear but smaller effect than official SFT                            | open   | open   | table reading; no paired test exists          |
-| 4b Present on indirect request and pattern continuation                  | open   | open   | table reading; no paired test exists          |
-| 4c Weaker on malformed and underspecified                                | open   | open   | table reading; no paired test exists          |
-| 4d Absent in the format-only control                                     | open   | open   | table reading; no paired test exists          |
-| 4e Grows with data scale                                                 | open   | open   | table reading; no paired test on this measure |
+| 1a Low at Stage 1                                                        | held   | held   | table reading                                 |
+| 1b Moves little or not at all at Base                                    | held   | held   | table reading; no paired test exists          |
+| 1c Rises sharply at SFT                                                  | held   | held   | table reading; no paired test exists          |
+| 1d Rises or holds at DPO                                                 | held   | held   | table reading; no paired test exists          |
+| 1e Stays flat at Instruct                                                | held   | mixed  | table reading; no paired test exists          |
+| 2 Controls stay high across stages                                       | failed | —      | table reading                                 |
+| 3 Cue ablation degrades Stage 1 and Base more than SFT, DPO and Instruct | mixed  | failed | table reading; no paired test exists          |
+| 4a Clear but smaller effect than official SFT                            | held   | held   | table reading; no paired test exists          |
+| 4b Present on indirect request and pattern continuation                  | mixed  | held   | table reading; no paired test exists          |
+| 4c Weaker on malformed and underspecified                                | failed | failed | table reading; no paired test exists          |
+| 4d Absent in the format-only control                                     | held   | held   | table reading; no paired test exists          |
+| 4e Grows with data scale                                                 | failed | failed | table reading; no paired test on this measure |
 
-| Decision                                      | Status |
-| --------------------------------------------- | ------ |
-| D1 The Instruct column                        | open   |
-| D2 The released base: a column or a dose note | open   |
-| D3 The pairs quoted from Ouyang et al. (2022) | open   |
+| Decision                                      | Status                               |
+| --------------------------------------------- | ------------------------------------ |
+| D1 The Instruct column                        | Yes.                                 |
+| D2 The released base: a column or a dose note | Yes                                  |
+| D3 The pairs quoted from Ouyang et al. (2022) | deferred to the writing of the paper |
 
 <!-- end of generated block: edits above this line are overwritten -->
 
@@ -153,50 +153,50 @@ Line 2. Portuguese, `full`: mean log-odds of the intended over the literal conti
 Read the Stage 1 column. The spec sets no threshold for "low".
 
 - Support: table reading
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: held
+- Line 2 verdict: held
 - Decided on:
-- Note:
+- Note: The best performance is at the *underspecified reques* item, which still shows less than 40% intent rate at stage 1. 
 
 ### 1b. Moves little or not at all at Base
 
 Read Stage 1 against Base, on the same rows.
 
 - Support: table reading; no paired test exists
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: held
+- Line 2 verdict: held
 - Decided on:
-- Note:
+- Note: *embedded instruction* was a pointed difference in Line 1, when 0/8 became 3/8; but that's clearly not a pattern and did not presented itself in Line 2 (log-odds 0.79 to 1.11).
 
 ### 1c. Rises sharply at SFT
 
 Read Base against SFT.
 
 - Support: table reading; no paired test exists
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: held
+- Line 2 verdict: held
 - Decided on:
-- Note:
+- Note: *rhetorical question* was a parcial exception in Lines 1 and 2; *embedded instruction* improvement was also not very sharp. Again, I'm reading the pointed parcial exceptions agains the general trend to judge that the prediction was held. 
 
 ### 1d. Rises or holds at DPO
 
 Read SFT against DPO.
 
 - Support: table reading; no paired test exists
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: held
+- Line 2 verdict: held
 - Decided on:
-- Note:
+- Note: Again, partial exceptions in Line 1 (*malformed instruction* went up one item and *rhetorical question* went down one item) were read against the general trend -- which, in Line 2 were especially clear, with improvements across the board. 
 
 ### 1e. Stays flat at Instruct
 
 Read DPO against Instruct.
 
 - Support: table reading; no paired test exists
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: held
+- Line 2 verdict: mixed
 - Decided on:
-- Note:
+- Note: Line 1 was exactly flat. Line 2 showed small improvments in most categories, a small decrease in *Underspecified request* and stayed flat only at *Indirect request*)
 
 ## Prediction 2: the controls
 
@@ -243,9 +243,9 @@ in Portuguese. The spec sets no threshold for "high". Line 2 has no control
 rows, so this claim has one verdict.
 
 - Support: table reading
-- Line 1 verdict:
+- Line 1 verdict: failed
 - Decided on:
-- Note:
+- Note: Both `stage 1` and `base` had only 2 categories at 2/2 and the same number at 0/2.
 
 ## Prediction 3: cue ablation
 
@@ -345,10 +345,10 @@ the codes; the counts as they stand are in §5.1, step 10, and in the table
 above.
 
 - Support: table reading; no paired test exists
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: mixed
+- Line 2 verdict: failed
 - Decided on:
-- Note:
+- Note: In Line 1, there seems to be a small global effect, even though individuals items were very mixed, so it might be a sort of Simpson's Paradox. For Line 2, the distribution of differences in log-odds seem pretty much random. 
 
 ## Prediction 4: the self-run adapters
 
@@ -464,38 +464,38 @@ Read Stage 1 Alpaca against the three adapters. Then read that step against
 the step from Stage 1 to SFT in the comparison tables.
 
 - Support: table reading; no paired test exists
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: held
+- Line 2 verdict: held
 - Decided on:
-- Note:
+- Note: Both lines decided mostly on the aggregate pattern; some important differences in individual categories, so the aforementioned caution about the Simpson's Paradox hold. 
 
 ### 4b. Present on indirect request and pattern continuation
 
 Read those two rows of the self-run tables.
 
 - Support: table reading; no paired test exists
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: mixed
+- Line 2 verdict: held
 - Decided on:
-- Note:
+- Note: Line 1 on the Alpaca version of `stage 1`was already at 8/8, so no effect there (although check out the post-experiment analysis using the correct v. incorrect judgments); 
 
 ### 4c. Weaker on malformed and underspecified
 
 Read those two rows against the two rows of claim 4b.
 
 - Support: table reading; no paired test exists
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: failed
+- Line 2 verdict: failed
 - Decided on:
-- Note:
+- Note: No relevant difference in effect for those rows in Line 1, and they were actually acute in Line 2. 
 
 ### 4d. Absent in the format-only control
 
 Read the Format only column against Stage 1 Alpaca.
 
 - Support: table reading; no paired test exists
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: held
+- Line 2 verdict: held
 - Decided on:
 - Note:
 
@@ -506,8 +506,8 @@ on this claim for Line 1: revision log, note of 2026-11-16. The one paired
 test that was run (spec §13.1) is on turn completion, a different measure.
 
 - Support: table reading; no paired test on this measure
-- Line 1 verdict:
-- Line 2 verdict:
+- Line 1 verdict: failed
+- Line 2 verdict: failed
 - Decided on:
 - Note:
 
@@ -522,9 +522,9 @@ The spec asks: does the Instruct column stay in the paper? Instruct is the
 control column of the design (spec §3.1). Look at DPO against Instruct in
 the tables of Prediction 1, and at claim 1e.
 
-- Decision:
+- Decision: Yes.
 - Decided on:
-- Reason:
+- Reason: The experiments were run with Instruct and it makes no sense to take it out *post hoc*. Besides, the fact that the performance on either judgment -- *intented* or *correct* -- does not seem to improve in this version is further data about the importance of Gricean intention for understanding meaning: Instruct does not improve that aspect. 
 
 ### D2. The released base: a column or a dose note
 
@@ -533,9 +533,9 @@ note under the figure? The step from Stage 1 to Base is not instruction
 data alone, and the spec does not allow it to be decomposed (§3.1). Look at
 Stage 1 against Base in the tables of Prediction 1, and at claim 1b.
 
-- Decision:
+- Decision: Yes
 - Decided on:
-- Reason:
+- Reason: Again, the experiment ran with Base and the fact that the predictions about its behavior mostly hold is data. 
 
 ### D3. The pairs quoted from Ouyang et al. (2022)
 
@@ -543,9 +543,9 @@ The spec asks: which GPT-3 and InstructGPT pairs are quoted beside the
 Stage 1 and SFT responses? The OLMo responses the paper may quote are in
 `olmo/examples.md`, drawn at random with a fixed seed (spec §6).
 
-- Decision:
+- Decision: deferred to the writing of the paper
 - Decided on:
-- Reason:
+- Reason: We may actually not needs this as it will just bloat the reading. We'll see. 
 
 ## Analyses added after the results
 

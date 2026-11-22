@@ -73,7 +73,7 @@ Change those lines, not the table.
 | Decision                                      | Status                               |
 | --------------------------------------------- | ------------------------------------ |
 | D1 The Instruct column                        | Yes                                  |
-| D2 The released base: a column or a dose note | Yes                                  |
+| D2 The released base: a column or a dose note | As a column.                         |
 | D3 The pairs quoted from Ouyang et al. (2022) | deferred to the writing of the paper |
 
 <!-- end of generated block: edits above this line are overwritten -->
@@ -523,7 +523,7 @@ control column of the design (spec §3.1). Look at DPO against Instruct in
 the tables of Prediction 1, and at claim 1e.
 
 - Decision: Yes
-- Decided on:
+- Decided on: 11/22/2026
 - Reason: The experiments were run with Instruct and it makes no sense to take it out *post hoc*. Besides, the fact that the performance on either judgment -- *intented* or *correct* -- does not seem to improve in this version is further data about the importance of Gricean intention for understanding meaning: Instruct does not improve that aspect. 
 
 ### D2. The released base: a column or a dose note
@@ -533,8 +533,8 @@ note under the figure? The step from Stage 1 to Base is not instruction
 data alone, and the spec does not allow it to be decomposed (§3.1). Look at
 Stage 1 against Base in the tables of Prediction 1, and at claim 1b.
 
-- Decision: Yes
-- Decided on:
+- Decision: As a column.
+- Decided on: 11/22/2026
 - Reason: Again, the experiment ran with Base and the fact that the predictions about its behavior mostly hold is data. 
 
 ### D3. The pairs quoted from Ouyang et al. (2022)

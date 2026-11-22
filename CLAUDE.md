@@ -230,14 +230,14 @@ readings come apart, run through open base → SFT → DPO → Instruct checkpoi
   match (flag and describe, as in the coding checks), on branch `results-verdicts`, through a
   pull request at the author's word. `git diff 447a056 acd4d1d` is the record:
   claim 4d on Line 2 went from `held` to `failed`, with a note; the note of claim 2 was corrected;
-  the dates were filled in. `7689c4e`, on the same branch: the author rewrote D2 from "Yes" to
-  "As a column" and dated D1 and D2. Verdicts as they stand (Line 1 / Line 2): 1a–1d `held` / `held`; 1e
+  the dates were filled in. `7689c4e` and the commit after it, on the same branch: the author rewrote D2 from "Yes" to
+  "As a column" and dated the three decisions. Verdicts as they stand (Line 1 / Line 2): 1a–1d `held` / `held`; 1e
   `held` / `mixed`; 2 `failed` (Line 1 only); 3 `mixed` / `failed`; 4a `held` / `held`; 4b
   `mixed` / `held`; 4c `failed` / `failed`; 4d `held` / `failed`; 4e `failed` / `failed`.
   Decisions: D1, the Instruct column stays; D2, Base stays as a column; D3, the Ouyang et al. pairs, deferred to the writing and perhaps
   dropped. Every verdict is a table reading; no paired test exists. Left as the author wrote
   them: the wording of the notes, their spelling, "Simpson's Paradox" in claims 3 and 4a, and
-  the empty `Decided on` lines of claim 4e and of D3. Read the page, not this
+  the empty `Decided on` line of claim 4e. Read the page, not this
   summary, before quoting a verdict.
 - Next: the experiment pipeline is complete and the outcomes are recorded; the author drafts the
   paper. Open for the author (spec §11): only the Ouyang et al. pairs (D3, deferred). Open gaps: `make finetune` trains `full` first although smallest-first is the safer

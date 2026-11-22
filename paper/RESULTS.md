@@ -67,12 +67,12 @@ Change those lines, not the table.
 | 4a Clear but smaller effect than official SFT                            | held   | held   | table reading; no paired test exists          |
 | 4b Present on indirect request and pattern continuation                  | mixed  | held   | table reading; no paired test exists          |
 | 4c Weaker on malformed and underspecified                                | failed | failed | table reading; no paired test exists          |
-| 4d Absent in the format-only control                                     | held   | held   | table reading; no paired test exists          |
+| 4d Absent in the format-only control                                     | held   | failed | table reading; no paired test exists          |
 | 4e Grows with data scale                                                 | failed | failed | table reading; no paired test on this measure |
 
 | Decision                                      | Status                               |
 | --------------------------------------------- | ------------------------------------ |
-| D1 The Instruct column                        | Yes.                                 |
+| D1 The Instruct column                        | Yes                                  |
 | D2 The released base: a column or a dose note | Yes                                  |
 | D3 The pairs quoted from Ouyang et al. (2022) | deferred to the writing of the paper |
 
@@ -155,7 +155,7 @@ Read the Stage 1 column. The spec sets no threshold for "low".
 - Support: table reading
 - Line 1 verdict: held
 - Line 2 verdict: held
-- Decided on:
+- Decided on: 11/22/2026
 - Note: The best performance is at the *underspecified reques* item, which still shows less than 40% intent rate at stage 1. 
 
 ### 1b. Moves little or not at all at Base
@@ -165,7 +165,7 @@ Read Stage 1 against Base, on the same rows.
 - Support: table reading; no paired test exists
 - Line 1 verdict: held
 - Line 2 verdict: held
-- Decided on:
+- Decided on: 11/22/2026
 - Note: *embedded instruction* was a pointed difference in Line 1, when 0/8 became 3/8; but that's clearly not a pattern and did not presented itself in Line 2 (log-odds 0.79 to 1.11).
 
 ### 1c. Rises sharply at SFT
@@ -175,7 +175,7 @@ Read Base against SFT.
 - Support: table reading; no paired test exists
 - Line 1 verdict: held
 - Line 2 verdict: held
-- Decided on:
+- Decided on: 11/22/2026
 - Note: *rhetorical question* was a parcial exception in Lines 1 and 2; *embedded instruction* improvement was also not very sharp. Again, I'm reading the pointed parcial exceptions agains the general trend to judge that the prediction was held. 
 
 ### 1d. Rises or holds at DPO
@@ -185,7 +185,7 @@ Read SFT against DPO.
 - Support: table reading; no paired test exists
 - Line 1 verdict: held
 - Line 2 verdict: held
-- Decided on:
+- Decided on: 11/22/2026
 - Note: Again, partial exceptions in Line 1 (*malformed instruction* went up one item and *rhetorical question* went down one item) were read against the general trend -- which, in Line 2 were especially clear, with improvements across the board. 
 
 ### 1e. Stays flat at Instruct
@@ -195,7 +195,7 @@ Read DPO against Instruct.
 - Support: table reading; no paired test exists
 - Line 1 verdict: held
 - Line 2 verdict: mixed
-- Decided on:
+- Decided on: 11/22/2026
 - Note: Line 1 was exactly flat. Line 2 showed small improvments in most categories, a small decrease in *Underspecified request* and stayed flat only at *Indirect request*)
 
 ## Prediction 2: the controls
@@ -244,8 +244,8 @@ rows, so this claim has one verdict.
 
 - Support: table reading
 - Line 1 verdict: failed
-- Decided on:
-- Note: Both `stage 1` and `base` had only 2 categories at 2/2 and the same number at 0/2.
+- Decided on: 11/22/2026
+- Note: Both `stage 1` and `base` had, collectively, only 2 categories at 2/2 and five at 0/2.
 
 ## Prediction 3: cue ablation
 
@@ -347,8 +347,8 @@ above.
 - Support: table reading; no paired test exists
 - Line 1 verdict: mixed
 - Line 2 verdict: failed
-- Decided on:
-- Note: In Line 1, there seems to be a small global effect, even though individuals items were very mixed, so it might be a sort of Simpson's Paradox. For Line 2, the distribution of differences in log-odds seem pretty much random. 
+- Decided on: 11/22/2026
+- Note: In Line 1, there seems to be a small global effect, even though individuals items were very mixed, so it might be a sort of reversed  Simpson's Paradox. For Line 2, the distribution of differences in log-odds seem pretty much random. 
 
 ## Prediction 4: the self-run adapters
 
@@ -466,7 +466,7 @@ the step from Stage 1 to SFT in the comparison tables.
 - Support: table reading; no paired test exists
 - Line 1 verdict: held
 - Line 2 verdict: held
-- Decided on:
+- Decided on: 11/22/2026
 - Note: Both lines decided mostly on the aggregate pattern; some important differences in individual categories, so the aforementioned caution about the Simpson's Paradox hold. 
 
 ### 4b. Present on indirect request and pattern continuation
@@ -476,7 +476,7 @@ Read those two rows of the self-run tables.
 - Support: table reading; no paired test exists
 - Line 1 verdict: mixed
 - Line 2 verdict: held
-- Decided on:
+- Decided on: 11/22/2026
 - Note: Line 1 on the Alpaca version of `stage 1`was already at 8/8, so no effect there (although check out the post-experiment analysis using the correct v. incorrect judgments); 
 
 ### 4c. Weaker on malformed and underspecified
@@ -486,7 +486,7 @@ Read those two rows against the two rows of claim 4b.
 - Support: table reading; no paired test exists
 - Line 1 verdict: failed
 - Line 2 verdict: failed
-- Decided on:
+- Decided on: 11/22/2026
 - Note: No relevant difference in effect for those rows in Line 1, and they were actually acute in Line 2. 
 
 ### 4d. Absent in the format-only control
@@ -495,9 +495,9 @@ Read the Format only column against Stage 1 Alpaca.
 
 - Support: table reading; no paired test exists
 - Line 1 verdict: held
-- Line 2 verdict: held
-- Decided on:
-- Note:
+- Line 2 verdict: failed
+- Decided on: 11/22/2026
+- Note: Fomat clearly matters in Line 2. Since the format-only controls are themselves well-formed sentences, albeit irrelevant to the prompt, and since the log-probs are based on a chain-rule probability calculation, this might means that the possibly low probability of token 1 of the response is dilluted by the higher probability of subsequent tokens. But this is not settled by the data in this project. 
 
 ### 4e. Grows with data scale
 
@@ -522,7 +522,7 @@ The spec asks: does the Instruct column stay in the paper? Instruct is the
 control column of the design (spec §3.1). Look at DPO against Instruct in
 the tables of Prediction 1, and at claim 1e.
 
-- Decision: Yes.
+- Decision: Yes
 - Decided on:
 - Reason: The experiments were run with Instruct and it makes no sense to take it out *post hoc*. Besides, the fact that the performance on either judgment -- *intented* or *correct* -- does not seem to improve in this version is further data about the importance of Gricean intention for understanding meaning: Instruct does not improve that aspect. 
 

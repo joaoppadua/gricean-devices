@@ -544,7 +544,7 @@ Stage 1 and SFT responses? The OLMo responses the paper may quote are in
 `olmo/examples.md`, drawn at random with a fixed seed (spec §6).
 
 - Decision: deferred to the writing of the paper
-- Decided on:
+- Decided on: 11/22/2026
 - Reason: We may actually not needs this as it will just bloat the reading. We'll see. 
 
 ## Analyses added after the results
